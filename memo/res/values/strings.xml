@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Memo</string>
+    <string name="memostart_button1_text">zeige Karte</string>
+    <string name="memostart_menu_item1_title">Pkt hinzufügen</string>
+    <string name="memostart_menu_item2_title">DB leeren</string>
+    <string name="memostart_menu_item3_title">DB füllen</string>
+    <string name="zeigekarte_menu_item1_title">akt. Position speichern</string>
+    <string name="zeigekarte_menu_item2_title">bel. Position speichern</string>
+    <string name="memo_dialog_geopkt_title">Position speichern</string>
+    <string name="memo_dialog_geopkt_name">GeoPunkt</string>
+    <string name="memo_dialog_latitude">Breitengrad:</string>
+    <string name="memo_dialog_longitude">Längengrad:</string>
+    <!-- <string name="memo_dialog_grad">°</string> -->
+    <!-- <string name="memo_dialog_minuten">\"</string> -->
+    <!-- <string name="memo_dialog_sekunden">\'</string> -->
+    <string name="memo_dialog_geopkt_button1_text">OK</string>
+    <string name="memo_dialog_geopkt_button2_text">Abbrechen</string>
+    <string name="memo_dialog_geopkt_edittext1_text">53600337</string>
+    <string name="memo_dialog_geopkt_edittext2_text">11418141</string>
+
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="memostart_button1_text_neu">Ladestationen zeigen</string>
+    <string name="memostart_button2_text_neu">Server synchronisieren</string>
+    <string name="memostart_button3_text_neu">Einstellungen</string>
+    <string name="memosingleton_gps_nicht_verfuegbar">Bitte GPS in den Einstellungen aktivieren!</string>
+    <string name="punktezeigen_tab_menu_item1_title">DB füllen</string>
+    <string name="punktezeigen_tab_menu_item2_title">DB leeren</string>
+    <string name="punktezeigen_tab_menu_item3_title">Punkt hinzufügen</string>
+    <string name="punktezeigen_tab_liste_asynctask_progressdialog_title">Lade Liste...</string>
+    <string name="punktezeigen_tab_karte_asynctask_progressdialog_title">Lade Punkte...</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_title">Punkt hinzufügen</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_editText1_text">Name</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_editText2_text">Beschreibung</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_editText3_text">Adresse</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_editText4_text">0</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_checkBox1_text">Position per GPS</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_textView1_text">Eigenschaften:</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_textView2_text">Cent/kWh</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_radio0_text">Drehstrom</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_radio1_text">Gleichstrom</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_button1_text">OK</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_neu_button2_text">Abbrechen</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_db_gescheitert">Fehler beim Einfügen des Punktes!</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_db_erfolgreich">Eintrag hinzugefügt.</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_unvollstaendig">Bitte folgende Felder ausfüllen:</string>
+    <string name="punktezeigen_tab_liste_karteanzeigen">neue Einträge</string>
+    <string name="punktezeigen_tab_karte_karteanzeigen">neue Punkte</string>
+
+</resources>

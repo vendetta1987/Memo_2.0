@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/punktezeigen_liste_listview_item_layout_relativelayout_neu"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="5dp" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/punktezeigen_liste_listview_item_layout_textview1_neu"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="blub"
+            android:textSize="25dp" >
+        </TextView>
+
+        <TextView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/punktezeigen_liste_listview_item_layout_textview2_neu"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="suelz"
+            android:textSize="15dp" >
+        </TextView>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/punktezeigen_liste_listview_item_layout_imageview_neu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/icon" />
+
+</RelativeLayout>
