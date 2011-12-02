@@ -2,22 +2,49 @@
 <resources>
 
     <string name="app_name">Memo</string>
-    <string name="memostart_button1_text">zeige Karte</string>
-    <string name="memostart_menu_item1_title">Pkt hinzufügen</string>
-    <string name="memostart_menu_item2_title">DB leeren</string>
-    <string name="memostart_menu_item3_title">DB füllen</string>
-    <string name="zeigekarte_menu_item1_title">akt. Position speichern</string>
-    <string name="zeigekarte_menu_item2_title">bel. Position speichern</string>
-    <string name="memo_dialog_geopkt_title">Position speichern</string>
-    <string name="memo_dialog_geopkt_name">GeoPunkt</string>
-    <string name="memo_dialog_latitude">Breitengrad:</string>
-    <string name="memo_dialog_longitude">Längengrad:</string>
-    <!-- <string name="memo_dialog_grad">°</string> -->
-    <!-- <string name="memo_dialog_minuten">\"</string> -->
-    <!-- <string name="memo_dialog_sekunden">\'</string> -->
-    <string name="memo_dialog_geopkt_button1_text">OK</string>
-    <string name="memo_dialog_geopkt_button2_text">Abbrechen</string>
-    <string name="memo_dialog_geopkt_edittext1_text">53600337</string>
-    <string name="memo_dialog_geopkt_edittext2_text">11418141</string>
+    <string name="memostart_button1_text">Ladestationen zeigen</string>
+    <string name="memostart_button2_text">Server synchronisieren</string>
+    <string name="memostart_button3_text">Einstellungen</string>
+    <string name="memosingleton_gps_nicht_verfuegbar">Bitte GPS in den Einstellungen aktivieren!</string>
+    <string name="punktezeigen_tab_menu_item1_title">DB füllen</string>
+    <string name="punktezeigen_tab_menu_item2_title">DB leeren</string>
+    <string name="punktezeigen_tab_dialog_pktfiltern_title">Punkte filtern</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_title">Punkt hinzufügen</string>
+    <string name="punktezeigen_tab_liste_asynctask_progressdialog_title">Lade Liste...</string>
+    <string name="punktezeigen_tab_karte_asynctask_progressdialog_title">Lade Punkte...</string>
+    <string name="punktezeigen_tab_dialog_text_name">Name</string>
+    <string name="punktezeigen_tab_dialog_text_beschreibung">Beschreibung</string>
+    <string name="punktezeigen_tab_dialog_text_adresse">Adresse</string>
+    <string name="punktezeigen_tab_dialog_text_eigenschaften">Eigenschaften</string>
+    <string name="punktezeigen_tab_dialog_text_preis">Cent/kWh</string>
+    <string name="punktezeigen_tab_dialog_text_unvollstaendig">Bitte folgende Felder ausfüllen:</string>
+    <string name="punktezeigen_tab_dialog_text_abbrechen">Abbrechen</string>
+    <string name="punktezeigen_tab_dialog_button_text_ok">OK</string>
+    <string name="punktezeigen_tab_dialog_button_text_zeige_karte">Auf Karte anzeigen</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_checkBox1_text">Position per GPS</string>
+    <string name="punktezeigen_tab_dialog_text_null">0</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_radio0_text">Drehstrom</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_radio1_text">Gleichstrom</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_db_gescheitert">Fehler beim Einfügen des Punktes!</string>
+    <string name="punktezeigen_tab_dialog_pkthinzufuegen_db_erfolgreich">Eintrag hinzugefügt.</string>
+    <string name="punktezeigen_tab_liste_karteanzeigen">neue Einträge</string>
+    <string name="punktezeigen_tab_karte_karteanzeigen">neue Punkte</string>
+    <string name="lat_kurz">Lat:</string>
+    <string name="lon_kurz">Lon:</string>
+    <string name="punktehinzufuegen_service_notification_speichere">Speichere:</string>
+    <string name="punktehinzufuegen_service_notification_bitte_warten">Bitte warten.</string>
+    <string name="punktehinzufuegen_service_notification_warte_auf_gps_versuch">Warte auf GPS: Versuch</string>
+    <string name="punktehinzufuegen_service_notification_von_12">von 12.</string>
+    <string name="punktehinzufuegen_service_notification_gespeichert">gespeichert.</string>
+    <string name="punktehinzufuegen_service_notification_vorgemerkt">vorgemerkt</string>
+    <string name="punktehinzufuegen_service_notification_wird_demnaechst_gespeichert">Wird demnächst gespeichert.</string>
+    <string name="datum">Datum</string>
+
+    <string-array name="punktezeigen_tab_dialog_pktfiltern_spinner1_stringarray">
+        <item>Cent/kWh ?</item>
+        <item>Cent/kWh ></item>
+        <item>Cent/kWh =</item>
+        <item>Cent/kWh &lt;</item>
+    </string-array>
 
 </resources>

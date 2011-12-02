@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.widget.Toast;
 
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
 
@@ -15,7 +13,7 @@ import com.google.android.maps.OverlayItem;
 public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 
 	// liste der punkte im overlay
-	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+	private ArrayList<OverlayItem> arraylist_Overlays = new ArrayList<OverlayItem>();
 
 	// context um Toast auszugeben
 	private Context context;
@@ -25,23 +23,30 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 	public ItemOverlay(Drawable defaultMarker, Context con) {
 		super(boundCenterBottom(defaultMarker));
 		context = con;
+		populate();
 	}
 
 	@Override
 	protected OverlayItem createItem(int i) {
-		return mOverlays.get(i);
+		return arraylist_Overlays.get(i);
 	}
 
 	// gibt die Anzahl der hinterlegten Punkte zurueck
 	@Override
 	public int size() {
 
-		return mOverlays.size();
+		return arraylist_Overlays.size();
 	}
 
 	// fuegt Punkte hinzu
+	// setlastfocus um problem mit geloeschten elementen zu vermeiden
 	public void addOverlay(OverlayItem overlay) {
-		mOverlays.add(overlay);
+		arraylist_Overlays.add(overlay);
+	}
+
+	public void initialisieren() {
+
+		setLastFocusedIndex(-1);
 		populate();
 	}
 
@@ -50,13 +55,9 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 	@Override
 	protected boolean onTap(int index) {
 
-		GeoPoint pnt = mOverlays.get(index).getPoint();
+		((MemoSingleton) context.getApplicationContext())
+				.dbAbfragen((GeoPunkt) arraylist_Overlays.get(index).getPoint(), false);
 
-		Toast.makeText(
-				context,
-				"Lon: " + Integer.toString(pnt.getLongitudeE6()) + " Lat: "
-						+ Integer.toString(pnt.getLatitudeE6()),
-				Toast.LENGTH_LONG).show();
 		return true;
 	}
 }
