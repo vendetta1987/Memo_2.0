@@ -15,19 +15,19 @@ public class MemoStart extends Activity {
 	}
 
 	public void punkteZeigen(View v_view) {
+
 		Intent int_intent = new Intent(this, PunkteZeigen_Tab.class);
 		this.startActivity(int_intent);
-
 	}
 
 	public void serverSynchronisieren(View v_view) {
+
 		Toast.makeText(this, "serverSynchronisieren", Toast.LENGTH_SHORT)
 				.show();
-
 	}
 
 	public void einstellungenZeigen(View v_view) {
-		Toast.makeText(this, "einstellungenZeigen", Toast.LENGTH_SHORT).show();
 
+		Toast.makeText(this, "einstellungenZeigen", Toast.LENGTH_SHORT).show();
 	}
 }

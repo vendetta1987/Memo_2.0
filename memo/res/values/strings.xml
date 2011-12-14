@@ -8,19 +8,29 @@
     <string name="memosingleton_gps_nicht_verfuegbar">Bitte GPS in den Einstellungen aktivieren!</string>
     <string name="punktezeigen_tab_menu_item1_title">DB füllen</string>
     <string name="punktezeigen_tab_menu_item2_title">DB leeren</string>
+    <string name="punktezeigen_tab_menu_item5_an_title">Pos zeigen</string>
+    <string name="punktezeigen_tab_menu_item5_aus_title">Pos nicht zeigen</string>
     <string name="punktezeigen_tab_dialog_pktfiltern_title">Punkte filtern</string>
     <string name="punktezeigen_tab_dialog_pkthinzufuegen_title">Punkt hinzufügen</string>
     <string name="punktezeigen_tab_liste_asynctask_progressdialog_title">Lade Liste...</string>
     <string name="punktezeigen_tab_karte_asynctask_progressdialog_title">Lade Punkte...</string>
     <string name="punktezeigen_tab_dialog_text_name">Name</string>
+    <string name="punktezeigen_tab_dialog_text_symbol">Symbol</string>
     <string name="punktezeigen_tab_dialog_text_beschreibung">Beschreibung</string>
     <string name="punktezeigen_tab_dialog_text_adresse">Adresse</string>
     <string name="punktezeigen_tab_dialog_text_eigenschaften">Eigenschaften</string>
     <string name="punktezeigen_tab_dialog_text_preis">Cent/kWh</string>
     <string name="punktezeigen_tab_dialog_text_unvollstaendig">Bitte folgende Felder ausfüllen:</string>
     <string name="punktezeigen_tab_dialog_text_abbrechen">Abbrechen</string>
+    <string name="punktezeigen_tab_dialog_text_navigiere">Hierhin navigieren</string>
+    <string name="navigation_text_navigation_beenden">Navigation beenden</string>
     <string name="punktezeigen_tab_dialog_button_text_ok">OK</string>
     <string name="punktezeigen_tab_dialog_button_text_zeige_karte">Auf Karte anzeigen</string>
+    <string name="datum_text">Datum</string>
+    <string name="es_ist_ein_fehler_text">Es ist ein Fehler aufgetreten.</string>
+    <string name="fehler_text">Fehler:</string>
+    <string name="navigation_asynctask_dialog_text_empfange_daten">Empfange Daten</string>
+    <string name="navigation_asynctask_dialog_text_verarbeite_daten">Verarbeitung</string>
     <string name="punktezeigen_tab_dialog_pkthinzufuegen_checkBox1_text">Position per GPS</string>
     <string name="punktezeigen_tab_dialog_text_null">0</string>
     <string name="punktezeigen_tab_dialog_pkthinzufuegen_radio0_text">Drehstrom</string>
@@ -38,7 +48,6 @@
     <string name="punktehinzufuegen_service_notification_gespeichert">gespeichert.</string>
     <string name="punktehinzufuegen_service_notification_vorgemerkt">vorgemerkt</string>
     <string name="punktehinzufuegen_service_notification_wird_demnaechst_gespeichert">Wird demnächst gespeichert.</string>
-    <string name="datum">Datum</string>
 
     <string-array name="punktezeigen_tab_dialog_pktfiltern_spinner1_stringarray">
         <item>Cent/kWh ?</item>
