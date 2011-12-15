@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.text.format.DateFormat;
 
 import com.google.android.maps.Overlay;
+import com.google.android.maps.Projection;
 
 public class MemoSingleton extends Application {
 
@@ -45,10 +46,12 @@ public class MemoSingleton extends Application {
 	public boolean boolean_gefiltert;
 	public boolean boolean_aktuelle_position;
 	public boolean boolean_navigieren;
+	public boolean boolean_gedreht;
 
 	public GPS_Verwaltung gps_verwaltung;
 	public PunkteZeigen_Tab context_punktezeigen_tab;
 	public SQLiteDatabase sqldatabase_writeable, sqldatabase_readable;
+	public Projection projection_karte;
 	// speichert listeneintraege
 	public ArrayList<HashMap<String, Object>> arraylist_liste_daten;
 	public ArrayList<HashMap<String, Object>> arraylist_liste_daten_temp;
@@ -82,6 +85,7 @@ public class MemoSingleton extends Application {
 
 		boolean_gefiltert = false;
 		boolean_navigieren = false;
+		boolean_gedreht = false;
 
 		bcreceiver_receiver = new BroadcastReceiver() {
 
@@ -197,9 +201,9 @@ public class MemoSingleton extends Application {
 									Intent intent_befehl = new Intent(
 											MemoSingleton.INTENT_ZOOME_KARTE);
 
-									intent_befehl.putExtra("lat",
+									intent_befehl.putExtra("int_lat",
 											geopunkt_punkt.getLatitudeE6());
-									intent_befehl.putExtra("lon",
+									intent_befehl.putExtra("int_lon",
 											geopunkt_punkt.getLongitudeE6());
 
 									context_punktezeigen_tab
@@ -219,7 +223,7 @@ public class MemoSingleton extends Application {
 
 						new Navigation_AsyncTask(context_punktezeigen_tab)
 								.execute(geopunkt_punkt);
-						
+
 						dialog.dismiss();
 					}
 				});

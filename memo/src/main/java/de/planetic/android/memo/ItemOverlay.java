@@ -29,14 +29,10 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 	private ArrayList<OverlayItem> arraylist_overlays = new ArrayList<OverlayItem>();
 	// context um Toast auszugeben
 	private Context context;
-	private ArrayList<GeoPunkt> arraylist_geopunkte, arraylist_geopunkte_fein;
 	private Paint paint_farbe;
-	private Point point_temp;
-	private Path path_pfad, path_pfad_fein;
-	private boolean boolean_startziel, boolean_pfad;
-
-	private Point point_or, point_ul;
-	private boolean boolean_einmal;
+	private Path path_pfad_grob, path_pfad_fein;
+	private RectF rectf_vergleich;
+	private boolean boolean_pfad;
 
 	// Konstruktor mit extra context fuer Toast
 	// standardgrafik festlegen und marker auf mitte unten setzen
@@ -49,16 +45,11 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	public ItemOverlay(Drawable defaultMarker, Context con,
-			ArrayList<GeoPunkt> arraylist_geopunkte,
-			ArrayList<GeoPunkt> arraylist_geopunkte_fein) {
+			Path path_pfad_grob, Path path_pfad_fein, RectF rectf_vergleich) {
 		super(boundCenterBottom(defaultMarker));
 		context = con;
 
 		boolean_pfad = true;
-		boolean_einmal = true;
-
-		this.arraylist_geopunkte = arraylist_geopunkte;
-		this.arraylist_geopunkte_fein = arraylist_geopunkte_fein;
 
 		paint_farbe = new Paint();
 		paint_farbe.setColor(Color.BLUE);
@@ -67,10 +58,9 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 		paint_farbe.setStrokeCap(Cap.ROUND);
 		paint_farbe.setStrokeWidth(7.5f);
 
-		point_temp = new Point();
-
-		path_pfad = new Path();
-		path_pfad_fein = new Path();
+		this.path_pfad_grob = path_pfad_grob;
+		this.path_pfad_fein = path_pfad_fein;
+		this.rectf_vergleich = rectf_vergleich;
 
 		populate();
 	}
@@ -79,60 +69,9 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 	public void draw(Canvas canvas, MapView mapview, boolean shadow) {
 
 		Projection projection_umrechnung;
-		int int_zoom;
 		Point point_or_temp, point_ul_temp;
 		Matrix matrix_skaltrans;
 		Path path_temp;
-
-		if (boolean_pfad && boolean_einmal) {
-
-			int_zoom = mapview.getZoomLevel();
-			mapview.getController().setZoom(21);
-			projection_umrechnung = mapview.getProjection();
-
-			point_or = projection_umrechnung.toPixels(new GeoPoint(45000000,
-					45000000), null);
-			point_ul = projection_umrechnung.toPixels(new GeoPoint(-45000000,
-					-45000000), null);
-
-			boolean_startziel = true;
-
-			for (GeoPunkt punkt : arraylist_geopunkte) {
-
-				if (boolean_startziel) {
-
-					projection_umrechnung.toPixels(punkt, point_temp);
-					path_pfad.moveTo(point_temp.x, point_temp.y);
-
-					boolean_startziel = false;
-				}
-
-				projection_umrechnung.toPixels(punkt, point_temp);
-				path_pfad.lineTo(point_temp.x, point_temp.y);
-				path_pfad.moveTo(point_temp.x, point_temp.y);
-			}
-
-			boolean_startziel = true;
-
-			for (GeoPunkt punkt : arraylist_geopunkte_fein) {
-
-				if (boolean_startziel) {
-
-					projection_umrechnung.toPixels(punkt, point_temp);
-					path_pfad_fein.moveTo(point_temp.x, point_temp.y);
-
-					boolean_startziel = false;
-				}
-
-				projection_umrechnung.toPixels(punkt, point_temp);
-				path_pfad_fein.lineTo(point_temp.x, point_temp.y);
-				path_pfad_fein.moveTo(point_temp.x, point_temp.y);
-			}
-
-			mapview.getController().setZoom(int_zoom);
-
-			boolean_einmal = false;
-		}
 
 		if (!shadow && boolean_pfad) {
 
@@ -143,16 +82,14 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 					-45000000, -45000000), null);
 
 			matrix_skaltrans = new Matrix();
-			matrix_skaltrans.setRectToRect(
-					new RectF((float) point_ul.x, (float) point_or.y,
-							(float) point_or.x, (float) point_ul.y), new RectF(
-							(float) point_ul_temp.x, (float) point_or_temp.y,
-							(float) point_or_temp.x, (float) point_ul_temp.y),
+			matrix_skaltrans.setRectToRect(rectf_vergleich, new RectF(
+					(float) point_ul_temp.x, (float) point_or_temp.y,
+					(float) point_or_temp.x, (float) point_ul_temp.y),
 					Matrix.ScaleToFit.CENTER);
 
 			if (mapview.getZoomLevel() < 13) {
 
-				path_temp = new Path(path_pfad);
+				path_temp = new Path(path_pfad_grob);
 			} else {
 
 				path_temp = new Path(path_pfad_fein);

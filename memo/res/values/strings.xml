@@ -12,8 +12,8 @@
     <string name="punktezeigen_tab_menu_item5_aus_title">Pos nicht zeigen</string>
     <string name="punktezeigen_tab_dialog_pktfiltern_title">Punkte filtern</string>
     <string name="punktezeigen_tab_dialog_pkthinzufuegen_title">Punkt hinzufügen</string>
-    <string name="punktezeigen_tab_liste_asynctask_progressdialog_title">Lade Liste...</string>
-    <string name="punktezeigen_tab_karte_asynctask_progressdialog_title">Lade Punkte...</string>
+    <string name="punktezeigen_tab_liste_asynctask_progressdialog_title">Lade Liste…</string>
+    <string name="punktezeigen_tab_karte_asynctask_progressdialog_title">Lade Punkte…</string>
     <string name="punktezeigen_tab_dialog_text_name">Name</string>
     <string name="punktezeigen_tab_dialog_text_symbol">Symbol</string>
     <string name="punktezeigen_tab_dialog_text_beschreibung">Beschreibung</string>
@@ -31,6 +31,8 @@
     <string name="fehler_text">Fehler:</string>
     <string name="navigation_asynctask_dialog_text_empfange_daten">Empfange Daten</string>
     <string name="navigation_asynctask_dialog_text_verarbeite_daten">Verarbeitung</string>
+    <string name="navigation_asynctask_dialog_text_dekodiere">Dekodiere</string>
+    <string name="navigation_asynctask_dialog_text_erzeuge_pfade">Erzeuge Pfade</string>
     <string name="punktezeigen_tab_dialog_pkthinzufuegen_checkBox1_text">Position per GPS</string>
     <string name="punktezeigen_tab_dialog_text_null">0</string>
     <string name="punktezeigen_tab_dialog_pkthinzufuegen_radio0_text">Drehstrom</string>
@@ -41,10 +43,11 @@
     <string name="punktezeigen_tab_karte_karteanzeigen">neue Punkte</string>
     <string name="lat_kurz">Lat:</string>
     <string name="lon_kurz">Lon:</string>
+    <string name="kein_bild">Kein Bild verfügbar</string>
     <string name="punktehinzufuegen_service_notification_speichere">Speichere:</string>
     <string name="punktehinzufuegen_service_notification_bitte_warten">Bitte warten.</string>
-    <string name="punktehinzufuegen_service_notification_warte_auf_gps_versuch">Warte auf GPS: Versuch</string>
-    <string name="punktehinzufuegen_service_notification_von_12">von 12.</string>
+    <string name="punktehinzufuegen_service_notification_warte_auf_gps">Warte auf GPS</string>
+    <string name="punktehinzufuegen_service_notification_von">von</string>
     <string name="punktehinzufuegen_service_notification_gespeichert">gespeichert.</string>
     <string name="punktehinzufuegen_service_notification_vorgemerkt">vorgemerkt</string>
     <string name="punktehinzufuegen_service_notification_wird_demnaechst_gespeichert">Wird demnächst gespeichert.</string>
