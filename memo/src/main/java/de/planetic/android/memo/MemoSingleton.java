@@ -34,6 +34,9 @@ public class MemoSingleton extends Application {
 	public static final String INTENT_PUNKTE_FILTERN = "punkte_filtern";
 	public static final String INTENT_KARTE_VERFOLGE_AKTUELLE_POS = "karte_verfolge_aktuelle_pos";
 	public static final String INTENT_HIERHIN_NAVIGIEREN = "hierhin_navigieren";
+	public static final String INTENT_STARTE_TTS = "starte_tts";
+	public static final String INTENT_TTS_SAGE = "tts_sage";
+	public static final String INTENT_STOPPE_TTS = "stoppe_tts";
 	// werden zur unterscheidung bei aktualisiereDBZugrif genutzt
 	public static final int LISTE = 0;
 	public static final int KARTE = 1;
