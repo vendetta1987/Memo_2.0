@@ -25,18 +25,26 @@ import com.google.android.maps.Projection;
 
 public class MemoSingleton extends Application {
 
-	public static final String INTENT_DB_FUELLEN = "db_fuellen";
-	public static final String INTENT_DB_LEEREN = "db_leeren";
-	public static final String INTENT_ZEIGE_LISTE = "zeige_liste";
-	public static final String INTENT_ZOOME_KARTE = "zeige_karte";
-	public static final String INTENT_STARTE_GPS = "starte_gps";
-	public static final String INTENT_STOPPE_GPS = "stoppe_gps";
-	public static final String INTENT_PUNKTE_FILTERN = "punkte_filtern";
-	public static final String INTENT_KARTE_VERFOLGE_AKTUELLE_POS = "karte_verfolge_aktuelle_pos";
-	public static final String INTENT_HIERHIN_NAVIGIEREN = "hierhin_navigieren";
-	public static final String INTENT_STARTE_TTS = "starte_tts";
-	public static final String INTENT_TTS_SAGE = "tts_sage";
-	public static final String INTENT_STOPPE_TTS = "stoppe_tts";
+	private static final String PACKAGE_NAME = "de.planetic.android.memo_";
+	public static final String INTENT_DB_FUELLEN = PACKAGE_NAME + "db_fuellen";
+	public static final String INTENT_DB_LEEREN = PACKAGE_NAME + "db_leeren";
+	public static final String INTENT_ZEIGE_LISTE = PACKAGE_NAME
+			+ "zeige_liste";
+	public static final String INTENT_ZOOME_KARTE = PACKAGE_NAME
+			+ "zeige_karte";
+	public static final String INTENT_STARTE_GPS = PACKAGE_NAME + "starte_gps";
+	public static final String INTENT_STOPPE_GPS = PACKAGE_NAME + "stoppe_gps";
+	public static final String INTENT_PUNKTE_FILTERN = PACKAGE_NAME
+			+ "punkte_filtern";
+	public static final String INTENT_KARTE_VERFOLGE_AKTUELLE_POS = PACKAGE_NAME
+			+ "karte_verfolge_aktuelle_pos";
+	public static final String INTENT_HIERHIN_NAVIGIEREN = PACKAGE_NAME
+			+ "hierhin_navigieren";
+	public static final String INTENT_KARTE_NAVIGATIONSANWEISUNG = PACKAGE_NAME
+			+ "navigationsanweisung";
+	public static final String INTENT_STARTE_TTS = PACKAGE_NAME + "starte_tts";
+	public static final String INTENT_TTS_SAGE = PACKAGE_NAME + "tts_sage";
+	public static final String INTENT_STOPPE_TTS = PACKAGE_NAME + "stoppe_tts";
 	// werden zur unterscheidung bei aktualisiereDBZugrif genutzt
 	public static final int LISTE = 0;
 	public static final int KARTE = 1;
@@ -61,6 +69,7 @@ public class MemoSingleton extends Application {
 	// speichert karteneintraege
 	public ArrayList<Overlay> arraylist_karte_overlays;
 	public ArrayList<Overlay> arraylist_karte_overlays_temp;
+	public ArrayList<HashMap<String, String>> arraylist_karte_navigationsanweisungen;
 
 	// speichern letzten lesezugriff auf db in ms seit 1.1.1970
 	private long long_letzter_db_zugriff_liste;
@@ -83,6 +92,7 @@ public class MemoSingleton extends Application {
 		arraylist_liste_daten_temp = new ArrayList<HashMap<String, Object>>();
 		arraylist_karte_overlays = new ArrayList<Overlay>();
 		arraylist_karte_overlays_temp = new ArrayList<Overlay>();
+		arraylist_karte_navigationsanweisungen = new ArrayList<HashMap<String, String>>();
 
 		gps_verwaltung = new GPS_Verwaltung(getApplicationContext());
 
@@ -204,9 +214,11 @@ public class MemoSingleton extends Application {
 									Intent intent_befehl = new Intent(
 											MemoSingleton.INTENT_ZOOME_KARTE);
 
-									intent_befehl.putExtra("int_lat",
+									intent_befehl.putExtra(getPackageName()
+											+ "_" + "int_lat",
 											geopunkt_punkt.getLatitudeE6());
-									intent_befehl.putExtra("int_lon",
+									intent_befehl.putExtra(getPackageName()
+											+ "_" + "int_lon",
 											geopunkt_punkt.getLongitudeE6());
 
 									context_punktezeigen_tab

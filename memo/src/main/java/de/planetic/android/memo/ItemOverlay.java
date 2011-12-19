@@ -139,7 +139,8 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 	@Override
 	protected boolean onTap(int index) {
 
-		if (!boolean_pfad) {
+		if (!boolean_pfad
+				&& !((MemoSingleton) context.getApplicationContext()).boolean_aktuelle_position) {
 
 			((MemoSingleton) context.getApplicationContext()).dbAbfragen(
 					(GeoPunkt) arraylist_overlays.get(index).getPoint(), false);
