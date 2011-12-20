@@ -24,6 +24,8 @@
     <string name="punktezeigen_tab_dialog_text_abbrechen">Abbrechen</string>
     <string name="punktezeigen_tab_dialog_text_navigiere">Hierhin navigieren</string>
     <string name="navigation_text_navigation_beenden">Navigation beenden</string>
+    <string name="navigation_text_aktuelle_position_an">Position verfolgen</string>
+    <string name="navigation_text_aktuelle_position_aus">Position nicht verfolgen</string>
     <string name="navigation_text_meter">Meter</string>
     <string name="navigation_text_kilometer">Kilometer</string>
     <string name="punktezeigen_tab_dialog_button_text_ok">OK</string>

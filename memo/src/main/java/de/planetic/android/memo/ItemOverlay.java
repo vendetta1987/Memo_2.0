@@ -23,6 +23,14 @@ import com.google.android.maps.Projection;
 
 // klasse fuer overlays einer karte, beinhaltet liste mit punkten, kuemmert
 // sich um zeichnen, klicken, etc
+/**
+ * Eigene Implementierung von {@link ItemizedOverlay}. Beinhaltet
+ * {@link ArrayList} der enthaltenen Punkte und erlaubt das Übergeben von
+ * {@link Path}-Variablen zur Darstellung auf der Karte. In diesem Fall
+ * reagieren die Punkte nicht auf Klicken. {@code populate()} muss explizit
+ * durch {@code initialisieren()} aufgerufen werden!
+ * 
+ */
 public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 
 	// liste der punkte im overlay
@@ -36,6 +44,17 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 
 	// Konstruktor mit extra context fuer Toast
 	// standardgrafik festlegen und marker auf mitte unten setzen
+	/**
+	 * {@code public ItemOverlay(Drawable defaultMarker, Context con)}
+	 * <p/>
+	 * Konstruktor für die Verwendung ohne Pfade. Erstellt leere Instanz und
+	 * legt {@code defaultMarker} als Symbol fest.
+	 * 
+	 * @param defaultMarker
+	 *            {@link Drawable} das als Symbol verwendet wird.
+	 * @param con
+	 *            {@link Context} für den Zugriff auf {@link MemoSingleton}
+	 */
 	public ItemOverlay(Drawable defaultMarker, Context con) {
 		super(boundCenterBottom(defaultMarker));
 		context = con;
@@ -44,6 +63,28 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 	}
 
+	/**
+	 * {@code public ItemOverlay(Drawable defaultMarker, Context con, Path path_pfad_grob, Path path_pfad_fein, RectF rectf_vergleich)}
+	 * <p/>
+	 * Konstruktor für die Verwendung mit Pfaden. Erstellt leere Instanz und
+	 * legt {@code defaultMarker} als Symbol fest. Bereitet zusätzlich
+	 * {@link Paint} für das Zeichnen des Pfades vor.
+	 * 
+	 * @param defaultMarker
+	 *            {@link Drawable} das als Symbol verwendet wird.
+	 * @param con
+	 *            {@link Context} für den Zugriff auf {@link MemoSingleton}
+	 * 
+	 * @param path_pfad_grob
+	 *            {@link Path} mit den groben Pfadangaben aus der Google-Antwort
+	 * @param path_pfad_fein
+	 *            {@link Path} mit den feinen Pfadangaben aus der Google-Antwort
+	 * @param rectf_vergleich
+	 *            {@link RectF} Vergleichsrechteck für die Anpassung des Pfades
+	 *            per Matrixmultiplikation
+	 * @see Navigation_AsyncTask
+	 * @see Matrix
+	 */
 	public ItemOverlay(Drawable defaultMarker, Context con,
 			Path path_pfad_grob, Path path_pfad_fein, RectF rectf_vergleich) {
 		super(boundCenterBottom(defaultMarker));
@@ -65,6 +106,17 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 	}
 
+	/**
+	 * {@code public void draw(Canvas canvas, MapView mapview, boolean shadow)}
+	 * <p/>
+	 * Eigene Implementierung von {@code super.draw(...)}. Zeichnet Pfad während
+	 * des Durchlaufs mit {@code shadow=false} und berechnet die
+	 * Translation/Skalierung entsprechend {@code rectf_vergleich}.
+	 * {@link Matrix} wird aus den unterschiedlichen {@link RectF} mit den
+	 * Eckpunkten 45°, 45° und -45°, -45° bei maximaler und aktueller
+	 * Vergrößerung der {@link MapView} berechnet.
+	 * 
+	 */
 	@Override
 	public void draw(Canvas canvas, MapView mapview, boolean shadow) {
 
@@ -116,19 +168,40 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 
 	// fuegt Punkte hinzu
 	// setlastfocus um problem mit geloeschten elementen zu vermeiden
+	/**
+	 * Fügt neues {@link OverlayItem} der {@link ArrayList} hinzu.
+	 * 
+	 * @param overlay
+	 *            {@link OverlayItem} das hinzugefügt werden soll
+	 */
 	public void addOverlay(OverlayItem overlay) {
 		arraylist_overlays.add(overlay);
 	}
 
+	/**
+	 * Entfernt {@link OverlayItem} aus der {@link ArrayList}
+	 * 
+	 * @param overlay
+	 *            {@link OverlayItem} das entfernt werden soll
+	 */
 	public void removeOverlay(OverlayItem overlay) {
 		arraylist_overlays.remove(overlay);
 	}
 
+	/**
+	 * Löscht alle {@link OverlayItem} dieses {@link ItemOverlay} und ruft
+	 * {@code initialisieren()} auf.
+	 */
 	public void clearOverlay() {
 		arraylist_overlays.clear();
 		initialisieren();
 	}
 
+	/**
+	 * Ruft {@code populate()} auf um die {@link OverlayItem} auf das Zeichnen
+	 * vorzubereiten. {@code setLastFocusedIndex(-1)} beugt Fehler beim Klicken
+	 * auf ein leeres {@link ItemOverlay} vor.
+	 */
 	public void initialisieren() {
 		setLastFocusedIndex(-1);
 		populate();
@@ -136,6 +209,13 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 
 	// listener fuer klicken eines punktes
 	// lese koordinaten des punktes, gebe aus
+	/**
+	 * Falls kein Pfad übergeben wurde und das {@link ItemOverlay} auch nicht
+	 * für die aktuelle Position verwendet wird, bewirkt ein Klicken den Aufruf
+	 * von {@code MemoSingleton.dbAbfragen()}.
+	 * 
+	 * @see MemoSingleton
+	 */
 	@Override
 	protected boolean onTap(int index) {
 

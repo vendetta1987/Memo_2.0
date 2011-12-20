@@ -23,6 +23,39 @@ import android.text.format.DateFormat;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
 
+/**
+ * Erweitert {@link Application} und dient als Singleton zum Bereitstellen von
+ * zentral genutzten Methoden und Feldern.
+ * <p/>
+ * {@code INTENT_*}
+ * 
+ * beinhalten die genutzten {@link Intent}-Actions<br/>
+ * {@code INTENT_GPS_*} identifizieren verschiedene GPS-Listener<br/>
+ * {@code boolean_gefilter} signalisiert Filterung der Liste<br/>
+ * {@code boolean_aktuelle_position} signalisiert Verfolgung der aktuellen
+ * Position<br/>
+ * {@code boolean_navigieren} signalisiert aktive Navigation<br/>
+ * {@code boolean_gedreht} signalisiert Drehung des Gerätes<br/>
+ * <p/>
+ * {@code gps_verwaltung} {@link GPS_Verwaltung}<br/>
+ * {@code context_punktezeigen_tab} {@link Context} von {@link PunkteZeigen_Tab}
+ * <br/>
+ * {@code sqldatabase_writeable} und {@code sqldatabase_readable}
+ * {@link SQLiteDatabase} für den Zugriff auf die DB<br/>
+ * {@code projection_karte} {@link Projection} für die Umrechnung von
+ * Geokoordinaten auf Pixel<br/>
+ * {@code arraylist_liste_daten} und {@code arraylist_liste_daten_temp}
+ * speichern Listeneinträge in {@link ArrayList}<br/>
+ * {@code arraylist_karte_overlays} und {@code arraylist_karte_overlays_temp}
+ * speichern Karteneinträge in {@link ArrayList}<br/>
+ * {@code arraylist_karte_navigationsanweisungen} speichert
+ * Navigationsanweisungen in {@link ArrayList}
+ * 
+ * @see GPS_Verwaltung
+ * @see PunkteZeigen_Tab_Liste
+ * @see PunkteZeigen_Tab_Karte
+ * @see Navigation_AsyncTask
+ */
 public class MemoSingleton extends Application {
 
 	private static final String PACKAGE_NAME = "de.planetic.android.memo_";
@@ -43,7 +76,6 @@ public class MemoSingleton extends Application {
 	public static final String INTENT_KARTE_NAVIGATIONSANWEISUNG = PACKAGE_NAME
 			+ "navigationsanweisung";
 	public static final String INTENT_STARTE_TTS = PACKAGE_NAME + "starte_tts";
-	public static final String INTENT_TTS_SAGE = PACKAGE_NAME + "tts_sage";
 	public static final String INTENT_STOPPE_TTS = PACKAGE_NAME + "stoppe_tts";
 	// werden zur unterscheidung bei aktualisiereDBZugrif genutzt
 	public static final int LISTE = 0;
@@ -53,6 +85,7 @@ public class MemoSingleton extends Application {
 	public static final int GPS_LISTENER_NORMAL = 0;
 	public static final int GPS_LISTENER_AKTUELL = 1;
 	public static final int GPS_LISTENER_NAVIGATION = 2;
+	public static final int GPS_LISTENER_SERVICE = 3;
 
 	public boolean boolean_gefiltert;
 	public boolean boolean_aktuelle_position;
@@ -99,6 +132,7 @@ public class MemoSingleton extends Application {
 		boolean_gefiltert = false;
 		boolean_navigieren = false;
 		boolean_gedreht = false;
+		boolean_aktuelle_position = false;
 
 		bcreceiver_receiver = new BroadcastReceiver() {
 
@@ -127,6 +161,20 @@ public class MemoSingleton extends Application {
 
 	// aktualisiert zeitstempel bei letzten zugriff der activities um nur neue
 	// eintraege zu beruecksichtigen
+	/**
+	 * {@code public void aktualisiereDBZugriff(int int_klasse, long long_id)}
+	 * <p/>
+	 * Aktualisiert letzten Zugriff auf die DB. Gespeichert wird die letzte
+	 * ausgelesene ID, getrennt für Listen- und Kartenansicht. Ermöglicht das
+	 * Zurücksetzen aller in {@link MemoSingleton} gespeicherten Listen und
+	 * DB-Zugriffe.
+	 * 
+	 * @param int_klasse
+	 *            Parameter zur Unterscheidung der zu aktualisierenden Klasse
+	 * @param long_id
+	 *            aktualisierte DB-ID
+	 * @see MemoSingleton
+	 */
 	public void aktualisiereDBZugriff(int int_klasse, long long_id) {
 		switch (int_klasse) {
 		case LISTE:
@@ -152,6 +200,16 @@ public class MemoSingleton extends Application {
 	}
 
 	// gibt letzten zugriff zeitstempel zurueck
+	/**
+	 * {@code public long letzterDBZugriff(int int_klasse)}
+	 * <p/>
+	 * Gibt den letzten Zugriff auf die Datenbank, getrennt nach Listen- und
+	 * Kartenansicht, zurück.
+	 * 
+	 * @param int_klasse
+	 *            Parameter zur Unterscheidung der Klasse
+	 * @return Die letzte ID die aus der Datenbank ausgelesen wurde
+	 */
 	public long letzterDBZugriff(int int_klasse) {
 		switch (int_klasse) {
 		case LISTE:
@@ -163,6 +221,20 @@ public class MemoSingleton extends Application {
 		}
 	}
 
+	/**
+	 * {@code public void dbAbfragen(final GeoPunkt geopunkt_punkt, boolean boolean_liste)}
+	 * <p/>
+	 * Wird aufgerufen sobald ein Listenpunkt oder Karteneintrag angeklickt wird
+	 * und erzeugt einen Dialog mit den in der DB hinterlegten Daten. Zusätzlich
+	 * enthält der Dialog die Schaltflächen: OK, auf Karte zentrieren (nur für
+	 * Liste) und hierhin navigieren.
+	 * 
+	 * @param geopunkt_punkt
+	 *            Der ausgewählte Punkt
+	 * @param boolean_liste
+	 *            signalisiert die Listenansicht
+	 * @see Navigation_AsyncTask
+	 */
 	public void dbAbfragen(final GeoPunkt geopunkt_punkt, boolean boolean_liste) {
 
 		Cursor cursor_anfrage = sqldatabase_readable.query(
@@ -301,6 +373,22 @@ public class MemoSingleton extends Application {
 		cursor_anfrage.close();
 	}
 
+	/**
+	 * {@code public Object getSymbol(String string_name, boolean boolean_drawable)}
+	 * <p/>
+	 * Liest übergebenen Symbolnamen aus den mitgelieferten Resourcen oder dem
+	 * Speicher, je nachdem was vorhanden ist. Gibt je nach
+	 * {@code boolean_drawable} ein {@link Drawable} oder eine Resourcen-ID
+	 * zurück.
+	 * 
+	 * @param string_name
+	 *            Name des gewünschten Icons
+	 * @param boolean_drawable
+	 *            Legt fest ob ein {@link Drawable} oder eine Resourcen-ID
+	 *            zurückgegeben wird.
+	 * @return {@code boolean_drawable=true} ein {@link Drawable}<br/>
+	 *         {@code boolean_drawable=false} eine Resourcen-ID
+	 */
 	public Object getSymbol(String string_name, boolean boolean_drawable) {
 
 		File file_iconsordner = getDir("icons", Context.MODE_PRIVATE);
