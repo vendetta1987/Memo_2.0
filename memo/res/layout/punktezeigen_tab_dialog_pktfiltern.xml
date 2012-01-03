@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <CheckBox
+                android:id="@+id/punktezeigen_tab_dialog_pktfiltern_checkBox1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/punktezeigen_tab_dialog_text_adresse" />
+
+            <CheckBox
+                android:id="@+id/punktezeigen_tab_dialog_pktfiltern_checkBox2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/punktezeigen_tab_dialog_text_name" />
+
+            <CheckBox
+                android:id="@+id/punktezeigen_tab_dialog_pktfiltern_checkBox3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/punktezeigen_tab_dialog_text_preis" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/punktezeigen_tab_dialog_pktfiltern_editText1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:selectAllOnFocus="true"
+            android:text="@string/punktezeigen_tab_dialog_text_adresse"
+            android:visibility="gone" android:inputType="text">
+        </EditText>
+
+        <EditText
+            android:id="@+id/punktezeigen_tab_dialog_pktfiltern_editText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:selectAllOnFocus="true"
+            android:text="@string/punktezeigen_tab_dialog_text_name"
+            android:visibility="gone" android:inputType="text">
+        </EditText>
+
+        <LinearLayout
+            android:id="@+id/punktezeigen_tab_dialog_pktfiltern_linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <Spinner
+                android:id="@+id/punktezeigen_tab_dialog_pktfiltern_spinner1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:prompt="@string/punktezeigen_tab_dialog_text_preis" />
+
+            <EditText
+                android:id="@+id/punktezeigen_tab_dialog_pktfiltern_editText3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal"
+                android:selectAllOnFocus="true"
+                android:text="@string/punktezeigen_tab_dialog_text_null" >
+            </EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/punktezeigen_tab_dialog_pktfiltern_button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/punktezeigen_tab_dialog_button_text_ok" />
+
+            <Button
+                android:id="@+id/punktezeigen_tab_dialog_pktfiltern_button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/punktezeigen_tab_dialog_text_abbrechen" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

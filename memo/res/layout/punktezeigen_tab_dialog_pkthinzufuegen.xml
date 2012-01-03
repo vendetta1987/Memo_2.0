@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_editText1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:selectAllOnFocus="true"
+            android:text="@string/punktezeigen_tab_dialog_text_name" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_editText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:selectAllOnFocus="true"
+            android:text="@string/punktezeigen_tab_dialog_text_beschreibung" />
+
+        <CheckBox
+            android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_checkBox1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/punktezeigen_tab_dialog_pkthinzufuegen_checkBox1_text" />
+
+        <EditText
+            android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_editText3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:selectAllOnFocus="true"
+            android:text="@string/punktezeigen_tab_dialog_text_adresse" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/punktezeigen_tab_dialog_text_eigenschaften" />
+
+        <RadioGroup
+            android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_radioGroup1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_radio0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/punktezeigen_tab_dialog_pkthinzufuegen_radio0_text" />
+
+            <RadioButton
+                android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_radio1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/punktezeigen_tab_dialog_pkthinzufuegen_radio1_text" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/punktezeigen_tab_dialog_text_preis" />
+
+            <EditText
+                android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_editText4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:inputType="number|numberDecimal"
+                android:selectAllOnFocus="true"
+                android:text="@string/punktezeigen_tab_dialog_text_null" />
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_spinner1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/punktezeigen_tab_dialog_text_symbol" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/punktezeigen_tab_dialog_button_text_ok" />
+
+            <Button
+                android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/punktezeigen_tab_dialog_text_abbrechen" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

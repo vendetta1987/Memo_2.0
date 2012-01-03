@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/punktezeigen_karte_layout_relativelayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <com.google.android.maps.MapView
+        android:id="@+id/punktezeigen_karte_layout_mapview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:apiKey="0ceyYmhz7tVZQhwMyiu15D505Eld9qHEW6o57Jg"
+        android:clickable="true" />
+
+    <Button
+        android:id="@+id/punktezeigen_karte_layout_button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="navigationBeenden"
+        android:text="@string/navigation_text_navigation_beenden"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/punktezeigen_karte_layout_button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/navigation_text_aktuelle_position_an"
+        android:visibility="gone" />
+
+</RelativeLayout>
