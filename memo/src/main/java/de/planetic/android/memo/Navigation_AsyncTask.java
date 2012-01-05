@@ -1,8 +1,6 @@
 package de.planetic.android.memo;
 
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
+import java.io.BufferedInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +10,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -19,6 +19,7 @@ import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -42,12 +43,12 @@ public class Navigation_AsyncTask extends
 	private Context context_con;
 	private MemoSingleton memosingleton_anwendung;
 	private ProgressDialog progress_spinner, progress_horizontal;
-	private String string_urheberrecht;
 	private static final int PROZENT_SCHRITTE = 10;
 	private static final int MODUS_EINRICHTEN = 0;
 	private static final int MODUS_AKTUALISIEREN = 1;
 	private static final int DIALOGTYP_SPINNER = 2;
 	private static final int DIALOGTYP_HORIZONTAL = 3;
+	private boolean boolean_gps_abbrechen;
 
 	/**
 	 * Konstruktor zur Bereitstellung eines {@link Context} und Zugriff auf
@@ -62,6 +63,8 @@ public class Navigation_AsyncTask extends
 		context_con = con;
 		memosingleton_anwendung = (MemoSingleton) context_con
 				.getApplicationContext();
+
+		boolean_gps_abbrechen = false;
 	}
 
 	/**
@@ -101,7 +104,15 @@ public class Navigation_AsyncTask extends
 
 		progress_spinner
 				.setTitle(R.string.punktezeigen_tab_dialog_text_navigiere);
-		progress_spinner.setCancelable(false);
+		progress_spinner.setCancelable(true);
+		progress_spinner.setOnCancelListener(new OnCancelListener() {
+
+			@Override
+			public void onCancel(DialogInterface dialog) {
+
+				boolean_gps_abbrechen = true;
+			}
+		});
 		progress_spinner.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
 		progress_horizontal
@@ -230,18 +241,15 @@ public class Navigation_AsyncTask extends
 		NetworkInfo networkinfo_internet = ((ConnectivityManager) context_con
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();
-		InputStream inputstream_daten = null;
+		BufferedInputStream bufferedinputstream_daten = null;
 		SAXParser saxparser_parser = null;
 		Navigation_SAXHandler navigationsaxhandler_handler = null;
-		HashMap<String, String> hashmap_ergebnis;
+		HashMap<String, String> hashmap_ergebnis = new HashMap<String, String>();
 		ArrayList<GeoPunkt> arraylist_fein_kodiert, arraylist_grob_kodiert;
 		Intent intent_befehl;
 		ItemOverlay itemoverlay_route;
 		MapView mapview_karte;
-		Point point_temp, point_or, point_ul;
-		Path path_pfad_grob, path_pfad_fein;
-		RectF rectf_vergleich;
-		boolean boolean_startziel;
+		Point point_or, point_ul;
 		long long_zeit = System.currentTimeMillis();
 		int int_span_lat, int_span_lon, int_summe, int_zaehler, int_zoom, int_prozent_temp;
 		String string_url;
@@ -273,29 +281,26 @@ public class Navigation_AsyncTask extends
 		publishProgress(MODUS_EINRICHTEN, DIALOGTYP_SPINNER,
 				R.string.punktehinzufuegen_service_notification_warte_auf_gps);
 
-		for (int i = 0; i < 12; i++) {
+		while (true) {
 
-			if (memosingleton_anwendung.gps_verwaltung.long_letzte_aktualisierung > long_zeit) {
+			if ((memosingleton_anwendung.gps_verwaltung.long_letzte_aktualisierung > long_zeit)
+					|| boolean_gps_abbrechen) {
+
 				break;
 			}
 
-			// TODO fuer nutzung wieder einschalten
-			// SystemClock.sleep(5000);
+			SystemClock.sleep(1000);
 		}
-
-		intent_befehl = new Intent(MemoSingleton.INTENT_STOPPE_GPS);
-		intent_befehl.putExtra(context_con.getPackageName() + "_"
-				+ "int_listener", MemoSingleton.GPS_LISTENER_NAVIGATION);
 
 		// TODO fuer nutzung anpassen
 		// GeoPunkt geopunkt_start = memosingleton_anwendung.gps_verwaltung
 		// .aktuellePosition();
-		GeoPunkt geopunkt_start = new GeoPunkt(53633333, 11416667);// schwerin
-
-		context_con.sendBroadcast(intent_befehl);
+		// schwerin
+		GeoPunkt geopunkt_start = new GeoPunkt(53633333, 11416667);
 
 		// geopunkt_ziel[0] = new GeoPunkt(53766667, 12566667);//teterow
 		// geopunkt_ziel[0] = new GeoPunkt(41973799, 2466103);// spanien
+		geopunkt_ziel[0] = new GeoPunkt(53900710, 11415200);// wendorf
 
 		string_url = "http://maps.google.com/maps/api/directions/xml?origin="
 				+ String.valueOf(geopunkt_start.getLatitudeE6() / 1e6) + ","
@@ -319,163 +324,90 @@ public class Navigation_AsyncTask extends
 				// TODO timeout?
 
 				// TODO fuer nutzung anpassen
-				// inputstream_daten = new URL(string_url).openStream();
-				inputstream_daten = new URL(string_url).openConnection(
-						new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
-								"proxy.planet-ic.de", 8118))).getInputStream();
+				bufferedinputstream_daten = new BufferedInputStream(new URL(
+						string_url).openStream());
+				// inputstream_daten = new URL(string_url).openConnection(
+				// new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+				// "proxy.planet-ic.de", 8118))).getInputStream();
 
 				saxparser_parser = SAXParserFactory.newInstance()
 						.newSAXParser();
 
 				navigationsaxhandler_handler = new Navigation_SAXHandler();
 
-				publishProgress(
-						MODUS_AKTUALISIEREN,
-						DIALOGTYP_SPINNER,
-						R.string.navigation_asynctask_dialog_text_verarbeite_daten);
+				publishProgress(MODUS_AKTUALISIEREN, DIALOGTYP_SPINNER,
+						R.string.verarbeitung_text);
 
-				saxparser_parser.parse(inputstream_daten,
+				saxparser_parser.parse(bufferedinputstream_daten,
 						navigationsaxhandler_handler);
 			} catch (Exception e) {
 
 				e.printStackTrace();
+				hashmap_ergebnis.put("fehler", e.toString());
+
+				return hashmap_ergebnis;
 			}
+		} else {
+
+			hashmap_ergebnis.put("fehler", context_con.getResources()
+					.getString(R.string.kein_internet_text));
+
+			return hashmap_ergebnis;
 		}
 
-		if (navigationsaxhandler_handler != null) {
+		if ((navigationsaxhandler_handler.string_status != null)
+				&& navigationsaxhandler_handler.string_status
+						.equalsIgnoreCase("OK")) {
 
-			if (navigationsaxhandler_handler.string_status
-					.equalsIgnoreCase("OK")) {
+			// daten auslesen
+			hashmap_ergebnis.put("string_urheberrecht",
+					navigationsaxhandler_handler.string_urheberrecht);
 
-				// daten auslesen
-				string_urheberrecht = navigationsaxhandler_handler.string_urheberrecht;
+			memosingleton_anwendung.arraylist_karte_navigationsanweisungen = navigationsaxhandler_handler.arraylist_html_anweisungen;
 
-				memosingleton_anwendung.arraylist_karte_navigationsanweisungen = navigationsaxhandler_handler.arraylist_html_anweisungen;
+			arraylist_grob_kodiert = dekodiere(navigationsaxhandler_handler.string_grob_kodiert);
 
-				arraylist_grob_kodiert = dekodiere(navigationsaxhandler_handler.string_grob_kodiert);
+			arraylist_fein_kodiert = new ArrayList<GeoPunkt>();
 
-				arraylist_fein_kodiert = new ArrayList<GeoPunkt>();
+			int_summe = navigationsaxhandler_handler.arraylist_fein_kodiert
+					.size();
+			int_zaehler = 1;
 
-				int_summe = navigationsaxhandler_handler.arraylist_fein_kodiert
-						.size();
-				int_zaehler = 1;
+			publishProgress(MODUS_EINRICHTEN, DIALOGTYP_HORIZONTAL,
+					R.string.navigation_asynctask_dialog_text_dekodiere,
+					int_summe);
 
-				publishProgress(MODUS_EINRICHTEN, DIALOGTYP_HORIZONTAL,
-						R.string.navigation_asynctask_dialog_text_dekodiere,
-						int_summe);
+			int_prozent_temp = berechneProzentSchritte(int_summe);
 
-				int_prozent_temp = berechneProzentSchritte(int_summe);
+			for (String string_fein_kodiert : navigationsaxhandler_handler.arraylist_fein_kodiert) {
 
-				for (String string_fein_kodiert : navigationsaxhandler_handler.arraylist_fein_kodiert) {
+				if ((int_zaehler % int_prozent_temp == 0)) {
 
-					if ((int_zaehler % int_prozent_temp == 0)) {
-
-						publishProgress(MODUS_AKTUALISIEREN,
-								DIALOGTYP_HORIZONTAL, int_zaehler);
-					}
-					int_zaehler++;
-
-					arraylist_fein_kodiert
-							.addAll(dekodiere(string_fein_kodiert));
+					publishProgress(MODUS_AKTUALISIEREN, DIALOGTYP_HORIZONTAL,
+							int_zaehler);
 				}
+				int_zaehler++;
 
-				// pfade erzeugen
-				point_temp = new Point();
-				path_pfad_grob = new Path();
-				path_pfad_fein = new Path();
-				boolean_startziel = true;
-
-				rectf_vergleich = new RectF((float) point_ul.x,
-						(float) point_or.y, (float) point_or.x,
-						(float) point_ul.y);
-
-				int_zaehler = 1;
-				int_summe = arraylist_grob_kodiert.size();
-
-				publishProgress(
-						MODUS_EINRICHTEN,
-						DIALOGTYP_HORIZONTAL,
-						R.string.navigation_asynctask_dialog_text_erzeuge_pfade,
-						int_summe);
-
-				int_prozent_temp = berechneProzentSchritte(int_summe);
-
-				for (GeoPunkt punkt : arraylist_grob_kodiert) {
-
-					if (boolean_startziel) {
-
-						memosingleton_anwendung.projection_karte.toPixels(
-								punkt, point_temp);
-						path_pfad_grob.moveTo(point_temp.x, point_temp.y);
-
-						boolean_startziel = false;
-					}
-
-					memosingleton_anwendung.projection_karte.toPixels(punkt,
-							point_temp);
-					path_pfad_grob.lineTo(point_temp.x, point_temp.y);
-					path_pfad_grob.moveTo(point_temp.x, point_temp.y);
-
-					if ((int_zaehler % int_prozent_temp) == 0) {
-
-						publishProgress(MODUS_AKTUALISIEREN,
-								DIALOGTYP_HORIZONTAL, int_zaehler);
-					}
-					int_zaehler++;
-				}
-
-				boolean_startziel = true;
-
-				int_zaehler = 1;
-				int_summe = arraylist_fein_kodiert.size();
-
-				publishProgress(
-						MODUS_EINRICHTEN,
-						DIALOGTYP_HORIZONTAL,
-						R.string.navigation_asynctask_dialog_text_erzeuge_pfade,
-						int_summe);
-
-				int_prozent_temp = berechneProzentSchritte(int_summe);
-
-				for (GeoPunkt punkt : arraylist_fein_kodiert) {
-
-					if (boolean_startziel) {
-
-						memosingleton_anwendung.projection_karte.toPixels(
-								punkt, point_temp);
-						path_pfad_fein.moveTo(point_temp.x, point_temp.y);
-
-						boolean_startziel = false;
-					}
-
-					memosingleton_anwendung.projection_karte.toPixels(punkt,
-							point_temp);
-					path_pfad_fein.lineTo(point_temp.x, point_temp.y);
-					path_pfad_fein.moveTo(point_temp.x, point_temp.y);
-
-					if ((int_zaehler % int_prozent_temp) == 0) {
-
-						publishProgress(MODUS_AKTUALISIEREN,
-								DIALOGTYP_HORIZONTAL, int_zaehler);
-					}
-					int_zaehler++;
-				}
-
-				// overlay mit pfaden erzeugen
-				itemoverlay_route = new ItemOverlay(context_con.getResources()
-						.getDrawable(R.drawable.dot), context_con,
-						path_pfad_grob, path_pfad_fein, rectf_vergleich);
-
-				itemoverlay_route.addOverlay(new OverlayItem(geopunkt_start,
-						"Start", ""));
-				itemoverlay_route.addOverlay(new OverlayItem(geopunkt_ziel[0],
-						"Ziel", ""));
-
-				itemoverlay_route.initialisieren();
-
-				memosingleton_anwendung.arraylist_karte_overlays_temp
-						.add(itemoverlay_route);
+				arraylist_fein_kodiert.addAll(dekodiere(string_fein_kodiert));
 			}
+
+			// overlay mit pfaden erzeugen
+			itemoverlay_route = new ItemOverlay(context_con.getResources()
+					.getDrawable(R.drawable.dot), context_con,
+					erzeugePfad(arraylist_grob_kodiert),
+					erzeugePfad(arraylist_fein_kodiert), new RectF(
+							(float) point_ul.x, (float) point_or.y,
+							(float) point_or.x, (float) point_ul.y));
+
+			itemoverlay_route.addOverlay(new OverlayItem(geopunkt_start,
+					"Start", ""));
+			itemoverlay_route.addOverlay(new OverlayItem(geopunkt_ziel[0],
+					"Ziel", ""));
+
+			itemoverlay_route.initialisieren();
+
+			memosingleton_anwendung.arraylist_karte_overlays_temp
+					.add(itemoverlay_route);
 
 			// gesamten pfad in karte anzeigen
 			int_span_lat = geopunkt_start.getLatitudeE6()
@@ -486,7 +418,6 @@ public class Navigation_AsyncTask extends
 			int_span_lat += int_span_lat / 40;
 			int_span_lon += int_span_lon / 40;
 
-			hashmap_ergebnis = new HashMap<String, String>();
 			hashmap_ergebnis.put(
 					"int_zentrum_lat",
 					Integer.toString(geopunkt_start.getLatitudeE6()
@@ -502,28 +433,25 @@ public class Navigation_AsyncTask extends
 
 			hashmap_ergebnis.put("string_status",
 					navigationsaxhandler_handler.string_status);
-
-			if (!navigationsaxhandler_handler.string_status
-					.equalsIgnoreCase("OK")) {
-
-				try {
-
-					mapview_karte.getController().setZoom(int_zoom);
-				} catch (Exception e) {
-
-					e.printStackTrace();
-				}
-			}
-
-			return hashmap_ergebnis;
 		} else {
 
-			return null;
+			try {// mapview nach drehung ungueltig
+
+				mapview_karte.getController().setZoom(int_zoom);
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			}
+
+			hashmap_ergebnis.put("fehler", context_con.getResources()
+					.getString(R.string.verarbeitung_text));
 		}
+
+		return hashmap_ergebnis;
 	}
 
 	/**
-	 * {@code private ArrayList<GeoPunkt> dekodiere(String string_kodiert)}
+	 * {@code private {@link ArrayList} dekodiere(String string_kodiert)}
 	 * <p/>
 	 * Dekodiert die von Google kodierten Linienzüge in Geokoordinaten.
 	 * Algorithmus siehe:<br/>
@@ -578,6 +506,60 @@ public class Navigation_AsyncTask extends
 	}
 
 	/**
+	 * {@code private {@link Path} erzeugePfad(ArrayList<GeoPunkt>
+	 * arraylist_kodiert)}
+	 * <p/>
+	 * Erzeugt Pfade aus den in der {@link ArrayList} hinterlegten Punkten und
+	 * aktualisiert den Fortschrittsdialog.
+	 * 
+	 * @param arraylist_kodiert
+	 *            {@link ArrayList} mit den dekodierten Geokoordinaten der
+	 *            Pfadzwischenpunkte
+	 * @return {@link Path} entsprechend den übergebenen Punkten
+	 */
+	private Path erzeugePfad(ArrayList<GeoPunkt> arraylist_kodiert) {
+
+		Path path_pfad = new Path();
+		Point point_temp = new Point();
+		boolean boolean_startziel = true;
+
+		int int_prozent_temp, int_zaehler = 1, int_summe = arraylist_kodiert
+				.size();
+
+		publishProgress(MODUS_EINRICHTEN, DIALOGTYP_HORIZONTAL,
+				R.string.navigation_asynctask_dialog_text_erzeuge_pfade,
+				int_summe);
+
+		int_prozent_temp = berechneProzentSchritte(int_summe);
+
+		for (GeoPunkt punkt : arraylist_kodiert) {
+
+			if (boolean_startziel) {
+
+				memosingleton_anwendung.projection_karte.toPixels(punkt,
+						point_temp);
+				path_pfad.moveTo(point_temp.x, point_temp.y);
+
+				boolean_startziel = false;
+			}
+
+			memosingleton_anwendung.projection_karte
+					.toPixels(punkt, point_temp);
+			path_pfad.lineTo(point_temp.x, point_temp.y);
+			path_pfad.moveTo(point_temp.x, point_temp.y);
+
+			if ((int_zaehler % int_prozent_temp) == 0) {
+
+				publishProgress(MODUS_AKTUALISIEREN, DIALOGTYP_HORIZONTAL,
+						int_zaehler);
+			}
+			int_zaehler++;
+		}
+
+		return path_pfad;
+	}
+
+	/**
 	 * Wird nach der Beendigung des Hintergrundthreads aufgerufen,
 	 * benachrichtigt {@link PunkteZeigen_Tab_Karte} und schließt die
 	 * Fortschrittsdialoge.
@@ -590,7 +572,7 @@ public class Navigation_AsyncTask extends
 		Intent intent_befehl = new Intent(
 				MemoSingleton.INTENT_HIERHIN_NAVIGIEREN);
 
-		if ((hashmap_ergebnis != null)) {
+		if (!hashmap_ergebnis.containsKey("fehler")) {
 
 			intent_befehl.putExtra(context_con.getPackageName() + "_"
 					+ "string_status", hashmap_ergebnis.get("string_status"));
@@ -606,12 +588,13 @@ public class Navigation_AsyncTask extends
 			intent_befehl.putExtra(context_con.getPackageName() + "_"
 					+ "int_span_lon",
 					Integer.parseInt(hashmap_ergebnis.get("int_span_lon")));
+			intent_befehl.putExtra(context_con.getPackageName() + "_"
+					+ "string_urheberrecht",
+					hashmap_ergebnis.get("string_urheberrecht"));
+		} else {
 
-			if (hashmap_ergebnis.get("string_status").equalsIgnoreCase("OK")) {
-
-				Toast.makeText(context_con, string_urheberrecht,
-						Toast.LENGTH_LONG).show();
-			}
+			intent_befehl.putExtra(context_con.getPackageName() + "_"
+					+ "fehler", hashmap_ergebnis.get("fehler"));
 		}
 
 		context_con.sendBroadcast(intent_befehl);

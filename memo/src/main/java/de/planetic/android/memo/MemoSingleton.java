@@ -201,7 +201,7 @@ public class MemoSingleton extends Application {
 
 	// gibt letzten zugriff zeitstempel zurueck
 	/**
-	 * {@code public long letzterDBZugriff(int int_klasse)}
+	 * {@code public {@link Long} letzterDBZugriff(int int_klasse)}
 	 * <p/>
 	 * Gibt den letzten Zugriff auf die Datenbank, getrennt nach Listen- und
 	 * Kartenansicht, zurück.
@@ -303,11 +303,12 @@ public class MemoSingleton extends Application {
 		alertdialog_builder.setNegativeButton(
 				getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_navigiere),
+						
 				new OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-
+						
 						new Navigation_AsyncTask(context_punktezeigen_tab)
 								.execute(geopunkt_punkt);
 
@@ -326,9 +327,10 @@ public class MemoSingleton extends Application {
 						true));
 
 		String string_datum = DateFormat.format(
-				DateFormat.DATE + "." + DateFormat.MONTH + "."
-						+ DateFormat.YEAR + " " + DateFormat.HOUR_OF_DAY + ":"
-						+ DateFormat.MINUTE,
+				"" + DateFormat.DATE + DateFormat.DATE + "." + DateFormat.MONTH
+						+ DateFormat.MONTH + "." + DateFormat.YEAR + " "
+						+ DateFormat.HOUR_OF_DAY + DateFormat.HOUR_OF_DAY + ":"
+						+ DateFormat.MINUTE + DateFormat.MINUTE,
 				new Date(cursor_anfrage.getLong(cursor_anfrage
 						.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_6))))
 				.toString();
@@ -374,7 +376,8 @@ public class MemoSingleton extends Application {
 	}
 
 	/**
-	 * {@code public Object getSymbol(String string_name, boolean boolean_drawable)}
+	 * {@code public {@link Object} getSymbol(String string_name, boolean
+	 * boolean_drawable)}
 	 * <p/>
 	 * Liest übergebenen Symbolnamen aus den mitgelieferten Resourcen oder dem
 	 * Speicher, je nachdem was vorhanden ist. Gibt je nach

@@ -252,7 +252,9 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	 * {@code public void aktuellePositionVerwalten()}
 	 * <p/>
 	 * Startet oder stoppt den {@link LocationListener} für die aktuelle
-	 * Position in {@link GPS_Verwaltung}.
+	 * Position in {@link GPS_Verwaltung}. Die Funktion wird über das Menü oder
+	 * über den Knopf "Position verfolgen", eingeblendet während der Navigation,
+	 * per {@link Intent} aufgerufen.
 	 */
 	public void aktuellePositionVerwalten() {
 		Intent intent_befehl = new Intent();
@@ -282,7 +284,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	}
 
 	/**
-	 * {@code private Dialog erzeugeDialogGeoPktHinzufuegen(final Dialog dialog)}
+	 * {@code private {@link Dialog} erzeugeDialogGeoPktHinzufuegen(final
+	 * Dialog dialog)}
 	 * <p/>
 	 * Erzeugt einen Dialog für das Hinzufügen eines Punktes in die Datenbank.
 	 * 
@@ -393,7 +396,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	}
 
 	/**
-	 * {@code private Dialog erzeugeDialogPunkteFiltern(final Dialog dialog)}
+	 * {@code private {@link Dialog} erzeugeDialogPunkteFiltern(final Dialog
+	 * dialog)}
 	 * <p/>
 	 * Erzeugt Dialog zur Einstellung des anzuwendenden Filters.
 	 * 
@@ -520,7 +524,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	 * @param int_dialog_id
 	 *            {@code DIALOG_GEOPUNKT_HINZUFUEGEN} oder
 	 *            {@code DIALOG_PUNKTE_FILTERN}
-	 * @return {@link Boolean} entsprechend der erfolgreichen Verarbeitung
+	 * @return {@code boolean} entsprechend der erfolgreichen Verarbeitung
 	 */
 	private boolean werteDialogAus(Dialog dialog, int int_dialog_id) {
 

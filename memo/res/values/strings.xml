@@ -31,10 +31,11 @@
     <string name="punktezeigen_tab_dialog_button_text_ok">OK</string>
     <string name="punktezeigen_tab_dialog_button_text_zeige_karte">Auf Karte anzeigen</string>
     <string name="datum_text">Datum</string>
-    <string name="es_ist_ein_fehler_text">Es ist ein Fehler aufgetreten.</string>
+    <!-- <string name="es_ist_ein_fehler_text">Es ist ein Fehler aufgetreten.</string> -->
     <string name="fehler_text">Fehler:</string>
+    <string name="kein_internet_text">kein Internetzugang</string>
     <string name="navigation_asynctask_dialog_text_empfange_daten">Empfange Daten</string>
-    <string name="navigation_asynctask_dialog_text_verarbeite_daten">Verarbeitung</string>
+    <string name="verarbeitung_text">Verarbeitung</string>
     <string name="navigation_asynctask_dialog_text_dekodiere">Dekodiere</string>
     <string name="navigation_asynctask_dialog_text_erzeuge_pfade">Erzeuge Pfade</string>
     <string name="punktezeigen_tab_dialog_pkthinzufuegen_checkBox1_text">Position per GPS</string>
@@ -55,12 +56,26 @@
     <string name="punktehinzufuegen_service_notification_gespeichert">gespeichert.</string>
     <string name="punktehinzufuegen_service_notification_vorgemerkt">vorgemerkt</string>
     <string name="punktehinzufuegen_service_notification_wird_demnaechst_gespeichert">Wird demnächst gespeichert.</string>
+    <string name="memo_einstellungen_gps">GPS</string>
+    <string name="memo_einstellungen_gps_benutzen">GPS benutzen</string>
+    <string name="memo_einstellungen_gps_wartezeit">Wartezeit in Minuten</string>
+    <string name="memo_einstellungen_gps_aktualisierungsrate">Aktualisierungsrate</string>
 
     <string-array name="punktezeigen_tab_dialog_pktfiltern_spinner1_stringarray">
         <item>Cent/kWh ?</item>
         <item>Cent/kWh ></item>
         <item>Cent/kWh =</item>
         <item>Cent/kWh &lt;</item>
+    </string-array>
+    <string-array name="memo_einstellungen_aktualisierungsrate_array">
+        <item>Langsam</item>
+        <item>Mittel</item>
+        <item>Hoch</item>
+    </string-array>
+    <string-array name="memo_einstellungen_aktualisierungsrate_werte_array">
+        <item>5</item>
+        <item>2</item>
+        <item>1</item>
     </string-array>
 
 </resources>

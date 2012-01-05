@@ -35,6 +35,8 @@
         </activity>
         <activity android:name=".PunkteZeigen_Tab_Karte" >
         </activity>
+        <activity android:name=".Memo_Einstellungen" >
+        </activity>
 
         <application>
         </application>

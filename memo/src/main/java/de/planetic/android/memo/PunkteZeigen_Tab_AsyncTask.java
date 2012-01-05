@@ -53,7 +53,9 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	 *            {@link Context} für die Anzeige von {@link Intent} und
 	 *            {@link Toast}
 	 * @param int_mod
+	 *            Modus zur Unterscheidung von {@code LISTE} und {@code KARTE}
 	 * @param filter
+	 *            {@link Boolean} für die Nutzung von Filtern und Navigation
 	 */
 	public PunkteZeigen_Tab_AsyncTask(Context con, int int_mod, boolean filter) {
 		int_modus = int_mod;
@@ -442,6 +444,18 @@ public class PunkteZeigen_Tab_AsyncTask extends
 
 		return cursor_db_anfrage[0].getCount();
 
+	}
+
+	/**
+	 * Wird aufgerufen sobald der Thread innerhalb von {@code doInBackground()}
+	 * von außen abgebrochen wird und schließt den Fortschrittdsdialog.
+	 */
+	@Override
+	protected void onCancelled() {
+
+		progress_fortschritt.dismiss();
+
+		super.onCancelled();
 	}
 
 	/**

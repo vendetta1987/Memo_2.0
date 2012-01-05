@@ -127,11 +127,12 @@ public class PunkteHinzufuegen_Service extends IntentService {
 			long_zeit = System.currentTimeMillis();
 
 			for (int i = 1; i <= 12; i++) {
-				// 125 sek = 60 sek
+				// 12 x 5 sek = 60 sek
 				// wartet je 5 sek und liest dann die letzte bekannte position
 				// aus, falls diese nach dem neuer punkt-auftrag erfasst wurde
 
 				if (memosingleton_anwendung.gps_verwaltung.long_letzte_aktualisierung > long_zeit) {
+
 					geopunkt_position = memosingleton_anwendung.gps_verwaltung
 							.aktuellePosition();
 					break;
@@ -279,7 +280,7 @@ public class PunkteHinzufuegen_Service extends IntentService {
 	}
 
 	/**
-	 * {@code public GeoPunkt adresseAufloesen(String string_adresse)}
+	 * {@code public {@link GeoPunkt} adresseAufloesen(String string_adresse)}
 	 * <p/>
 	 * Nutzt die übergebene Adresse als Suchanfrage bei Google und ermittelt
 	 * deren Geokoordinaten. Nur ein Ergebnis wird ausgewertet.

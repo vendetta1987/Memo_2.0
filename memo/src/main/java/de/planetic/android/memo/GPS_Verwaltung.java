@@ -62,9 +62,8 @@ public class GPS_Verwaltung {
 	 */
 	public boolean starteGPS(final Intent intent_befehl) {
 
-		List<String> list_anbieter = locationmanager.getProviders(true);
-
-		if (list_anbieter.contains(LocationManager.GPS_PROVIDER)) {
+		if (locationmanager.getProviders(true).contains(
+				LocationManager.GPS_PROVIDER)) {
 
 			LocationListener locationlistener_listener = new LocationListener() {
 				@Override
@@ -119,7 +118,7 @@ public class GPS_Verwaltung {
 			};
 
 			locationmanager.requestLocationUpdates(
-					LocationManager.GPS_PROVIDER, 1000 * 1, 0,
+					LocationManager.GPS_PROVIDER, 500 * 1, 0,
 					locationlistener_listener);
 
 			switch (intent_befehl.getIntExtra(context_con.getPackageName()
@@ -218,7 +217,7 @@ public class GPS_Verwaltung {
 	}
 
 	/**
-	 * {@code public GeoPunkt aktuellePosition()}
+	 * {@code public {@link GeoPunkt} aktuellePosition()}
 	 * <p/>
 	 * Durchläuft alle Positionsanbieter und aktualisiert die in
 	 * {@code long_letzte_aktualisierung} gespeicherte, letzte bekannte
@@ -232,8 +231,6 @@ public class GPS_Verwaltung {
 				.iterator();
 
 		Location location_ort;
-
-		GeoPunkt geopunkt_punkt;
 
 		while (iterator_provider.hasNext()) {
 			location_ort = locationmanager
@@ -252,8 +249,6 @@ public class GPS_Verwaltung {
 
 		}
 
-		geopunkt_punkt = new GeoPunkt(int_lat, int_lon);
-
-		return geopunkt_punkt;
+		return new GeoPunkt(int_lat, int_lon);
 	}
 }

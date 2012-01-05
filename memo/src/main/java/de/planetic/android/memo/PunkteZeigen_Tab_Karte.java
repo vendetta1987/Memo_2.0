@@ -253,6 +253,21 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
+	/**
+	 * Beendet die Navigation beim Druck auf den Knopf "Zurück".
+	 */
+	@Override
+	public void onBackPressed() {
+
+		if (memosingleton_anwendung.boolean_navigieren) {
+
+			navigationBeenden(null);
+		} else {
+
+			super.onBackPressed();
+		}
+	}
+
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
@@ -523,7 +538,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	private void hierhinNavigieren(Intent intent_befehl) {
 		// "zentrum_lat""zentrum_lon""dif_lat""dif_lon""string_status"
 
-		String string_status;
+		String string_status, string_meldung = new String();
 
 		if (intent_befehl.hasExtra(getPackageName() + "_" + "string_status")) {
 
@@ -546,23 +561,27 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 								+ "int_span_lon", -1));
 
 				navigationButtonsVerwalten(true);
+
+				string_meldung = intent_befehl.getStringExtra(getPackageName()
+						+ "_" + "string_urheberrecht");
 			} else {
 
-				Toast.makeText(
-						this,
-						getResources().getString(R.string.fehler_text) + " "
-								+ string_status, Toast.LENGTH_SHORT).show();
+				string_meldung = getResources().getString(R.string.fehler_text)
+						+ " " + string_status;
 
 				navigationBeenden(null);
 			}
 		} else {
 
-			Toast.makeText(this,
-					getResources().getString(R.string.es_ist_ein_fehler_text),
-					Toast.LENGTH_SHORT).show();
+			string_meldung = getResources().getString(R.string.fehler_text)
+					+ " "
+					+ intent_befehl.getStringExtra(getPackageName() + "_"
+							+ "fehler");
 
 			navigationBeenden(null);
 		}
+
+		Toast.makeText(this, string_meldung, Toast.LENGTH_SHORT).show();
 	}
 
 	/**
@@ -647,8 +666,6 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 * ausgeblendet, GPS und {@link TextToSpeech} abgeschaltet und die
 	 * Naviagtionsanweisungen gelöscht.
 	 * 
-	 * @param view
-	 *            dem aufrufenden knopf zugewiesener {@link View}
 	 * @see MemoSingleton
 	 */
 	public void navigationBeenden(View view) {
@@ -657,20 +674,26 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		navigationButtonsVerwalten(false);
 
+		Intent intent_befehl = new Intent(MemoSingleton.INTENT_STOPPE_GPS);
+
 		if (memosingleton_anwendung.boolean_aktuelle_position) {
 
-			sendBroadcast(new Intent(MemoSingleton.INTENT_STOPPE_GPS).putExtra(
-					getPackageName() + "_" + "int_listener",
-					MemoSingleton.GPS_LISTENER_AKTUELL));
+			intent_befehl.putExtra(getPackageName() + "_" + "int_listener",
+					MemoSingleton.GPS_LISTENER_AKTUELL);
+
+			sendBroadcast(intent_befehl);
 		}
+
+		intent_befehl.putExtra(getPackageName() + "_" + "int_listener",
+				MemoSingleton.GPS_LISTENER_NAVIGATION);
+		sendBroadcast(intent_befehl);
 
 		stoppeTTS();
 
 		memosingleton_anwendung.arraylist_karte_navigationsanweisungen = null;
 		memosingleton_anwendung.boolean_navigieren = false;
 
-		karteAnzeigen(memosingleton_anwendung.arraylist_karte_overlays.size(),
-				false, false);
+		dbAbfrageStarten(new Intent());
 	}
 
 	/**
