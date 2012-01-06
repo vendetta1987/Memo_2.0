@@ -32,12 +32,49 @@ public class Navigation_SAXHandler extends DefaultHandler {
 	private String string_temp;
 	private HashMap<String, String> hashmap_temp;
 
+	private HashMap<String, HashMap<String, ArrayList<HashMap<String, String>>>> test;
+
+	private void erzeugeHTMLAnweisungen(HashMap<String, String> hashmap_daten) {
+
+		int int_lat = ((Double) (Double.parseDouble(hashmap_daten
+				.get("string_lat")) * 1e6)).intValue();
+		int int_lon = ((Double) (Double.parseDouble(hashmap_daten
+				.get("string_lon")) * 1e6)).intValue();
+		int int_lat_temp, int_lon_temp;
+		String string_schluessel_g, string_schluessel_m;
+		ArrayList<HashMap<String, String>> arraylist_temp;
+
+		// lon 180, lat 80
+		// 54320000
+
+		int_lat_temp = int_lat / 1000000;
+		int_lon_temp = int_lon / 1000000;
+
+		string_schluessel_g = "G" + String.valueOf(int_lat_temp) + "_"
+				+ String.valueOf(int_lon_temp);
+		string_schluessel_m = "M"
+				+ String.valueOf((int_lat - int_lat_temp) / 10000) + "_"
+				+ String.valueOf((int_lon - int_lon_temp) / 10000);
+
+		if (!test.containsKey(string_schluessel_g)) {
+
+			arraylist_temp = new ArrayList<HashMap<String, String>>();
+			arraylist_temp.add(hashmap_daten);
+
+			// test.put(string_schluessel_g,
+			// new HashMap<String, ArrayList<HashMap<String, String>>>()
+			// .put(string_schluessel_m, arraylist_temp));
+		}
+	}
+
 	/**
 	 * Wird beim Start des Dokumentes aufgerufen und initialisiert die
 	 * Variablen.
 	 */
 	@Override
 	public void startDocument() {
+
+		test = new HashMap<String, HashMap<String, ArrayList<HashMap<String, String>>>>();
 
 		boolean_step = false;
 		boolean_overview_polyline = false;
@@ -192,6 +229,9 @@ public class Navigation_SAXHandler extends DefaultHandler {
 		} else if (localName.equalsIgnoreCase("distance")) {
 
 			boolean_distanz = false;
+
+			erzeugeHTMLAnweisungen(hashmap_temp);
+
 			arraylist_html_anweisungen.add(hashmap_temp);
 		} else if (localName.equalsIgnoreCase("value")) {
 

@@ -11,6 +11,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask.Status;
@@ -72,7 +73,32 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		boolean_tts_aktiv = false;
 
 		// TODO waehlbar
-		// mapview_karte.setSatellite(true);
+
+		SharedPreferences sp_einstellungen = Memo_Einstellungen
+				.leseEinstellungen(this);
+
+		switch (Integer
+				.decode(sp_einstellungen
+						.getString(
+								getResources()
+										.getString(
+												R.string.memo_einstellungen_gps_kartenansicht_schluessel),
+								"-1"))) {
+		case -1:
+			mapview_karte.setSatellite(false);
+			break;
+		case 1:
+			mapview_karte.setSatellite(true);
+			break;
+		}
+
+		mapview_karte
+				.setTraffic(sp_einstellungen
+						.getBoolean(
+								getResources()
+										.getString(
+												R.string.memo_einstellungen_gps_verkehrslage_schluessel),
+								false));
 
 		if (savedInstanceState == null) {
 			dbAbfrageStarten(new Intent());
@@ -806,6 +832,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 			iterator_anweisungen = memosingleton_anwendung.arraylist_karte_navigationsanweisungen
 					.iterator();
+
 			while (iterator_anweisungen.hasNext()) {
 				// lat, lon, distanz, html
 
@@ -820,20 +847,29 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 						Double.parseDouble(hashmap_temp.get("string_lon")),
 						float_entfernung);
 
-				if (float_entfernung[0] < 75) {
+				if (float_entfernung[0] < 150) {
 
-					string_temp = hashmap_temp.get("string_html") + " "
-							+ hashmap_temp.get("string_distanz") + " ";
+					string_temp = hashmap_temp.get("string_html") + " ";
 
-					if (Double.parseDouble(hashmap_temp.get("string_distanz")) < 1000.0) {
+					Double double_distanz = Double.parseDouble(hashmap_temp
+							.get("string_distanz"));
 
-						string_temp = string_temp.concat(getResources()
-								.getString(R.string.navigation_text_meter));
+					if (double_distanz > 1000.0) {
+
+						string_temp = string_temp
+								+ String.valueOf(double_distanz / 1000.0)
+								+ getResources().getString(
+										R.string.navigation_text_kilometer);
 					} else {
 
-						string_temp = string_temp.concat(getResources()
-								.getString(R.string.navigation_text_kilometer));
+						string_temp = string_temp
+								+ String.valueOf(double_distanz)
+								+ getResources().getString(
+										R.string.navigation_text_meter);
 					}
+
+					string_temp = string_temp
+							+ hashmap_temp.get("string_distanz");
 
 					sageTTS(string_temp);
 

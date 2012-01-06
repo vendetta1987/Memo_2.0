@@ -62,6 +62,15 @@ public class GPS_Verwaltung {
 	 */
 	public boolean starteGPS(final Intent intent_befehl) {
 
+		/*
+		 * dezimalgrad und umrechnung in km/m
+		 * x = streckenlaenge bei erhoehung um 1 gegenueber vergleichspunkt
+		 * dezimalgrad = ab,cdefgh
+		 * 
+		 * a=1113,195km b=111,3195km c=11,13195km d=1,113195km e=111,3195m
+		 * f=11,13195m g=1,113195m h=0,1113195m
+		 */
+
 		if (locationmanager.getProviders(true).contains(
 				LocationManager.GPS_PROVIDER)) {
 

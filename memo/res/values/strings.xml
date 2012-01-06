@@ -60,6 +60,14 @@
     <string name="memo_einstellungen_gps_benutzen">GPS benutzen</string>
     <string name="memo_einstellungen_gps_wartezeit">Wartezeit in Minuten</string>
     <string name="memo_einstellungen_gps_aktualisierungsrate">Aktualisierungsrate</string>
+    <string name="memo_einstellungen_gps_karte">Karte</string>
+    <string name="memo_einstellungen_gps_kartenansicht">Kartenansicht</string>
+    <string name="memo_einstellungen_gps_verkehrslage">Verkehrslage</string>
+    <string name="memo_einstellungen_gps_benutzen_schluessel">gps_benutzen</string>
+    <string name="memo_einstellungen_gps_wartezeit_schluessel">gps_wartezeit</string>
+    <string name="memo_einstellungen_gps_aktualisierungsrate_schluessel">gps_aktualisierungsrate</string>
+    <string name="memo_einstellungen_gps_kartenansicht_schluessel">karte_kartenansicht</string>
+    <string name="memo_einstellungen_gps_verkehrslage_schluessel">karte_verkehrslage</string>
 
     <string-array name="punktezeigen_tab_dialog_pktfiltern_spinner1_stringarray">
         <item>Cent/kWh ?</item>
@@ -76,6 +84,14 @@
         <item>5</item>
         <item>2</item>
         <item>1</item>
+    </string-array>
+    <string-array name="memo_einstellungen_kartenansicht_array">
+        <item>Satellit</item>
+        <item>Karte</item>
+    </string-array>
+    <string-array name="memo_einstellungen_kartenansicht_werte_array">
+        <item>1</item>
+        <item>-1</item>
     </string-array>
 
 </resources>
