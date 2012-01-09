@@ -86,6 +86,7 @@ public class PunkteHinzufuegen_Service extends IntentService {
 		// id fuer erneute verarbeitung
 		long long_id = intent_service.getLongExtra(getPackageName() + "_"
 				+ "long_id", -1), long_zeit;
+		int int_wartezeit;
 
 		// bereitet meldung fuer notification-leiste vor
 		Notification notification_nachricht = new Notification(R.drawable.icon,
@@ -94,7 +95,8 @@ public class PunkteHinzufuegen_Service extends IntentService {
 
 		NotificationManager notificationmanager_verwaltung = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		if (boolean_pos_aus_gps) {
+		if (boolean_pos_aus_gps
+				&& memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar(false)) {
 			Intent intent_befehl = new Intent(MemoSingleton.INTENT_STARTE_GPS);
 			intent_befehl.putExtra(getPackageName() + "_" + "int_listener",
 					MemoSingleton.GPS_LISTENER_SERVICE);
@@ -123,45 +125,66 @@ public class PunkteHinzufuegen_Service extends IntentService {
 				notification_nachricht);
 
 		if (boolean_pos_aus_gps) {
-			// position aus gps erfassen
-			long_zeit = System.currentTimeMillis();
 
-			for (int i = 1; i <= 12; i++) {
-				// 12 x 5 sek = 60 sek
-				// wartet je 5 sek und liest dann die letzte bekannte position
-				// aus, falls diese nach dem neuer punkt-auftrag erfasst wurde
+			if (memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar(false)) {
+				// position aus gps erfassen
 
-				if (memosingleton_anwendung.gps_verwaltung.long_letzte_aktualisierung > long_zeit) {
+				long_zeit = System.currentTimeMillis();
 
-					geopunkt_position = memosingleton_anwendung.gps_verwaltung
-							.aktuellePosition();
-					break;
+				int_wartezeit = Memo_Einstellungen
+						.leseEinstellungen(getApplicationContext())
+						.getInt(getApplicationContext()
+								.getResources()
+								.getString(
+										R.string.memo_einstellungen_gps_wartezeit_schluessel),
+								1);
+
+				for (int i = 0; i < int_wartezeit * 12; i++) {
+					// X x 12 x 5 sek = 60 sek x X
+					// wartet je 5 sek und liest dann die letzte bekannte
+					// position aus, falls diese nach dem neuer punkt-auftrag
+					// erfasst wurde
+
+					if (memosingleton_anwendung.gps_verwaltung.long_letzte_aktualisierung > long_zeit) {
+
+						geopunkt_position = memosingleton_anwendung.gps_verwaltung
+								.aktuellePosition();
+						break;
+					}
+
+					notification_nachricht
+							.setLatestEventInfo(
+									getApplicationContext(),
+									getResources()
+											.getString(
+													R.string.punktehinzufuegen_service_notification_speichere)
+											+ " " + string_name,
+									getResources()
+											.getString(
+													R.string.punktehinzufuegen_service_notification_warte_auf_gps)
+											+ " "
+											+ String.valueOf((i / 12) + 1)
+											+ " "
+											+ getResources()
+													.getString(
+															R.string.punktehinzufuegen_service_notification_von)
+											+ Integer.toString(int_wartezeit)
+											+ " "
+											+ getResources()
+													.getString(
+															R.string.punktehinzufuegen_service_notification_minuten),
+									PendingIntent.getBroadcast(
+											getApplicationContext(), 0,
+											new Intent(),
+											Notification.FLAG_ONGOING_EVENT));
+					notificationmanager_verwaltung.notify(NOTIFICATION_ID,
+							notification_nachricht);
+
+					SystemClock.sleep(5 * 1000);
 				}
+			} else {
 
-				notification_nachricht
-						.setLatestEventInfo(
-								getApplicationContext(),
-								getResources()
-										.getString(
-												R.string.punktehinzufuegen_service_notification_speichere)
-										+ " " + string_name,
-								getResources()
-										.getString(
-												R.string.punktehinzufuegen_service_notification_warte_auf_gps)
-										+ " "
-										+ String.valueOf(i)
-										+ " "
-										+ getResources()
-												.getString(
-														R.string.punktehinzufuegen_service_notification_von)
-										+ " 12", PendingIntent.getBroadcast(
-										getApplicationContext(), 0,
-										new Intent(),
-										Notification.FLAG_ONGOING_EVENT));
-				notificationmanager_verwaltung.notify(NOTIFICATION_ID,
-						notification_nachricht);
-
-				SystemClock.sleep(5 * 1000);
+				geopunkt_position = null;
 			}
 		} else {
 			// adresse in position umwandeln

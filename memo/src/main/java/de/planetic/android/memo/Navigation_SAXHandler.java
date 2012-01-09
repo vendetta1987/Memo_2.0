@@ -15,7 +15,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * {@code string_status} beinhaltet die Statusangabe der Antwort<br/>
  * {@code string_urheberrecht} beinhaltet die Angaben zum Urheberrecht der
  * Karte/Route<br/>
- * {@code arraylist_html_anweisungen} beinhaltet die Navigationsanweisungen
+ * {@code arraylist_html_anweisungen} beinhaltet die Navigationsanweisungen<br/>
  * 
  * @see Navigation_AsyncTask
  */
@@ -23,17 +23,30 @@ public class Navigation_SAXHandler extends DefaultHandler {
 
 	public String string_grob_kodiert, string_status, string_urheberrecht;
 	public ArrayList<String> arraylist_fein_kodiert;
-	public ArrayList<HashMap<String, String>> arraylist_html_anweisungen;
+	public HashMap<String, ArrayList<HashMap<String, String>>> hashmap_html_anweisungen;
 
 	private boolean boolean_overview_polyline, boolean_points, boolean_status,
 			boolean_urheberrecht, boolean_step, boolean_html,
 			boolean_start_location, boolean_lat, boolean_lon, boolean_distanz,
 			boolean_value;
-	private String string_temp;
+	private StringBuilder stringbuilder_temp;
 	private HashMap<String, String> hashmap_temp;
 
-	private HashMap<String, HashMap<String, ArrayList<HashMap<String, String>>>> test;
-
+	/**
+	 * Speichert die Naviagtionsanweisungen in der {@link HashMap}
+	 * {@code hashmap_html_anweisungen}.<br/>
+	 * Jede Anweisung wird als {@link HashMap} übergeben. Daraus wird
+	 * {@code string_schluessel} in der Form "G_ggb_ggl_M_mmb_mml" erzeugt (gg -
+	 * Grad, mm - Minuten, b - Breite, l - Länge). Unter diesem Schlüssel wird
+	 * in {@code hashmap_html_anweisungen} eine {@link ArrayList} eingetragen
+	 * die {@code hashmap_daten} beinhaltet.
+	 * 
+	 * @param hashmap_daten
+	 *            {@link Hashmap} mit den Einträgen {@code string_lat},
+	 *            {@code string_lon}, {@code string_html} und
+	 *            {@code string_distanz}
+	 * @see GPS_Verwaltung
+	 */
 	private void erzeugeHTMLAnweisungen(HashMap<String, String> hashmap_daten) {
 
 		int int_lat = ((Double) (Double.parseDouble(hashmap_daten
@@ -41,29 +54,30 @@ public class Navigation_SAXHandler extends DefaultHandler {
 		int int_lon = ((Double) (Double.parseDouble(hashmap_daten
 				.get("string_lon")) * 1e6)).intValue();
 		int int_lat_temp, int_lon_temp;
-		String string_schluessel_g, string_schluessel_m;
-		ArrayList<HashMap<String, String>> arraylist_temp;
-
-		// lon 180, lat 80
-		// 54320000
+		String string_schluessel;
 
 		int_lat_temp = int_lat / 1000000;
 		int_lon_temp = int_lon / 1000000;
 
-		string_schluessel_g = "G" + String.valueOf(int_lat_temp) + "_"
-				+ String.valueOf(int_lon_temp);
-		string_schluessel_m = "M"
-				+ String.valueOf((int_lat - int_lat_temp) / 10000) + "_"
-				+ String.valueOf((int_lon - int_lon_temp) / 10000);
+		string_schluessel = "G_" + String.valueOf(int_lat_temp) + "_"
+				+ String.valueOf(int_lon_temp) + "_M_"
+				+ String.valueOf((int_lat - (int_lat_temp * 1000000)) / 10000)
+				+ "_"
+				+ String.valueOf((int_lon - (int_lon_temp * 1000000)) / 10000);
 
-		if (!test.containsKey(string_schluessel_g)) {
+		if (!hashmap_html_anweisungen.containsKey(string_schluessel)) {
 
-			arraylist_temp = new ArrayList<HashMap<String, String>>();
-			arraylist_temp.add(hashmap_daten);
+			hashmap_html_anweisungen.put(string_schluessel,
+					new ArrayList<HashMap<String, String>>());
+			hashmap_html_anweisungen.get(string_schluessel).add(hashmap_daten);
+		} else {
 
-			// test.put(string_schluessel_g,
-			// new HashMap<String, ArrayList<HashMap<String, String>>>()
-			// .put(string_schluessel_m, arraylist_temp));
+			if (!hashmap_html_anweisungen.get(string_schluessel).contains(
+					hashmap_daten)) {
+
+				hashmap_html_anweisungen.get(string_schluessel).add(
+						hashmap_daten);
+			}
 		}
 	}
 
@@ -73,8 +87,6 @@ public class Navigation_SAXHandler extends DefaultHandler {
 	 */
 	@Override
 	public void startDocument() {
-
-		test = new HashMap<String, HashMap<String, ArrayList<HashMap<String, String>>>>();
 
 		boolean_step = false;
 		boolean_overview_polyline = false;
@@ -91,7 +103,7 @@ public class Navigation_SAXHandler extends DefaultHandler {
 		string_grob_kodiert = new String();
 		string_urheberrecht = new String();
 		arraylist_fein_kodiert = new ArrayList<String>();
-		arraylist_html_anweisungen = new ArrayList<HashMap<String, String>>();
+		hashmap_html_anweisungen = new HashMap<String, ArrayList<HashMap<String, String>>>();
 	}
 
 	/**
@@ -124,11 +136,11 @@ public class Navigation_SAXHandler extends DefaultHandler {
 		} else if (localName.equalsIgnoreCase("points")) {
 
 			boolean_points = true;
-			string_temp = new String();
+			stringbuilder_temp = new StringBuilder();
 		} else if (localName.equalsIgnoreCase("html_instructions")) {
 
 			boolean_html = true;
-			string_temp = new String();
+			stringbuilder_temp = new StringBuilder();
 		} else if (localName.equalsIgnoreCase("distance")) {
 
 			boolean_distanz = true;
@@ -173,10 +185,10 @@ public class Navigation_SAXHandler extends DefaultHandler {
 			// .intValue()));
 		} else if (boolean_step && boolean_points) {
 
-			string_temp = string_temp.concat(new String(ch, start, length));
+			stringbuilder_temp.append(new String(ch, start, length));
 		} else if (boolean_step && boolean_html) {
 
-			string_temp = string_temp.concat(new String(ch, start, length));
+			stringbuilder_temp.append(new String(ch, start, length));
 		} else if (boolean_step && boolean_distanz && boolean_value) {
 
 			hashmap_temp.put("string_distanz", new String(ch, start, length));
@@ -219,20 +231,19 @@ public class Navigation_SAXHandler extends DefaultHandler {
 			boolean_points = false;
 			if (!boolean_overview_polyline) {
 
-				arraylist_fein_kodiert.add(string_temp);
+				arraylist_fein_kodiert.add(stringbuilder_temp.toString());
 			}
 		} else if (localName.equalsIgnoreCase("html_instructions")) {
 
 			boolean_html = false;
-			hashmap_temp.put("string_html",
-					string_temp.replaceAll("<(.|\n)*?>", ""));
+
+			hashmap_temp.put("string_html", stringbuilder_temp.toString()
+					.replaceAll("<(.|\n)*?>", ""));
 		} else if (localName.equalsIgnoreCase("distance")) {
 
 			boolean_distanz = false;
 
 			erzeugeHTMLAnweisungen(hashmap_temp);
-
-			arraylist_html_anweisungen.add(hashmap_temp);
 		} else if (localName.equalsIgnoreCase("value")) {
 
 			boolean_value = false;

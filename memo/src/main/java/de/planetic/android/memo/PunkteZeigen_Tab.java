@@ -54,7 +54,6 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	public TabHost tabhost;
 
 	private MemoSingleton memosingleton_anwendung;
-	private boolean boolean_gps_verfuegbar;
 
 	/**
 	 * Erzeugt die {@link TabActivity} und startet
@@ -72,9 +71,6 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 		// speichere context im singleton um spaeter dialog fuer geopunkte
 		// anzeigen zu koennen
 		memosingleton_anwendung.context_punktezeigen_tab = this;
-
-		boolean_gps_verfuegbar = memosingleton_anwendung.gps_verwaltung
-				.gpsVerfuegbar();
 
 		Resources res = getResources(); // Resource object to get Drawables
 		tabhost = getTabHost(); // The activity TabHost
@@ -155,20 +151,26 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 
-		if (tabhost.getCurrentTab() == 0) {
+		if ((tabhost.getCurrentTab() == 0)
+				|| !memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar(false)) {
+
 			menu.removeItem(R.id.punktezeigen_tab_menu_item5);
 		}
 
 		if (memosingleton_anwendung.boolean_aktuelle_position) {
+
 			menu.findItem(R.id.punktezeigen_tab_menu_item5).setTitle(
 					getResources().getString(
 							R.string.punktezeigen_tab_menu_item5_aus_title));
 		} else {
+
 			try {
+
 				menu.findItem(R.id.punktezeigen_tab_menu_item5).setTitle(
 						getResources().getString(
 								R.string.punktezeigen_tab_menu_item5_an_title));
 			} catch (Exception e) {
+
 				e.printStackTrace();
 			}
 		}
@@ -259,7 +261,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	public void aktuellePositionVerwalten() {
 		Intent intent_befehl = new Intent();
 
-		if (memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar()) {
+		if (memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar(false)) {
 
 			Button button_position_verfolgen = ((Button) tabhost
 					.getCurrentView().findViewById(
@@ -295,6 +297,9 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	 */
 	private Dialog erzeugeDialogGeoPktHinzufuegen(final Dialog dialog) {
 
+		boolean boolean_gps_verfuegbar = memosingleton_anwendung.gps_verwaltung
+				.gpsVerfuegbar(true);
+
 		dialog.setContentView(R.layout.punktezeigen_tab_dialog_pkthinzufuegen);
 		dialog.setTitle(R.string.punktezeigen_tab_dialog_pkthinzufuegen_title);
 		dialog.getWindow().setSoftInputMode(
@@ -322,6 +327,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 		checkbox_gps.setClickable(boolean_gps_verfuegbar);
 		checkbox_gps.setChecked(boolean_gps_verfuegbar);
+		checkbox_gps.setEnabled(boolean_gps_verfuegbar);
 		checkbox_gps.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override

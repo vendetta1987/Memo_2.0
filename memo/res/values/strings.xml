@@ -5,7 +5,7 @@
     <string name="memostart_button1_text">Ladestationen zeigen</string>
     <string name="memostart_button2_text">Server synchronisieren</string>
     <string name="memostart_button3_text">Einstellungen</string>
-    <string name="memosingleton_gps_nicht_verfuegbar">Bitte GPS in den Einstellungen aktivieren!</string>
+    <string name="memosingleton_gps_nicht_verfuegbar">Bitte GPS in allen Einstellungen aktivieren!</string>
     <string name="punktezeigen_tab_menu_item1_title">DB füllen</string>
     <string name="punktezeigen_tab_menu_item2_title">DB leeren</string>
     <string name="punktezeigen_tab_menu_item5_an_title">Pos zeigen</string>
@@ -32,7 +32,7 @@
     <string name="punktezeigen_tab_dialog_button_text_zeige_karte">Auf Karte anzeigen</string>
     <string name="datum_text">Datum</string>
     <!-- <string name="es_ist_ein_fehler_text">Es ist ein Fehler aufgetreten.</string> -->
-    <string name="fehler_text">Fehler:</string>
+    <string name="fehler_text">Fehler</string>
     <string name="kein_internet_text">kein Internetzugang</string>
     <string name="navigation_asynctask_dialog_text_empfange_daten">Empfange Daten</string>
     <string name="verarbeitung_text">Verarbeitung</string>
@@ -46,6 +46,8 @@
     <string name="punktezeigen_tab_dialog_pkthinzufuegen_db_erfolgreich">Eintrag hinzugefügt.</string>
     <string name="punktezeigen_tab_liste_karteanzeigen">neue Einträge</string>
     <string name="punktezeigen_tab_karte_karteanzeigen">neue Punkte</string>
+    <string name="punktezeigen_tab_karte_tts_nicht_aktiviert">TTS nicht aktiviert</string>
+    <string name="punktezeigen_tab_karte_tts_sprache_nicht">TTS Sprache nicht verfügbar</string>
     <string name="lat_kurz">Lat:</string>
     <string name="lon_kurz">Lon:</string>
     <string name="kein_bild">Kein Bild verfügbar</string>
@@ -53,6 +55,7 @@
     <string name="punktehinzufuegen_service_notification_bitte_warten">Bitte warten.</string>
     <string name="punktehinzufuegen_service_notification_warte_auf_gps">Warte auf GPS</string>
     <string name="punktehinzufuegen_service_notification_von">von</string>
+    <string name="punktehinzufuegen_service_notification_minuten">Minuten</string>
     <string name="punktehinzufuegen_service_notification_gespeichert">gespeichert.</string>
     <string name="punktehinzufuegen_service_notification_vorgemerkt">vorgemerkt</string>
     <string name="punktehinzufuegen_service_notification_wird_demnaechst_gespeichert">Wird demnächst gespeichert.</string>
@@ -79,11 +82,13 @@
         <item>Langsam</item>
         <item>Mittel</item>
         <item>Hoch</item>
+        <item>Maximum</item>
     </string-array>
     <string-array name="memo_einstellungen_aktualisierungsrate_werte_array">
         <item>5</item>
         <item>2</item>
         <item>1</item>
+        <item>0</item>
     </string-array>
     <string-array name="memo_einstellungen_kartenansicht_array">
         <item>Satellit</item>

@@ -250,9 +250,12 @@ public class Navigation_AsyncTask extends
 		ItemOverlay itemoverlay_route;
 		MapView mapview_karte;
 		Point point_or, point_ul;
+		GeoPunkt geopunkt_start;
 		long long_zeit = System.currentTimeMillis();
 		int int_span_lat, int_span_lon, int_summe, int_zaehler, int_zoom, int_prozent_temp;
 		String string_url;
+		boolean boolean_gps_verfuegbar = memosingleton_anwendung.gps_verwaltung
+				.gpsVerfuegbar(false);
 		// "http://maps.google.com/maps/api/directions/xml?origin=53.633333, 11.416667&destination=53.766667, 12.566667&sensor=false&language=de"
 
 		memosingleton_anwendung.arraylist_karte_overlays_temp.clear();
@@ -270,18 +273,23 @@ public class Navigation_AsyncTask extends
 		point_ul = memosingleton_anwendung.projection_karte.toPixels(
 				new GeoPoint(-45000000, -45000000), null);
 
-		intent_befehl = new Intent(MemoSingleton.INTENT_STARTE_GPS);
-		intent_befehl.putExtra(context_con.getPackageName() + "_"
-				+ "int_listener", MemoSingleton.GPS_LISTENER_NAVIGATION);
-		context_con.sendBroadcast(intent_befehl);
+		if (boolean_gps_verfuegbar) {
+
+			intent_befehl = new Intent(MemoSingleton.INTENT_STARTE_GPS);
+			intent_befehl.putExtra(context_con.getPackageName() + "_"
+					+ "int_listener", MemoSingleton.GPS_LISTENER_NAVIGATION);
+			context_con.sendBroadcast(intent_befehl);
+
+			publishProgress(
+					MODUS_EINRICHTEN,
+					DIALOGTYP_SPINNER,
+					R.string.punktehinzufuegen_service_notification_warte_auf_gps);
+		}
 
 		intent_befehl = new Intent(MemoSingleton.INTENT_STARTE_TTS);
 		context_con.sendBroadcast(intent_befehl);
 
-		publishProgress(MODUS_EINRICHTEN, DIALOGTYP_SPINNER,
-				R.string.punktehinzufuegen_service_notification_warte_auf_gps);
-
-		while (true) {
+		while (boolean_gps_verfuegbar) {
 
 			if ((memosingleton_anwendung.gps_verwaltung.long_letzte_aktualisierung > long_zeit)
 					|| boolean_gps_abbrechen) {
@@ -292,15 +300,22 @@ public class Navigation_AsyncTask extends
 			SystemClock.sleep(1000);
 		}
 
-		// TODO fuer nutzung anpassen
-		// GeoPunkt geopunkt_start = memosingleton_anwendung.gps_verwaltung
-		// .aktuellePosition();
-		// schwerin
-		GeoPunkt geopunkt_start = new GeoPunkt(53633333, 11416667);
+		if (boolean_gps_verfuegbar && !boolean_gps_abbrechen) {
 
-		// geopunkt_ziel[0] = new GeoPunkt(53766667, 12566667);//teterow
+			geopunkt_start = memosingleton_anwendung.gps_verwaltung
+					.aktuellePosition();
+		} else {
+
+			// TODO Benachrichtigung einfuegen oder Dialog zum Waehlen des
+			// Startpunktes zeigen
+
+			// schwerin
+			geopunkt_start = new GeoPunkt(53633333, 11416667);
+		}
+
+		geopunkt_ziel[0] = new GeoPunkt(53766667, 12566667);// teterow
 		// geopunkt_ziel[0] = new GeoPunkt(41973799, 2466103);// spanien
-		geopunkt_ziel[0] = new GeoPunkt(53900710, 11415200);// wendorf
+		// geopunkt_ziel[0] = new GeoPunkt(53900710, 11415200);// wendorf
 
 		string_url = "http://maps.google.com/maps/api/directions/xml?origin="
 				+ String.valueOf(geopunkt_start.getLatitudeE6() / 1e6) + ","
@@ -320,8 +335,6 @@ public class Navigation_AsyncTask extends
 						MODUS_EINRICHTEN,
 						DIALOGTYP_SPINNER,
 						R.string.navigation_asynctask_dialog_text_empfange_daten);
-
-				// TODO timeout?
 
 				// TODO fuer nutzung anpassen
 				bufferedinputstream_daten = new BufferedInputStream(new URL(
@@ -363,7 +376,7 @@ public class Navigation_AsyncTask extends
 			hashmap_ergebnis.put("string_urheberrecht",
 					navigationsaxhandler_handler.string_urheberrecht);
 
-			memosingleton_anwendung.arraylist_karte_navigationsanweisungen = navigationsaxhandler_handler.arraylist_html_anweisungen;
+			memosingleton_anwendung.hashmap_karte_navigationsanweisungen = navigationsaxhandler_handler.hashmap_html_anweisungen;
 
 			arraylist_grob_kodiert = dekodiere(navigationsaxhandler_handler.string_grob_kodiert);
 

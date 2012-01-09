@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Einstellungen" >
+
+    <PreferenceCategory android:title="@string/memo_einstellungen_gps" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/memo_einstellungen_gps_benutzen_schluessel"
+            android:title="@string/memo_einstellungen_gps_benutzen" />
+
+        <EditTextPreference
+            android:defaultValue="1"
+            android:dependency="gps_benutzen"
+            android:gravity="right"
+            android:inputType="number"
+            android:key="@string/memo_einstellungen_gps_wartezeit_schluessel"
+            android:selectAllOnFocus="true"
+            android:title="@string/memo_einstellungen_gps_wartezeit" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:dependency="gps_benutzen"
+            android:entries="@array/memo_einstellungen_aktualisierungsrate_array"
+            android:entryValues="@array/memo_einstellungen_aktualisierungsrate_werte_array"
+            android:key="@string/memo_einstellungen_gps_aktualisierungsrate_schluessel"
+            android:title="@string/memo_einstellungen_gps_aktualisierungsrate" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/memo_einstellungen_gps_karte" >
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/memo_einstellungen_kartenansicht_array"
+            android:entryValues="@array/memo_einstellungen_kartenansicht_werte_array"
+            android:key="@string/memo_einstellungen_gps_kartenansicht_schluessel"
+            android:title="@string/memo_einstellungen_gps_kartenansicht" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/memo_einstellungen_gps_verkehrslage_schluessel"
+            android:title="@string/memo_einstellungen_gps_verkehrslage" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -63,13 +63,14 @@ public class GPS_Verwaltung {
 	public boolean starteGPS(final Intent intent_befehl) {
 
 		/*
-		 * dezimalgrad und umrechnung in km/m
-		 * x = streckenlaenge bei erhoehung um 1 gegenueber vergleichspunkt
-		 * dezimalgrad = ab,cdefgh
+		 * dezimalgrad und umrechnung in km/m x = streckenlaenge bei erhoehung
+		 * um 1 gegenueber vergleichspunkt. dezimalgrad = ab,cdefgh
 		 * 
 		 * a=1113,195km b=111,3195km c=11,13195km d=1,113195km e=111,3195m
 		 * f=11,13195m g=1,113195m h=0,1113195m
 		 */
+
+		int int_listener;
 
 		if (locationmanager.getProviders(true).contains(
 				LocationManager.GPS_PROVIDER)) {
@@ -126,21 +127,40 @@ public class GPS_Verwaltung {
 				}
 			};
 
-			locationmanager.requestLocationUpdates(
-					LocationManager.GPS_PROVIDER, 500 * 1, 0,
-					locationlistener_listener);
+			locationmanager
+					.requestLocationUpdates(
+							LocationManager.GPS_PROVIDER,
+							500 * Integer
+									.parseInt(Memo_Einstellungen
+											.leseEinstellungen(context_con)
+											.getString(
+													context_con
+															.getResources()
+															.getString(
+																	R.string.memo_einstellungen_gps_aktualisierungsrate_schluessel),
+													"1")), 0,
+							locationlistener_listener);
 
-			switch (intent_befehl.getIntExtra(context_con.getPackageName()
-					+ "_" + "int_listener", MemoSingleton.GPS_LISTENER_NORMAL)) {
+			int_listener = intent_befehl.getIntExtra(
+					context_con.getPackageName() + "_" + "int_listener",
+					MemoSingleton.GPS_LISTENER_NORMAL);
+
+			switch (int_listener) {
+
 			case MemoSingleton.GPS_LISTENER_AKTUELL:
 				((MemoSingleton) context_con.getApplicationContext()).boolean_aktuelle_position = true;
 				break;
 			}
 
-			hashmap_locationlistener.put(intent_befehl.getIntExtra(
-					context_con.getPackageName() + "_" + "int_listener",
-					MemoSingleton.GPS_LISTENER_NORMAL),
+			if (hashmap_locationlistener.containsKey(int_listener)) {
+
+				locationmanager.removeUpdates(hashmap_locationlistener
+						.get(int_listener));
+			}
+
+			hashmap_locationlistener.put(int_listener,
 					locationlistener_listener);
+
 			return true;
 		} else {
 
@@ -152,18 +172,29 @@ public class GPS_Verwaltung {
 	 * {@code public boolean gpsVerfuegbar()}
 	 * <p/>
 	 * Prüft die Verfügbarkeit eines GPS-Empfängers und gibt einen {@link Toast}
-	 * aus, falls keiner gefunden wurde.
+	 * aus, falls Keiner gefunden wurde.
 	 * 
-	 * @return {@code true} Falls ein GPS-Empfänger vorhanden ist.<br/>
-	 *         {@code false} Falls kein GPS-Empfänger vorhanden ist.
+	 * @param boolean_meldung
+	 *            {@link Boolean} zur Steuerung der Ausgabe per {@link Toast}
+	 * @return <ul>
+	 *         <li>{@code true} GPS-Empfänger vorhanden und in Einstellungen
+	 *         aktiviert</li> <li> {@code false} kein GPS-Empfänger vorhanden
+	 *         </li>
+	 *         <ul/>
 	 */
-	public boolean gpsVerfuegbar() {
+	public boolean gpsVerfuegbar(boolean boolean_meldung) {
+
 		List<String> list_anbieter = locationmanager.getProviders(true);
 
-		boolean boolean_verfuegbar = list_anbieter
-				.contains(LocationManager.GPS_PROVIDER);
+		boolean boolean_verfuegbar = (Memo_Einstellungen
+				.leseEinstellungen(context_con).getBoolean(
+				context_con.getResources().getString(
+						R.string.memo_einstellungen_gps_benutzen_schluessel),
+				true))
+				&& list_anbieter.contains(LocationManager.GPS_PROVIDER);
 
-		if (!boolean_verfuegbar) {
+		if (!boolean_verfuegbar && boolean_meldung) {
+
 			Toast.makeText(
 					context_con,
 					context_con.getResources().getString(

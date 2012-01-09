@@ -48,8 +48,8 @@ import com.google.android.maps.Projection;
  * speichern Listeneinträge in {@link ArrayList}<br/>
  * {@code arraylist_karte_overlays} und {@code arraylist_karte_overlays_temp}
  * speichern Karteneinträge in {@link ArrayList}<br/>
- * {@code arraylist_karte_navigationsanweisungen} speichert
- * Navigationsanweisungen in {@link ArrayList}
+ * {@code hashmap_karte_navigationsanweisungen} speichert Navigationsanweisungen
+ * in {@link HashMap}
  * 
  * @see GPS_Verwaltung
  * @see PunkteZeigen_Tab_Liste
@@ -93,6 +93,7 @@ public class MemoSingleton extends Application {
 	public boolean boolean_gedreht;
 
 	public GPS_Verwaltung gps_verwaltung;
+	public ItemOverlay itemoverlay_aktuelle_position;
 	public PunkteZeigen_Tab context_punktezeigen_tab;
 	public SQLiteDatabase sqldatabase_writeable, sqldatabase_readable;
 	public Projection projection_karte;
@@ -102,7 +103,7 @@ public class MemoSingleton extends Application {
 	// speichert karteneintraege
 	public ArrayList<Overlay> arraylist_karte_overlays;
 	public ArrayList<Overlay> arraylist_karte_overlays_temp;
-	public ArrayList<HashMap<String, String>> arraylist_karte_navigationsanweisungen;
+	public HashMap<String, ArrayList<HashMap<String, String>>> hashmap_karte_navigationsanweisungen;
 
 	// speichern letzten lesezugriff auf db in ms seit 1.1.1970
 	private long long_letzter_db_zugriff_liste;
@@ -125,9 +126,11 @@ public class MemoSingleton extends Application {
 		arraylist_liste_daten_temp = new ArrayList<HashMap<String, Object>>();
 		arraylist_karte_overlays = new ArrayList<Overlay>();
 		arraylist_karte_overlays_temp = new ArrayList<Overlay>();
-		arraylist_karte_navigationsanweisungen = new ArrayList<HashMap<String, String>>();
+		hashmap_karte_navigationsanweisungen = new HashMap<String, ArrayList<HashMap<String, String>>>();
 
 		gps_verwaltung = new GPS_Verwaltung(getApplicationContext());
+		itemoverlay_aktuelle_position = new ItemOverlay(getResources()
+				.getDrawable(R.drawable.dot), this);
 
 		boolean_gefiltert = false;
 		boolean_navigieren = false;
@@ -303,12 +306,12 @@ public class MemoSingleton extends Application {
 		alertdialog_builder.setNegativeButton(
 				getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_navigiere),
-						
+
 				new OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						
+
 						new Navigation_AsyncTask(context_punktezeigen_tab)
 								.execute(geopunkt_punkt);
 

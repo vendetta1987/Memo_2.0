@@ -1,6 +1,5 @@
 package de.planetic.android.memo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +45,6 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	private BroadcastReceiver bcreceiver_receiver;
 	private PunkteZeigen_Tab_AsyncTask asynctask_dbabfrage;
 	private MemoSingleton memosingleton_anwendung;
-	private ItemOverlay itemoverlay_aktuelle_position;
 	private TextToSpeech texttospeech_sprache;
 	private boolean boolean_tts_aktiv;
 
@@ -243,6 +241,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		if ((asynctask_dbabfrage != null)
 				&& (asynctask_dbabfrage.getStatus() == Status.RUNNING)) {
+
 			asynctask_dbabfrage.cancel(false);
 			outState.putBoolean("karte_asynctask", true);
 		}
@@ -482,35 +481,31 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		List<Overlay> list_overlays = mapview_karte.getOverlays();
 
-		if (itemoverlay_aktuelle_position == null) {
-
-			itemoverlay_aktuelle_position = new ItemOverlay(getResources()
-					.getDrawable(R.drawable.dot), memosingleton_anwendung);
-		}
-
 		if (!intent_befehl.getBooleanExtra(getPackageName() + "_"
 				+ "boolean_aktivieren", false)) {
 
-			list_overlays.remove(itemoverlay_aktuelle_position);
+			list_overlays
+					.remove(memosingleton_anwendung.itemoverlay_aktuelle_position);
 		} else {
 
-			if (!list_overlays.contains(itemoverlay_aktuelle_position)) {
+			if (!list_overlays
+					.contains(memosingleton_anwendung.itemoverlay_aktuelle_position)) {
 
-				list_overlays.add(itemoverlay_aktuelle_position);
+				list_overlays
+						.add(memosingleton_anwendung.itemoverlay_aktuelle_position);
 			}
 
-			// GeoPunkt geopunkt_aktuell =
-			// memosingleton_anwendung.gps_verwaltung
-			// .aktuellePosition();
 			GeoPunkt geopunkt_aktuell = new GeoPunkt(intent_befehl.getIntExtra(
 					getPackageName() + "_" + "int_lat", 0),
 					intent_befehl.getIntExtra(getPackageName() + "_"
 							+ "int_lon", 0));
 
-			itemoverlay_aktuelle_position.clearOverlay();
-			itemoverlay_aktuelle_position.addOverlay(new OverlayItem(
-					geopunkt_aktuell, "", ""));
-			itemoverlay_aktuelle_position.initialisieren();
+			memosingleton_anwendung.itemoverlay_aktuelle_position
+					.clearOverlay();
+			memosingleton_anwendung.itemoverlay_aktuelle_position
+					.addOverlay(new OverlayItem(geopunkt_aktuell, "", ""));
+			memosingleton_anwendung.itemoverlay_aktuelle_position
+					.initialisieren();
 
 			zoomeKarte(geopunkt_aktuell, -1, -1);
 		}
@@ -522,8 +517,9 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 * {@code private void zoomeKarte(GeoPunkt geopunkt_zentrum, int int_spanlat,
 			int int_spanlon)}
 	 * <p/>
-	 * Zoomt die Karte auf eine vorgegebene größe und zentriert sie über einem
-	 * {@link GeoPunkt}
+	 * Zoomt die Karte auf eine vorgegebene Größe und zentriert sie über einem
+	 * {@link GeoPunkt}, falls {@code int_spanlat} und {@code int_spanlon} >= 0
+	 * sind.
 	 * 
 	 * @param geopunkt_zentrum
 	 *            {@link GeoPunkt} über dem die Karte zentriert wird.
@@ -545,8 +541,6 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 			mapcontroller_karte.zoomToSpan(int_spanlat, int_spanlon);
 		}
-
-		// mapcontroller_karte.setZoom(17);
 
 		mapview_karte.invalidate();
 	}
@@ -593,14 +587,14 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			} else {
 
 				string_meldung = getResources().getString(R.string.fehler_text)
-						+ " " + string_status;
+						+ ": " + string_status;
 
 				navigationBeenden(null);
 			}
 		} else {
 
 			string_meldung = getResources().getString(R.string.fehler_text)
-					+ " "
+					+ ": "
 					+ intent_befehl.getStringExtra(getPackageName() + "_"
 							+ "fehler");
 
@@ -634,8 +628,11 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			findViewById(R.id.punktezeigen_karte_layout_button1).setVisibility(
 					View.VISIBLE);
 
-			// Position verfolgen
-			button_aktuelle_position.setVisibility(View.VISIBLE);
+			if (memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar(false)) {
+
+				// Position verfolgen
+				button_aktuelle_position.setVisibility(View.VISIBLE);
+			}
 		} else {
 
 			findViewById(R.id.punktezeigen_karte_layout_button1).setVisibility(
@@ -660,7 +657,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			public void onClick(View v) {
 				Intent intent_befehl = new Intent();
 
-				if (memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar()) {
+				if (memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar(false)) {
 
 					if (!memosingleton_anwendung.boolean_aktuelle_position) {
 
@@ -716,7 +713,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		stoppeTTS();
 
-		memosingleton_anwendung.arraylist_karte_navigationsanweisungen = null;
+		memosingleton_anwendung.hashmap_karte_navigationsanweisungen = null;
 		memosingleton_anwendung.boolean_navigieren = false;
 
 		dbAbfrageStarten(new Intent());
@@ -734,9 +731,9 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	}
 
 	/**
-	 * Wird aufgerufen sobald @l{@link Activity} aus {@code starteTTS}
-	 * zurückkehrt und wertet den Rückgabewert aus. Startet entweder
-	 * {@link TextToSpeech} oder installiert es aus dem Markt.
+	 * Wird aufgerufen sobald {@link Activity} aus {@code starteTTS} zurückkehrt
+	 * und wertet den Rückgabewert aus. Startet entweder {@link TextToSpeech}
+	 * oder installiert es aus dem Markt.
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -756,11 +753,13 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 	/**
 	 * Wird nach dem Start von {@link TextToSpeech} aufgerufen und prüft, ob
-	 * dieser erfolgreich war und konfiguriert anschließend die verwendetet
+	 * dieser erfolgreich war und konfiguriert anschließend die verwendete
 	 * Sprache.
 	 */
 	@Override
 	public void onInit(int status) {
+
+		String string_fehler = new String();
 
 		if (status == TextToSpeech.SUCCESS) {
 
@@ -770,7 +769,23 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 					&& !(int_ergebnis == TextToSpeech.LANG_NOT_SUPPORTED)) {
 
 				boolean_tts_aktiv = true;
+			} else {
+
+				string_fehler = getResources().getString(
+						R.string.punktezeigen_tab_karte_tts_sprache_nicht);
 			}
+		} else {
+
+			string_fehler = getResources().getString(
+					R.string.punktezeigen_tab_karte_tts_nicht_aktiviert);
+		}
+
+		if (!boolean_tts_aktiv) {
+
+			Toast.makeText(
+					this,
+					getResources().getString(R.string.fehler_text) + ": "
+							+ string_fehler, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -784,13 +799,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 */
 	private void sageTTS(String string_text) {
 
-		if (boolean_tts_aktiv) {// &&
-								// intent_befehl.hasExtra(getPackageName()+"_"+"string_text"))
-								// {
+		if (boolean_tts_aktiv) {
 
-			// texttospeech_sprache.speak(
-			// intent_befehl.getStringExtra(getPackageName()+"_"+"string_text"),
-			// TextToSpeech.QUEUE_ADD, null);
 			texttospeech_sprache.speak(string_text, TextToSpeech.QUEUE_ADD,
 					null);
 		}
@@ -814,68 +824,91 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 * {@code private void navigationAnweisung(Intent intent_befehl)}
 	 * <p/>
 	 * Aufgerufen durch {@link GPS_Verwaltung} zur Ausgabe der
-	 * Navigationsanweisungen. Liest Anweisungen aus der {@link ArrayList} in
+	 * Navigationsanweisungen. Liest Anweisungen aus der {@link HashMap} in
 	 * {@link MemoSingleton} und prüft die Entfernung zur aktuellen Position.
 	 * Die Ausgabe erfolgt durch {@link TextToSpeech}.
 	 * 
 	 * @param intent_befehl
 	 *            {@link Intent} mit den Angaben zur aktuellen Position
+	 * @see MemoSingleton
 	 */
 	private void navigationAnweisung(Intent intent_befehl) {
 
 		Iterator<HashMap<String, String>> iterator_anweisungen;
 		HashMap<String, String> hashmap_temp = new HashMap<String, String>();
 		float[] float_entfernung = new float[3];
-		String string_temp = new String();
+		String string_temp = new String(), string_schluessel;
+		int int_lat, int_lon, int_lat_temp, int_lon_temp;
+		double double_distanz;
 
-		if (memosingleton_anwendung.arraylist_karte_navigationsanweisungen != null) {
+		if (memosingleton_anwendung.hashmap_karte_navigationsanweisungen != null) {
 
-			iterator_anweisungen = memosingleton_anwendung.arraylist_karte_navigationsanweisungen
-					.iterator();
+			int_lat = ((Double) (intent_befehl.getDoubleExtra(getPackageName()
+					+ "_" + "double_lat", 0.0) * 1e6)).intValue();
+			int_lon = ((Double) (intent_befehl.getDoubleExtra(getPackageName()
+					+ "_" + "double_lon", 0.0) * 1e6)).intValue();
 
-			while (iterator_anweisungen.hasNext()) {
-				// lat, lon, distanz, html
+			int_lat_temp = int_lat / 1000000;
+			int_lon_temp = int_lon / 1000000;
 
-				hashmap_temp = iterator_anweisungen.next();
+			string_schluessel = "G_"
+					+ String.valueOf(int_lat_temp)
+					+ "_"
+					+ String.valueOf(int_lon_temp)
+					+ "_M_"
+					+ String.valueOf((int_lat - (int_lat_temp * 1000000)) / 10000)
+					+ "_"
+					+ String.valueOf((int_lon - (int_lon_temp * 1000000)) / 10000);
 
-				Location.distanceBetween(
-						intent_befehl.getDoubleExtra(getPackageName() + "_"
-								+ "double_lat", 0.0),
-						intent_befehl.getDoubleExtra(getPackageName() + "_"
-								+ "double_lon", 0.0),
-						Double.parseDouble(hashmap_temp.get("string_lat")),
-						Double.parseDouble(hashmap_temp.get("string_lon")),
-						float_entfernung);
+			if (memosingleton_anwendung.hashmap_karte_navigationsanweisungen
+					.containsKey(string_schluessel)) {
 
-				if (float_entfernung[0] < 150) {
+				iterator_anweisungen = memosingleton_anwendung.hashmap_karte_navigationsanweisungen
+						.get(string_schluessel).iterator();
 
-					string_temp = hashmap_temp.get("string_html") + " ";
+				while (iterator_anweisungen.hasNext()) {
+					// lat, lon, distanz, html
 
-					Double double_distanz = Double.parseDouble(hashmap_temp
-							.get("string_distanz"));
+					hashmap_temp = iterator_anweisungen.next();
 
-					if (double_distanz > 1000.0) {
+					Location.distanceBetween(
+							intent_befehl.getDoubleExtra(getPackageName() + "_"
+									+ "double_lat", 0.0),
+							intent_befehl.getDoubleExtra(getPackageName() + "_"
+									+ "double_lon", 0.0),
+							Double.parseDouble(hashmap_temp.get("string_lat")),
+							Double.parseDouble(hashmap_temp.get("string_lon")),
+							float_entfernung);
 
-						string_temp = string_temp
-								+ String.valueOf(double_distanz / 1000.0)
-								+ getResources().getString(
-										R.string.navigation_text_kilometer);
-					} else {
+					if (float_entfernung[0] < 150) {
 
-						string_temp = string_temp
-								+ String.valueOf(double_distanz)
-								+ getResources().getString(
-										R.string.navigation_text_meter);
+						string_temp = hashmap_temp.get("string_html") + " ";
+
+						double_distanz = Double.parseDouble(hashmap_temp
+								.get("string_distanz"));
+
+						if (double_distanz > 1000.0) {
+
+							string_temp = string_temp
+									+ String.valueOf(double_distanz / 1000.0)
+									+ " "
+									+ getResources().getString(
+											R.string.navigation_text_kilometer);
+						} else {
+
+							string_temp = string_temp
+									+ String.valueOf(double_distanz)
+									+ " "
+									+ getResources().getString(
+											R.string.navigation_text_meter);
+						}
+
+						sageTTS(string_temp);
+
+						Log.d("memo_debug", string_temp);
+
+						iterator_anweisungen.remove();
 					}
-
-					string_temp = string_temp
-							+ hashmap_temp.get("string_distanz");
-
-					sageTTS(string_temp);
-
-					Log.d("memo_debug", string_temp);
-
-					iterator_anweisungen.remove();
 				}
 			}
 		}
