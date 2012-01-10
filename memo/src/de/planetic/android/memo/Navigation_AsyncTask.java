@@ -311,11 +311,11 @@ public class Navigation_AsyncTask extends
 
 			// schwerin
 			geopunkt_start = new GeoPunkt(53633333, 11416667);
-			geopunkt_ziel[0] = new GeoPunkt(53900710, 11415200);// wendorf
 		}
 
-		// geopunkt_ziel[0] = new GeoPunkt(53766667, 12566667);// teterow
+		geopunkt_ziel[0] = new GeoPunkt(53766667, 12566667);// teterow
 		// geopunkt_ziel[0] = new GeoPunkt(41973799, 2466103);// spanien
+		// geopunkt_ziel[0] = new GeoPunkt(53900710, 11415200);// wendorf
 
 		string_url = "http://maps.google.com/maps/api/directions/xml?origin="
 				+ String.valueOf(geopunkt_start.getLatitudeE6() / 1e6) + ","
