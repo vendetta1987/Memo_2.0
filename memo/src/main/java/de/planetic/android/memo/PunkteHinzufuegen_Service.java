@@ -79,7 +79,7 @@ public class PunkteHinzufuegen_Service extends IntentService {
 		boolean boolean_pos_aus_gps = intent_service.getBooleanExtra(
 				getPackageName() + "_" + "boolean_pos_aus_gps", true);
 		// falls die verarbeitung erfolgreich war
-		boolean boolean_verarbeitet = false;
+		boolean boolean_verarbeitet;
 		// falls ein punkt beim letzten mal nicht verarbeitet werden konnte
 		boolean boolean_erneut_verarbeiten = intent_service.getBooleanExtra(
 				getPackageName() + "_" + "boolean_erneut_verarbeiten", false);
@@ -97,6 +97,7 @@ public class PunkteHinzufuegen_Service extends IntentService {
 
 		if (boolean_pos_aus_gps
 				&& memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar(false)) {
+
 			Intent intent_befehl = new Intent(MemoSingleton.INTENT_STARTE_GPS);
 			intent_befehl.putExtra(getPackageName() + "_" + "int_listener",
 					MemoSingleton.GPS_LISTENER_SERVICE);
@@ -131,13 +132,15 @@ public class PunkteHinzufuegen_Service extends IntentService {
 
 				long_zeit = System.currentTimeMillis();
 
-				int_wartezeit = Memo_Einstellungen
-						.leseEinstellungen(getApplicationContext())
-						.getInt(getApplicationContext()
-								.getResources()
+				int_wartezeit = Integer
+						.parseInt(Memo_Einstellungen
+								.leseEinstellungen(getApplicationContext())
 								.getString(
-										R.string.memo_einstellungen_gps_wartezeit_schluessel),
-								1);
+										getApplicationContext()
+												.getResources()
+												.getString(
+														R.string.memo_einstellungen_gps_wartezeit_schluessel),
+										"1"));
 
 				for (int i = 0; i < int_wartezeit * 12; i++) {
 					// X x 12 x 5 sek = 60 sek x X
@@ -152,33 +155,40 @@ public class PunkteHinzufuegen_Service extends IntentService {
 						break;
 					}
 
-					notification_nachricht
-							.setLatestEventInfo(
-									getApplicationContext(),
-									getResources()
-											.getString(
-													R.string.punktehinzufuegen_service_notification_speichere)
-											+ " " + string_name,
-									getResources()
-											.getString(
-													R.string.punktehinzufuegen_service_notification_warte_auf_gps)
-											+ " "
-											+ String.valueOf((i / 12) + 1)
-											+ " "
-											+ getResources()
-													.getString(
-															R.string.punktehinzufuegen_service_notification_von)
-											+ Integer.toString(int_wartezeit)
-											+ " "
-											+ getResources()
-													.getString(
-															R.string.punktehinzufuegen_service_notification_minuten),
-									PendingIntent.getBroadcast(
-											getApplicationContext(), 0,
-											new Intent(),
-											Notification.FLAG_ONGOING_EVENT));
-					notificationmanager_verwaltung.notify(NOTIFICATION_ID,
-							notification_nachricht);
+					if ((i % 12) == 0) {
+
+						notification_nachricht
+								.setLatestEventInfo(
+										getApplicationContext(),
+										getResources()
+												.getString(
+														R.string.punktehinzufuegen_service_notification_speichere)
+												+ " " + string_name,
+										getResources()
+												.getString(
+														R.string.punktehinzufuegen_service_notification_warte_auf_gps)
+												+ " "
+												+ String.valueOf((i / 12) + 1)
+												+ " "
+												+ getResources()
+														.getString(
+																R.string.punktehinzufuegen_service_notification_von)
+												+ " "
+												+ Integer
+														.toString(int_wartezeit)
+												+ " "
+												+ getResources()
+														.getString(
+																R.string.punktehinzufuegen_service_notification_minuten),
+										PendingIntent
+												.getBroadcast(
+														getApplicationContext(),
+														0,
+														new Intent(),
+														Notification.FLAG_ONGOING_EVENT));
+						notificationmanager_verwaltung.notify(NOTIFICATION_ID,
+								notification_nachricht);
+					}
 
 					SystemClock.sleep(5 * 1000);
 				}
@@ -196,6 +206,7 @@ public class PunkteHinzufuegen_Service extends IntentService {
 
 		if (geopunkt_position != null) {
 			// fuer den punkt wurden geokoordinaten ermittelt
+
 			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_3,
 					geopunkt_position.getLatitudeE6());
 			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_4,
@@ -204,8 +215,11 @@ public class PunkteHinzufuegen_Service extends IntentService {
 			boolean_verarbeitet = true;
 		} else {
 			// falls keine koordinaten ermittelt werden konnten
+
 			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_3, -1);
 			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_4, -1);
+
+			boolean_verarbeitet = false;
 		}
 
 		contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_5, string_icon);
@@ -222,7 +236,7 @@ public class PunkteHinzufuegen_Service extends IntentService {
 				string_adresse);
 
 		if (boolean_verarbeitet) {
-			// hinterlege in der tabelle, das der punkt verarbeitet wurde
+			// hinterlege in der tabelle, dass der punkt verarbeitet wurde
 
 			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_11,
 					VERARBEITET);
@@ -253,12 +267,13 @@ public class PunkteHinzufuegen_Service extends IntentService {
 			// werden soll
 
 			if (boolean_pos_aus_gps) {
+
 				contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_11,
 						NICHT_VERARBEITET_GPS);
 			} else {
+
 				contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_11,
 						NICHT_VERARBEITET_ADRESSE);
-
 			}
 
 			notification_nachricht
@@ -293,13 +308,15 @@ public class PunkteHinzufuegen_Service extends IntentService {
 					contentvalues_werte);
 		}
 
-		if (boolean_pos_aus_gps) {
+		if (boolean_pos_aus_gps
+				&& intent_service.getBooleanExtra(getPackageName() + "_"
+						+ "boolean_letzte_zeile", true)) {
+
 			Intent intent_befehl = new Intent(MemoSingleton.INTENT_STOPPE_GPS);
 			intent_befehl.putExtra(getPackageName() + "_" + "int_listener",
 					MemoSingleton.GPS_LISTENER_SERVICE);
 			this.sendBroadcast(intent_befehl);
 		}
-
 	}
 
 	/**
@@ -331,6 +348,7 @@ public class PunkteHinzufuegen_Service extends IntentService {
 					list_ergebnis = geocoder_geokodierung.getFromLocationName(
 							string_adresse, 1);
 				} else {
+
 					if (Geocoder.isPresent()) {
 
 						list_ergebnis = geocoder_geokodierung

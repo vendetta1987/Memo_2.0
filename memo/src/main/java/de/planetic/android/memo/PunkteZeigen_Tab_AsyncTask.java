@@ -389,7 +389,7 @@ public class PunkteZeigen_Tab_AsyncTask extends
 			int_prozent_temp = berechneProzentSchritte(hashmap_itemoverlays_temp
 					.size());
 
-			// initialisiert alle overlays -> abbruch möglich
+			// initialisiert alle overlays -> abbruch moeglich
 			int int_zaehler = 1;
 			for (ItemOverlay itemoverlay_inner : hashmap_itemoverlays_temp
 					.values()) {
@@ -411,7 +411,7 @@ public class PunkteZeigen_Tab_AsyncTask extends
 					.values().iterator();
 
 			if (!boolean_filter) {
-				// speichert alle overlays im singleton -> kein abbruch möglich
+				// speichert alle overlays im singleton -> kein abbruch moeglich
 				while (iterator_itemoverlays.hasNext()) {
 
 					itemoverlay_temp = iterator_itemoverlays.next();

@@ -44,7 +44,6 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 
 		listview_liste.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 

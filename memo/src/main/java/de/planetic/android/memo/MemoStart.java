@@ -1,10 +1,11 @@
 package de.planetic.android.memo;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 public class MemoStart extends Activity {
 
@@ -21,15 +22,76 @@ public class MemoStart extends Activity {
 	}
 
 	public void serverSynchronisieren(View v_view) {
+		// platzhalter für "Server synchronisieren". wird waehrenddessen zum
+		// abgleich der db-tabellen genutzt
 
-		Toast.makeText(this, "serverSynchronisieren", Toast.LENGTH_SHORT)
-				.show();
+		ContentValues contentvalues_werte;
+		MemoSingleton memosingleton_anwendung = ((MemoSingleton) getApplication());
+
+		Cursor cursor_synch = memosingleton_anwendung.sqldatabase_readable
+				.query(SQL_DB_Verwaltung.TABELLEN_NAME_SYNCH,
+						null,
+						"NOT " + SQL_DB_Verwaltung.NAME_SPALTE_11 + "=?",
+						new String[] { String
+								.valueOf(PunkteHinzufuegen_Service.VERARBEITET) },
+						null, null, null);
+
+		if (cursor_synch.moveToFirst()) {
+
+			do {
+
+				contentvalues_werte = new ContentValues(10);
+
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_1,
+								cursor_synch.getLong(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_1)));
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_2,
+								cursor_synch.getString(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_2)));
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_3,
+								cursor_synch.getInt(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_3)));
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_4,
+								cursor_synch.getInt(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_4)));
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_5,
+								cursor_synch.getString(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_5)));
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_6,
+								cursor_synch.getLong(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_6)));
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_7,
+								cursor_synch.getString(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_7)));
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_8,
+								cursor_synch.getString(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_8)));
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_9,
+								cursor_synch.getDouble(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_9)));
+				contentvalues_werte
+						.put(SQL_DB_Verwaltung.NAME_SPALTE_10,
+								cursor_synch.getString(cursor_synch
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_10)));
+
+				memosingleton_anwendung.sqldatabase_writeable.insert(
+						SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, null,
+						contentvalues_werte);
+			} while (cursor_synch.moveToNext());
+		}
 	}
 
 	public void einstellungenZeigen(View v_view) {
 
-		// Toast.makeText(this, "einstellungenZeigen",
-		// Toast.LENGTH_SHORT).show();
 		startActivity(new Intent(this, Memo_Einstellungen.class));
 	}
 }

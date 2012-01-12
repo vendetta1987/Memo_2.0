@@ -3,7 +3,7 @@
 
     <string name="app_name">Memo</string>
     <string name="memostart_button1_text">Ladestationen zeigen</string>
-    <string name="memostart_button2_text">Server synchronisieren</string>
+    <string name="memostart_button2_text">Tabellen synchronisieren</string>
     <string name="memostart_button3_text">Einstellungen</string>
     <string name="memosingleton_gps_nicht_verfuegbar">Bitte GPS in allen Einstellungen aktivieren!</string>
     <string name="punktezeigen_tab_menu_item1_title">DB füllen</string>
@@ -55,7 +55,7 @@
     <string name="punktehinzufuegen_service_notification_bitte_warten">Bitte warten.</string>
     <string name="punktehinzufuegen_service_notification_warte_auf_gps">Warte auf GPS</string>
     <string name="punktehinzufuegen_service_notification_von">von</string>
-    <string name="punktehinzufuegen_service_notification_minuten">Minuten</string>
+    <string name="punktehinzufuegen_service_notification_minuten">Minute/-n</string>
     <string name="punktehinzufuegen_service_notification_gespeichert">gespeichert.</string>
     <string name="punktehinzufuegen_service_notification_vorgemerkt">vorgemerkt</string>
     <string name="punktehinzufuegen_service_notification_wird_demnaechst_gespeichert">Wird demnächst gespeichert.</string>

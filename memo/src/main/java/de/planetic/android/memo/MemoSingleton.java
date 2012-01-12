@@ -266,12 +266,12 @@ public class MemoSingleton extends Application {
 						R.string.punktezeigen_tab_dialog_button_text_ok),
 				new OnClickListener() {
 
-					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
 
+						dialog.dismiss();
 					}
 				});
+
 		if (boolean_liste) {
 			alertdialog_builder
 					.setNeutralButton(
@@ -280,9 +280,9 @@ public class MemoSingleton extends Application {
 											R.string.punktezeigen_tab_dialog_button_text_zeige_karte),
 							new OnClickListener() {
 
-								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
+
 									context_punktezeigen_tab.tabhost
 											.setCurrentTab(PunkteZeigen_Tab.TAB_KARTE);
 
@@ -302,6 +302,7 @@ public class MemoSingleton extends Application {
 									dialog.dismiss();
 								}
 							});
+
 		}
 		alertdialog_builder.setNegativeButton(
 				getResources().getString(
@@ -309,7 +310,6 @@ public class MemoSingleton extends Application {
 
 				new OnClickListener() {
 
-					@Override
 					public void onClick(DialogInterface dialog, int which) {
 
 						new Navigation_AsyncTask(context_punktezeigen_tab)
@@ -412,6 +412,7 @@ public class MemoSingleton extends Application {
 		// R.drawable.icon).compress(
 		// CompressFormat.PNG, 100, fos_ausgabe);
 
+		//TODO dateiendung?
 		File file_bild = new File(file_iconsordner.getAbsolutePath() + "/"
 				+ string_name);
 
@@ -428,7 +429,7 @@ public class MemoSingleton extends Application {
 
 		} else {
 
-			int i = 0;
+			int i;
 
 			try {
 

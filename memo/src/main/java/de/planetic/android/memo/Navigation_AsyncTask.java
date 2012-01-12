@@ -107,12 +107,12 @@ public class Navigation_AsyncTask extends
 		progress_spinner.setCancelable(true);
 		progress_spinner.setOnCancelListener(new OnCancelListener() {
 
-			@Override
 			public void onCancel(DialogInterface dialog) {
 
 				boolean_gps_abbrechen = true;
 			}
 		});
+
 		progress_spinner.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
 		progress_horizontal
@@ -260,7 +260,7 @@ public class Navigation_AsyncTask extends
 
 		memosingleton_anwendung.arraylist_karte_overlays_temp.clear();
 
-		// zoom auf max fuer hoch aufgelösten pfad
+		// zoom auf max fuer hoch aufgeloesten pfad
 		mapview_karte = (MapView) memosingleton_anwendung.context_punktezeigen_tab
 				.getLocalActivityManager().getCurrentActivity()
 				.findViewById(R.id.punktezeigen_karte_layout_mapview);
@@ -311,9 +311,10 @@ public class Navigation_AsyncTask extends
 
 			// schwerin
 			geopunkt_start = new GeoPunkt(53633333, 11416667);
-			geopunkt_ziel[0] = new GeoPunkt(53900710, 11415200);// wendorf
+
 		}
 
+		// geopunkt_ziel[0] = new GeoPunkt(53900710, 11415200);// wendorf
 		// geopunkt_ziel[0] = new GeoPunkt(53766667, 12566667);// teterow
 		// geopunkt_ziel[0] = new GeoPunkt(41973799, 2466103);// spanien
 
@@ -336,7 +337,7 @@ public class Navigation_AsyncTask extends
 						DIALOGTYP_SPINNER,
 						R.string.navigation_asynctask_dialog_text_empfange_daten);
 
-				// TODO fuer nutzung anpassen
+				// TODO hier proxy eintragen
 				bufferedinputstream_daten = new BufferedInputStream(new URL(
 						string_url).openStream());
 				// inputstream_daten = new URL(string_url).openConnection(

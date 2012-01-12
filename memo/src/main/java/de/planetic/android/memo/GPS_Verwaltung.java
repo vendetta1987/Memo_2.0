@@ -76,9 +76,8 @@ public class GPS_Verwaltung {
 				LocationManager.GPS_PROVIDER)) {
 
 			LocationListener locationlistener_listener = new LocationListener() {
-				@Override
-				public void onLocationChanged(Location location) {
 
+				public void onLocationChanged(Location location) {
 					int_lat = new Double(location.getLatitude() * 1e6)
 							.intValue();
 					int_lon = new Double(location.getLongitude() * 1e6)
@@ -114,6 +113,7 @@ public class GPS_Verwaltung {
 						context_con.sendBroadcast(intent_temp);
 						break;
 					}
+
 				}
 
 				public void onStatusChanged(String provider, int status,
@@ -267,10 +267,9 @@ public class GPS_Verwaltung {
 	 */
 	public GeoPunkt aktuellePosition() {
 
+		Location location_ort;
 		Iterator<String> iterator_provider = locationmanager.getProviders(true)
 				.iterator();
-
-		Location location_ort;
 
 		while (iterator_provider.hasNext()) {
 			location_ort = locationmanager

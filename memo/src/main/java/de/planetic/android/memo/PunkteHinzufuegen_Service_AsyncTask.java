@@ -33,16 +33,8 @@ public class PunkteHinzufuegen_Service_AsyncTask extends
 
 		Cursor cursor_anfrage = ((MemoSingleton) context_con
 				.getApplicationContext()).sqldatabase_readable.query(
-				SQL_DB_Verwaltung.TABELLEN_NAME_SYNCH, new String[] {
-						SQL_DB_Verwaltung.NAME_SPALTE_1,
-						SQL_DB_Verwaltung.NAME_SPALTE_2,
-						SQL_DB_Verwaltung.NAME_SPALTE_7,
-						SQL_DB_Verwaltung.NAME_SPALTE_8,
-						SQL_DB_Verwaltung.NAME_SPALTE_9,
-						SQL_DB_Verwaltung.NAME_SPALTE_10,
-						SQL_DB_Verwaltung.NAME_SPALTE_11 },
-
-				"NOT " + SQL_DB_Verwaltung.NAME_SPALTE_11 + "=?",
+				SQL_DB_Verwaltung.TABELLEN_NAME_SYNCH, null, "NOT "
+						+ SQL_DB_Verwaltung.NAME_SPALTE_11 + "=?",
 				new String[] { String
 						.valueOf(PunkteHinzufuegen_Service.VERARBEITET) },
 				null, null, null);
@@ -64,6 +56,12 @@ public class PunkteHinzufuegen_Service_AsyncTask extends
 										+ "string_name",
 								cursor_anfrage.getString(cursor_anfrage
 										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_2)));
+				intent_service
+						.putExtra(
+								context_con.getPackageName() + "_"
+										+ "string_icon",
+								cursor_anfrage.getString(cursor_anfrage
+										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_5)));
 				intent_service
 						.putExtra(
 								context_con.getPackageName() + "_"
@@ -99,6 +97,12 @@ public class PunkteHinzufuegen_Service_AsyncTask extends
 						+ "boolean_erneut_verarbeiten", true);
 				intent_service.putExtra(context_con.getPackageName() + "_"
 						+ "int_notification_zaehler", int_notification_zaehler);
+
+				if (cursor_anfrage.isLast()) {
+
+					intent_service.putExtra(context_con.getPackageName() + "_"
+							+ "boolean_letzte_zeile", true);
+				}
 
 				int_notification_zaehler++;
 

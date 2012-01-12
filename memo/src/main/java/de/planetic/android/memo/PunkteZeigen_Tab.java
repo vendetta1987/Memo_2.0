@@ -99,6 +99,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 		// TODO aufruf bei drehung <-> start
 		if (savedInstanceState == null) {
+
 			new PunkteHinzufuegen_Service_AsyncTask(this).execute();
 		}
 
@@ -240,12 +241,14 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	/**
 	 * Automatisch aufgerufen sobald ein Dialog beendet wird.
 	 */
-	@Override
 	public void onCancel(DialogInterface dialog) {
+
 		try {
+
 			removeDialog(DIALOG_GEOPUNKT_HINZUFUEGEN);
 			removeDialog(DIALOG_PUNKTE_FILTERN);
 		} catch (Exception e) {
+
 			e.printStackTrace();
 		}
 	}
@@ -318,6 +321,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View v) {
 						// Abbrechen
+
 						dialog.cancel();
 					}
 				});
@@ -330,7 +334,6 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 		checkbox_gps.setEnabled(boolean_gps_verfuegbar);
 		checkbox_gps.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 
@@ -381,6 +384,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 			} while (cursor_abfrage.moveToNext());
 		}
 
+		cursor_abfrage.close();
+
 		// TODO mindestens ein symbol mitliefern
 		if (arraylist_spinnerdaten.isEmpty()) {
 
@@ -390,8 +395,6 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 					memosingleton_anwendung.getSymbol("icon", true));
 			arraylist_spinnerdaten.add(hashmap_spinnereintrag);
 		}
-
-		cursor_abfrage.close();
 
 		spinner_icon.setAdapter(new PunkteHinzufuegen_Dialog_SpinnerAdapter(
 				this, arraylist_spinnerdaten));
@@ -422,7 +425,6 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 				.findViewById(R.id.punktezeigen_tab_dialog_pktfiltern_checkBox1))
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 
@@ -437,11 +439,11 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 						}
 					}
 				});
+
 		((CheckBox) dialog
 				.findViewById(R.id.punktezeigen_tab_dialog_pktfiltern_checkBox2))
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 
@@ -456,11 +458,11 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 						}
 					}
 				});
+
 		((CheckBox) dialog
 				.findViewById(R.id.punktezeigen_tab_dialog_pktfiltern_checkBox3))
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 
@@ -493,23 +495,23 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 				.setOnClickListener(new OnClickListener() {
 					// OK
 
-					@Override
 					public void onClick(View v) {
+
 						if (werteDialogAus(dialog, DIALOG_PUNKTE_FILTERN)) {
+
 							removeDialog(DIALOG_PUNKTE_FILTERN);
 						}
-
 					}
 				});
+
 		((Button) dialog
 				.findViewById(R.id.punktezeigen_tab_dialog_pktfiltern_button2))
 				.setOnClickListener(new OnClickListener() {
 					// Abbrechen
 
-					@Override
 					public void onClick(View v) {
-						dialog.cancel();
 
+						dialog.cancel();
 					}
 				});
 
@@ -536,7 +538,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 		String string_fehler = "", string_name, string_beschreibung, string_adresse, string_radio_eigenschaften, string_groesserkleiner, string_icon;
 		double double_preis;
-		boolean boolean_ergebnis = true, boolean_pos_aus_gps = false;
+		boolean boolean_ergebnis = true, boolean_pos_aus_gps;
 		int int_filter_checkbox = 0;
 
 		switch (int_dialog_id) {
@@ -547,6 +549,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 					.getText().toString();
 			if (string_name.equals(getResources().getString(
 					R.string.punktezeigen_tab_dialog_text_name))) {
+
 				boolean_ergebnis = false;
 				string_fehler = string_fehler.concat(getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_name)
@@ -558,6 +561,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 					.getText().toString();
 			if (string_beschreibung.equals(getResources().getString(
 					R.string.punktezeigen_tab_dialog_text_beschreibung))) {
+
 				boolean_ergebnis = false;
 				string_fehler = string_fehler.concat(getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_beschreibung)
@@ -579,12 +583,15 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 				if (string_adresse.equals(getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_adresse))) {
+
 					boolean_ergebnis = false;
 					string_fehler = string_fehler
 							.concat(getResources()
 									.getString(
 											R.string.punktezeigen_tab_dialog_text_adresse));
 				}
+
+				boolean_pos_aus_gps = false;
 			}
 
 			string_radio_eigenschaften = ((RadioButton) dialog
@@ -797,8 +804,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 						"rechts");// icon
 				break;
 			case 4:
-				contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_5,
-						"paul.png");// icon
+				contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_5, "dot");// icon
 				break;
 			default:
 				contentvalues_werte

@@ -70,8 +70,6 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		boolean_tts_aktiv = false;
 
-		// TODO waehlbar
-
 		SharedPreferences sp_einstellungen = Memo_Einstellungen
 				.leseEinstellungen(this);
 
@@ -185,7 +183,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 */
 	@Override
 	public void onStop() {
-		// loescht den nachrichtenempfänger beim beenden der activity
+		// loescht den nachrichtenempfaenger beim beenden der activity
 
 		this.unregisterReceiver(bcreceiver_receiver);
 		super.onStop();
@@ -250,6 +248,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 				memosingleton_anwendung.boolean_navigieren);
 
 		outState.putBoolean("boolean_tts_aktiv", boolean_tts_aktiv);
+		stoppeTTS();
 
 		super.onSaveInstanceState(outState);
 	}
@@ -272,6 +271,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		}
 
 		if (savedInstanceState.getBoolean("boolean_tts_aktiv")) {
+
 			starteTTS();
 		}
 
@@ -653,8 +653,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		button_aktuelle_position.setOnClickListener(new OnClickListener() {
 
-			@Override
 			public void onClick(View v) {
+
 				Intent intent_befehl = new Intent();
 
 				if (memosingleton_anwendung.gps_verwaltung.gpsVerfuegbar(false)) {
@@ -680,6 +680,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 				}
 			}
 		});
+
 	}
 
 	/**
@@ -756,7 +757,6 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 * dieser erfolgreich war und konfiguriert anschließend die verwendete
 	 * Sprache.
 	 */
-	@Override
 	public void onInit(int status) {
 
 		String string_fehler = new String();
