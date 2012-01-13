@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,6 +55,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	public TabHost tabhost;
 
 	private MemoSingleton memosingleton_anwendung;
+	private boolean boolean_debug_festeorte;
 
 	/**
 	 * Erzeugt die {@link TabActivity} und startet
@@ -97,13 +99,14 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 		tabhost.setCurrentTab(TAB_LISTE);
 
-		// TODO aufruf bei drehung <-> start
 		if (savedInstanceState == null) {
 
 			new PunkteHinzufuegen_Service_AsyncTask(this).execute();
 		}
 
 		// http://developer.android.com/resources/tutorials/views/hello-tabwidget.html
+
+		boolean_debug_festeorte = true;
 	}
 
 	/**
@@ -114,6 +117,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	public void onSaveInstanceState(Bundle outState) {
 
 		memosingleton_anwendung.boolean_gedreht = true;
+
+		Log.d("memo_debug_punktezeigen_tab", "onsaveinstancestate");
 
 		super.onSaveInstanceState(outState);
 	}
@@ -130,6 +135,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 				MemoSingleton.GPS_LISTENER_ALLE);
 		sendBroadcast(intent_befehl);
 
+		Log.d("memo_debug_punktezeigen_tab", "ondestroy");
+
 		super.onDestroy();
 	}
 
@@ -138,10 +145,12 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		// Menue mit gegebenem Layout erstellen
 
 		getMenuInflater().inflate(R.menu.punktezeigen_tab_menu, menu);
 
-		// Menue mit gegebenem Layout erstellen
+		Log.d("memo_debug_punktezeigen_tab", "oncreateoptionsmenu");
+
 		return true;
 	}
 
@@ -175,6 +184,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 				e.printStackTrace();
 			}
 		}
+
+		Log.d("memo_debug_punktezeigen_tab", "onprepareoptionsmenu");
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -214,6 +225,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 			break;
 		default:
 		}
+
+		Log.d("memo_debug_punktezeigen_tab", "onoptionsitemselected");
 
 		return super.onOptionsItemSelected(item);
 	}
@@ -286,6 +299,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 					MemoSingleton.GPS_LISTENER_AKTUELL);
 			sendBroadcast(intent_befehl);
 		}
+
+		Log.d("memo_debug_punktezeigen_tab", "aktuellepositionverwalten");
 	}
 
 	/**
@@ -401,6 +416,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 		dialog.setOnCancelListener(this);
 
+		Log.d("memo_debug_punktezeigen_tab", "erzeugedialoggeopkthinzufuegen");
+
 		return dialog;
 	}
 
@@ -514,6 +531,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 						dialog.cancel();
 					}
 				});
+
+		Log.d("memo_debug_punktezeigen_tab", "erzeugedialogpunktefiltern");
 
 		return dialog;
 	}
@@ -750,6 +769,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 							+ " " + string_fehler, Toast.LENGTH_LONG).show();
 		}
 
+		Log.d("memo_debug_punktezeigen_tab", "wertedialogaus");
+
 		return boolean_ergebnis;
 	}
 
@@ -825,6 +846,43 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 			memosingleton_anwendung.sqldatabase_writeable.insert(
 					SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, null,
 					contentvalues_werte);
+		}
+
+		if (boolean_debug_festeorte) {
+
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_2, "Teterow");
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_3, 53766667);
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_4, 12566667);
+
+			memosingleton_anwendung.sqldatabase_writeable.insert(
+					SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, null,
+					contentvalues_werte);
+
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_2, "Wendorf");
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_3, 53900710);
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_4, 11415200);
+
+			memosingleton_anwendung.sqldatabase_writeable.insert(
+					SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, null,
+					contentvalues_werte);
+
+			contentvalues_werte
+					.put(SQL_DB_Verwaltung.NAME_SPALTE_2, "Schwerin");
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_3, 53599780);
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_4, 11419280);
+
+			memosingleton_anwendung.sqldatabase_writeable.insert(
+					SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, null,
+					contentvalues_werte);
+
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_2, "Spanien");
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_3, 41973799);
+			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_4, 2466103);
+
+			memosingleton_anwendung.sqldatabase_writeable.insert(
+					SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, null,
+					contentvalues_werte);
+			boolean_debug_festeorte = false;
 		}
 
 		cursor_db_anfrage.close();

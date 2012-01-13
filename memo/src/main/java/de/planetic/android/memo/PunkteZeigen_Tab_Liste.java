@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -81,6 +82,7 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 	 */
 	@Override
 	public void onStart() {
+
 		bcreceiver_receiver = new BroadcastReceiver() {
 
 			@Override
@@ -108,6 +110,8 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 
 		this.registerReceiver(bcreceiver_receiver, ifilter_filter);
 
+		Log.d("memo_debug_punktezeigen_tab_liste", "onstart");
+
 		super.onStart();
 	}
 
@@ -119,6 +123,9 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 	public void onStop() {
 
 		this.unregisterReceiver(bcreceiver_receiver);
+
+		Log.d("memo_debug_punktezeigen_tab_liste", "onstop");
+
 		super.onStop();
 	}
 
@@ -136,6 +143,8 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 			outState.putBoolean("liste_asynctask", true);
 		}
 
+		Log.d("memo_debug_punktezeigen_tab_liste", "onsaveinstancestate");
+
 		super.onSaveInstanceState(outState);
 	}
 
@@ -146,6 +155,8 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 
 		listeAnzeigen(0, false, memosingleton_anwendung.boolean_gefiltert);
+
+		Log.d("memo_debug_punktezeigen_tab_liste", "onrestoreinstancestate");
 
 		super.onRestoreInstanceState(savedInstanceState);
 	}
@@ -229,6 +240,8 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 				PunkteZeigen_Tab_AsyncTask.LISTE, boolean_filter);
 
 		asynctask_dbabfrage.execute(cursor_db_anfrage);
+
+		Log.d("memo_debug_punktezeigen_tab_liste", "dbabfragestarten");
 	}
 
 	/**
@@ -291,6 +304,8 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 		}
 
 		listview_liste.setAdapter(simpleadapter_liste_adapter);
+
+		Log.d("memo_debug_punktezeigen_tab_liste", "listeanzeigen");
 	}
 
 	/**

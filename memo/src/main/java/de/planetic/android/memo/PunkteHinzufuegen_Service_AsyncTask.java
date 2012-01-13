@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * {@link AsyncTask} für die Verarbeitung aller Punkte die in der Tabelle Synch
@@ -110,6 +111,9 @@ public class PunkteHinzufuegen_Service_AsyncTask extends
 
 			} while (cursor_anfrage.moveToNext());
 		}
+
+		Log.d("memo_debug_punktehinzufuegen_service_asynctask",
+				"tabelle synch durchlaufen");
 
 		cursor_anfrage.close();
 

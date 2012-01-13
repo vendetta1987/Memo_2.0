@@ -174,6 +174,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		this.registerReceiver(bcreceiver_receiver, ifilter_filter);
 
+		Log.d("memo_debug_punktezeigen_tab_karte", "onstart");
+
 		super.onStart();
 	}
 
@@ -186,6 +188,9 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		// loescht den nachrichtenempfaenger beim beenden der activity
 
 		this.unregisterReceiver(bcreceiver_receiver);
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "onstop");
+
 		super.onStop();
 	}
 
@@ -206,6 +211,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			sendBroadcast(intent_befehl);
 		}
 
+		Log.d("memo_debug_punktezeigen_tab_karte", "onresume");
+
 		super.onResume();
 	}
 
@@ -225,6 +232,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 					MemoSingleton.GPS_LISTENER_AKTUELL);
 			sendBroadcast(intent_befehl);
 		}
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "onpause");
 
 		super.onPause();
 	}
@@ -249,6 +258,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		outState.putBoolean("boolean_tts_aktiv", boolean_tts_aktiv);
 		stoppeTTS();
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "onsaveinstancestate");
 
 		super.onSaveInstanceState(outState);
 	}
@@ -275,6 +286,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			starteTTS();
 		}
 
+		Log.d("memo_debug_punktezeigen_tab_karte", "onrestoreinstancestate");
+
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
@@ -283,6 +296,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 */
 	@Override
 	public void onBackPressed() {
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "onbackpressed");
 
 		if (memosingleton_anwendung.boolean_navigieren) {
 
@@ -386,6 +401,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		asynctask_dbabfrage.execute(cursor_db_anfrage_geopkt,
 				cursor_db_anfrage_icon);
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "dbabfragestarten");
 	}
 
 	/**
@@ -446,6 +463,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		// zeichne die karte neu
 		mapview_karte.invalidate();
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "karteanzeigen");
 	}
 
 	/**
@@ -511,6 +530,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		}
 
 		mapview_karte.invalidate();
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "verfolgeaktuelleposition");
 	}
 
 	/**
@@ -543,6 +564,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		}
 
 		mapview_karte.invalidate();
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "zoomekarte");
 	}
 
 	/**
@@ -602,6 +625,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		}
 
 		Toast.makeText(this, string_meldung, Toast.LENGTH_SHORT).show();
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "hierhinnavigieren");
 	}
 
 	/**
@@ -718,6 +743,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		memosingleton_anwendung.boolean_navigieren = false;
 
 		dbAbfrageStarten(new Intent());
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "navigationbeenden");
 	}
 
 	/**
@@ -729,6 +756,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		Intent checkIntent = new Intent();
 		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
 		startActivityForResult(checkIntent, REQUEST_CODE_TTS);
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "startetts");
 	}
 
 	/**
@@ -804,6 +833,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			texttospeech_sprache.speak(string_text, TextToSpeech.QUEUE_ADD,
 					null);
 		}
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "sagetts");
 	}
 
 	/**
@@ -818,6 +849,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		}
 
 		boolean_tts_aktiv = false;
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "stoppetts");
 	}
 
 	/**
@@ -912,5 +945,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 				}
 			}
 		}
+
+		Log.d("memo_debug_punktezeigen_tab_karte", "navigationanweisung");
 	}
 }

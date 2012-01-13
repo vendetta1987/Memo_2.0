@@ -91,6 +91,8 @@ public class PunkteZeigen_Tab_AsyncTask extends
 		progress_fortschritt.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 
 		progress_fortschritt.show();
+
+		Log.d("memo_debug_punktezeigen_tab_asynctask", "onpreexecute");
 	}
 
 	/**
@@ -178,6 +180,9 @@ public class PunkteZeigen_Tab_AsyncTask extends
 		default:
 			int_rueckgabe = -1;
 		}
+
+		Log.d("memo_debug_punktezeigen_tab_asynctask",
+				"doinbackground durchlaufen");
 
 		return int_rueckgabe;
 
@@ -455,6 +460,8 @@ public class PunkteZeigen_Tab_AsyncTask extends
 
 		progress_fortschritt.dismiss();
 
+		Log.d("memo_debug_punktezeigen_tab_asynctask", "oncancelled");
+
 		super.onCancelled();
 	}
 
@@ -483,5 +490,7 @@ public class PunkteZeigen_Tab_AsyncTask extends
 
 		progress_fortschritt.setProgress(progress_fortschritt.getMax());
 		progress_fortschritt.dismiss();
+
+		Log.d("memo_debug_punktezeigen_tab_asynctask", "onpostexecute");
 	}
 }

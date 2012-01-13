@@ -19,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
@@ -412,7 +413,9 @@ public class MemoSingleton extends Application {
 		// R.drawable.icon).compress(
 		// CompressFormat.PNG, 100, fos_ausgabe);
 
-		//TODO dateiendung?
+		Log.d("memo_debug_memosingleton", "getsymbol aufgerufen");
+
+		// TODO dateiendung?
 		File file_bild = new File(file_iconsordner.getAbsolutePath() + "/"
 				+ string_name);
 

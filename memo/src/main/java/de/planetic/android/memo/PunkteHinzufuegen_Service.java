@@ -347,6 +347,8 @@ public class PunkteHinzufuegen_Service extends IntentService {
 					MemoSingleton.GPS_LISTENER_SERVICE);
 			this.sendBroadcast(intent_befehl);
 		}
+
+		Log.d("memo_debug_punktehinzufuegen_service", "punkt verarbeitet");
 	}
 
 	/**

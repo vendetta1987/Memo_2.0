@@ -6,6 +6,8 @@ import java.util.HashMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
+import android.util.Log;
+
 /**
  * Eigene Implementierung eines SAX-Handlers. Durchsucht die Antwort des Google
  * Directions API nach den benötigten Daten.
@@ -104,6 +106,8 @@ public class Navigation_SAXHandler extends DefaultHandler {
 		string_urheberrecht = new String();
 		arraylist_fein_kodiert = new ArrayList<String>();
 		hashmap_html_anweisungen = new HashMap<String, ArrayList<HashMap<String, String>>>();
+
+		Log.d("memo_debug_naviagtion_saxhandler", "startdocument");
 	}
 
 	/**
@@ -256,9 +260,9 @@ public class Navigation_SAXHandler extends DefaultHandler {
 		}
 	}
 
-	// @Override
-	// public void endDocument() {
-	//
-	// Log.d("memo_debug", "");
-	// }
+	@Override
+	public void endDocument() {
+
+		Log.d("memo_debug_navigation_saxhandler", "enddocument");
+	}
 }

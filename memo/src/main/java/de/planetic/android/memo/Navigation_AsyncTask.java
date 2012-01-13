@@ -82,6 +82,8 @@ public class Navigation_AsyncTask extends
 			memosingleton_anwendung.context_punktezeigen_tab.tabhost
 					.setCurrentTab(PunkteZeigen_Tab.TAB_KARTE);
 		}
+
+		Log.d("memo_debug_navigation_asynctask", "onpreexecute");
 	}
 
 	/**
@@ -622,6 +624,7 @@ public class Navigation_AsyncTask extends
 			e.printStackTrace();
 		}
 
+		Log.d("memo_debug_navigation_asynctask", "onpostexecute");
 	}
 
 }

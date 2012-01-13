@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -161,6 +162,8 @@ public class GPS_Verwaltung {
 			hashmap_locationlistener.put(int_listener,
 					locationlistener_listener);
 
+			Log.d("memo_debug_gps_verwaltung", "gps_listener registriert");
+
 			return true;
 		} else {
 
@@ -243,6 +246,8 @@ public class GPS_Verwaltung {
 
 				hashmap_locationlistener.remove(int_listener);
 			}
+
+			Log.d("memo_debug_gps_verwaltung", "gps_listener entfernt");
 		}
 
 		if (int_listener == MemoSingleton.GPS_LISTENER_AKTUELL) {
