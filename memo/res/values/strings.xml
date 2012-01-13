@@ -31,11 +31,11 @@
     <string name="punktezeigen_tab_dialog_button_text_ok">OK</string>
     <string name="punktezeigen_tab_dialog_button_text_zeige_karte">Auf Karte anzeigen</string>
     <string name="datum_text">Datum</string>
-    <!-- <string name="es_ist_ein_fehler_text">Es ist ein Fehler aufgetreten.</string> -->
     <string name="fehler_text">Fehler</string>
     <string name="kein_internet_text">kein Internetzugang</string>
     <string name="navigation_asynctask_dialog_text_empfange_daten">Empfange Daten</string>
     <string name="verarbeitung_text">Verarbeitung</string>
+    <string name="elemente_hinzugefuegt_text">Elemente wurden dem Bestand hinzugefügt.</string>
     <string name="navigation_asynctask_dialog_text_dekodiere">Dekodiere</string>
     <string name="navigation_asynctask_dialog_text_erzeuge_pfade">Erzeuge Pfade</string>
     <string name="punktezeigen_tab_dialog_pkthinzufuegen_checkBox1_text">Position per GPS</string>

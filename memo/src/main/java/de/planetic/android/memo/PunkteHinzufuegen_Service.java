@@ -1,6 +1,7 @@
 package de.planetic.android.memo;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import android.app.IntentService;
@@ -14,7 +15,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -87,6 +87,7 @@ public class PunkteHinzufuegen_Service extends IntentService {
 		long long_id = intent_service.getLongExtra(getPackageName() + "_"
 				+ "long_id", -1), long_zeit;
 		int int_wartezeit;
+		HashMap<String, String> hashmap_temp;
 
 		// bereitet meldung fuer notification-leiste vor
 		Notification notification_nachricht = new Notification(R.drawable.icon,
@@ -152,6 +153,21 @@ public class PunkteHinzufuegen_Service extends IntentService {
 
 						geopunkt_position = memosingleton_anwendung.gps_verwaltung
 								.aktuellePosition();
+
+						hashmap_temp = new HashMap<String, String>();
+						hashmap_temp.put("string_lat",
+								String.valueOf((geopunkt_position
+										.getLatitudeE6() / 1e6d)));
+						hashmap_temp.put("string_lon",
+								String.valueOf((geopunkt_position
+										.getLongitudeE6() / 1e6d)));
+						hashmap_temp = nutzeGeokodierung(hashmap_temp);
+
+						if ((hashmap_temp != null)
+								&& hashmap_temp.containsKey("string_adresse")) {
+
+							string_adresse = hashmap_temp.get("string_adresse");
+						}
 						break;
 					}
 
@@ -199,7 +215,21 @@ public class PunkteHinzufuegen_Service extends IntentService {
 		} else {
 			// adresse in position umwandeln
 
-			geopunkt_position = adresseAufloesen(string_adresse);
+			hashmap_temp = new HashMap<String, String>();
+			hashmap_temp.put("string_adresse", string_adresse);
+			hashmap_temp = nutzeGeokodierung(hashmap_temp);
+
+			if ((hashmap_temp != null)
+					&& hashmap_temp.containsKey("string_lat")
+					&& hashmap_temp.containsKey("string_lon")) {
+
+				geopunkt_position = new GeoPunkt(Integer.parseInt(hashmap_temp
+						.get("string_lat")), Integer.parseInt(hashmap_temp
+						.get("string_lon")));
+			} else {
+
+				geopunkt_position = null;
+			}
 		}
 
 		contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_2, string_name);
@@ -320,42 +350,48 @@ public class PunkteHinzufuegen_Service extends IntentService {
 	}
 
 	/**
-	 * {@code public {@link GeoPunkt} adresseAufloesen(String string_adresse)}
+	 * {@code public HashMap<String, String> nutzeGeokodierung(
+			HashMap<String, String> hashmap_anfrage)}
 	 * <p/>
-	 * Nutzt die übergebene Adresse als Suchanfrage bei Google und ermittelt
-	 * deren Geokoordinaten. Nur ein Ergebnis wird ausgewertet.
+	 * Nutzt {@link Geocoder} um Adressen in Koordinaten und anders herum zu
+	 * wandeln.
 	 * 
-	 * @param string_adresse
-	 *            {@link String} mit den Adressdaten
-	 * @return {@link GeoPunkt} mit den empfangenen Geokoordinaten
+	 * @param hashmap_anfrage
+	 *            {@link HashMap} mit den Einträgen {@code string_adresse} oder
+	 *            {@code string_lat} und {@code string_lon}
+	 * @return eine {@link HashMap} mit dem in {@code hashmap_anfrage} fehlenden
+	 *         Eintrag
 	 */
-	public GeoPunkt adresseAufloesen(String string_adresse) {
-		Geocoder geocoder_geokodierung = new Geocoder(getApplicationContext());
+	public HashMap<String, String> nutzeGeokodierung(
+			HashMap<String, String> hashmap_anfrage) {
 
+		Geocoder geocoder_geokodierung = new Geocoder(getApplicationContext());
 		List<Address> list_ergebnis = null;
+		HashMap<String, String> hashmap_ergebnis = new HashMap<String, String>();
+		String string_temp;
 
 		NetworkInfo networkinfo_internet = ((ConnectivityManager) getApplicationContext()
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();
 
 		if ((networkinfo_internet != null)
-				&& (networkinfo_internet.isAvailable())) {
+				&& networkinfo_internet.isAvailable()) {
 
 			try {
 
-				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.FROYO) {
+				if (hashmap_anfrage.containsKey("string_adresse")) {
 
 					list_ergebnis = geocoder_geokodierung.getFromLocationName(
-							string_adresse, 1);
+							hashmap_anfrage.get("string_adresse"), 1);
 				} else {
 
-					if (Geocoder.isPresent()) {
-
-						list_ergebnis = geocoder_geokodierung
-								.getFromLocationName(string_adresse, 1);
-					}
-
+					list_ergebnis = geocoder_geokodierung.getFromLocation(
+							Double.parseDouble(hashmap_anfrage
+									.get("string_lat")), Double
+									.parseDouble(hashmap_anfrage
+											.get("string_lon")), 1);
 				}
+
 			} catch (Exception e) {
 
 				Log.d("memo_debug", e.toString());
@@ -366,14 +402,31 @@ public class PunkteHinzufuegen_Service extends IntentService {
 
 			for (Address address_adresse : list_ergebnis) {
 
-				if (address_adresse.hasLatitude()
-						&& address_adresse.hasLongitude()) {
+				if (hashmap_anfrage.containsKey("string_adresse")) {
 
-					return new GeoPunkt(
-							((Double) (address_adresse.getLatitude() * 1e6))
-									.intValue(),
-							((Double) (address_adresse.getLongitude() * 1e6))
-									.intValue());
+					if (address_adresse.hasLatitude()
+							&& address_adresse.hasLongitude()) {
+
+						hashmap_ergebnis.put("string_lat", String
+								.valueOf(((Double) (address_adresse
+										.getLatitude() * 1e6)).intValue()));
+						hashmap_ergebnis.put("string_lon", String
+								.valueOf(((Double) (address_adresse
+										.getLongitude() * 1e6)).intValue()));
+						return hashmap_ergebnis;
+					}
+				} else {
+
+					string_temp = new String();
+
+					for (int i = 0; i <= address_adresse
+							.getMaxAddressLineIndex(); i++) {
+
+						string_temp += address_adresse.getAddressLine(i) + " ";
+					}
+
+					hashmap_ergebnis.put("string_adresse", string_temp);
+					return hashmap_ergebnis;
 				}
 			}
 		}

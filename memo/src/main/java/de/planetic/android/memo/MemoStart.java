@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 public class MemoStart extends Activity {
 
@@ -26,12 +27,13 @@ public class MemoStart extends Activity {
 		// abgleich der db-tabellen genutzt
 
 		ContentValues contentvalues_werte;
-		MemoSingleton memosingleton_anwendung = ((MemoSingleton) getApplication());
+		MemoSingleton memosingleton_anwendung = (MemoSingleton) getApplication();
+		int int_anzahl = 0;
 
 		Cursor cursor_synch = memosingleton_anwendung.sqldatabase_readable
 				.query(SQL_DB_Verwaltung.TABELLEN_NAME_SYNCH,
 						null,
-						"NOT " + SQL_DB_Verwaltung.NAME_SPALTE_11 + "=?",
+						SQL_DB_Verwaltung.NAME_SPALTE_11 + "=?",
 						new String[] { String
 								.valueOf(PunkteHinzufuegen_Service.VERARBEITET) },
 						null, null, null);
@@ -86,8 +88,18 @@ public class MemoStart extends Activity {
 				memosingleton_anwendung.sqldatabase_writeable.insert(
 						SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, null,
 						contentvalues_werte);
+
+				int_anzahl++;
 			} while (cursor_synch.moveToNext());
 		}
+
+		Toast.makeText(
+				this,
+				String.valueOf(int_anzahl)
+						+ " "
+						+ getResources().getString(
+								R.string.elemente_hinzugefuegt_text),
+				Toast.LENGTH_SHORT).show();
 	}
 
 	public void einstellungenZeigen(View v_view) {
