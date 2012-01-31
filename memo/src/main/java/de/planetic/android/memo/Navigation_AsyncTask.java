@@ -474,7 +474,7 @@ public class Navigation_AsyncTask extends
 	 * www.facstaff.unca.edu/mcmcclur/GoogleMaps/EncodePolyline/decode.html<br/>
 	 * und<br/>
 	 * http://www.code.google.com/intl/de/apis/maps/documentation/utilities/
-	 * polylinealgorithm.html}<br/>
+	 * polylinealgorithm.html<br/>
 	 * 
 	 * @param string_kodiert
 	 * @return
