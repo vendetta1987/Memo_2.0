@@ -12,6 +12,10 @@ public class Memo_Einstellungen extends PreferenceActivity {
 		super.onCreate(savedInstanceState);
 
 		addPreferencesFromResource(R.xml.preferences);
+		
+		this.getSharedPreferences(this.getPackageName() + "_preferences",
+				Context.MODE_PRIVATE).edit()
+				.putBoolean("boolean_google_lizenz_beachten", false).commit();
 	}
 
 	public static final SharedPreferences leseEinstellungen(

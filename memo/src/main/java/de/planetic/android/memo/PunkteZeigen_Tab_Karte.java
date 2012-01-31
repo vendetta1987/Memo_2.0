@@ -46,7 +46,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	private PunkteZeigen_Tab_AsyncTask asynctask_dbabfrage;
 	private MemoSingleton memosingleton_anwendung;
 	private TextToSpeech texttospeech_sprache;
-	private boolean boolean_tts_aktiv;
+	private boolean boolean_tts_aktiv, boolean_google_lizenz_beachten;
 
 	private static final int REQUEST_CODE_TTS = 78911191;
 
@@ -88,6 +88,9 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			break;
 		}
 
+		boolean_google_lizenz_beachten = sp_einstellungen.getBoolean(
+				"boolean_google_lizenz_beachten", true);
+		
 		mapview_karte
 				.setTraffic(sp_einstellungen
 						.getBoolean(
@@ -828,7 +831,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 */
 	private void sageTTS(String string_text) {
 
-		if (boolean_tts_aktiv) {
+		if (boolean_tts_aktiv && boolean_google_lizenz_beachten) {
 
 			texttospeech_sprache.speak(string_text, TextToSpeech.QUEUE_ADD,
 					null);
