@@ -164,17 +164,18 @@ public class Navigation_AsyncTask extends
 		// //einrichten horizontal: 2-> text, 3-> summe
 		// //aktualisieren horizontal: 2-> zaehler
 
+		if (memosingleton_anwendung.boolean_gedreht) {
+
+			erzeugeDialoge();
+			memosingleton_anwendung.boolean_gedreht = false;
+		}
+
 		switch (int_aktualisierung[0]) {
 
 		case MODUS_EINRICHTEN:
 			switch (int_aktualisierung[1]) {
 
 			case DIALOGTYP_SPINNER:
-				if (memosingleton_anwendung.boolean_gedreht) {
-
-					erzeugeDialoge();
-					memosingleton_anwendung.boolean_gedreht = false;
-				}
 
 				if (progress_horizontal.isShowing()) {
 
@@ -188,11 +189,6 @@ public class Navigation_AsyncTask extends
 				}
 				break;
 			case DIALOGTYP_HORIZONTAL:
-				if (memosingleton_anwendung.boolean_gedreht) {
-
-					erzeugeDialoge();
-					memosingleton_anwendung.boolean_gedreht = false;
-				}
 
 				if (progress_spinner.isShowing()) {
 
