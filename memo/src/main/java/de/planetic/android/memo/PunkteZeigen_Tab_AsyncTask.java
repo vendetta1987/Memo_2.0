@@ -476,6 +476,9 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	 */
 	@Override
 	protected void onPostExecute(Integer int_result) {
+		
+		//TODO !!! auf Intent umstellen
+		
 		switch (int_modus) {
 		case LISTE:
 			((PunkteZeigen_Tab_Liste) context_con).listeAnzeigen(int_result,
