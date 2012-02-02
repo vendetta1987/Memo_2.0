@@ -8,10 +8,12 @@
         android:id="@+id/punktezeigen_karte_layout_mapview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:apiKey="0ceyYmhz7tVb7JkkRMcKscVVCdeu2kfg0rAlOLA"
+        android:apiKey="0ceyYmhz7tVb160YqdmAtTIaynDrSBLoKY8WtdQ"
         android:clickable="true" />
-    
-    <!-- 0ceyYmhz7tVZQhwMyiu15D505Eld9qHEW6o57Jg -->
+
+    <!-- laptop 0ceyYmhz7tVb7JkkRMcKscVVCdeu2kfg0rAlOLA -->
+    <!-- hn01 0ceyYmhz7tVb160YqdmAtTIaynDrSBLoKY8WtdQ -->
+    <!-- alter schlüssel 0ceyYmhz7tVZQhwMyiu15D505Eld9qHEW6o57Jg -->
 
     <Button
         android:id="@+id/punktezeigen_karte_layout_button1"
