@@ -92,13 +92,18 @@ public class Navigation_AsyncTask extends
 	 */
 	private void erzeugeDialoge() {
 
-		if (progress_spinner != null) {
+		try {
+			if (progress_spinner != null) {
 
-			progress_spinner.dismiss();
-		}
-		if (progress_horizontal != null) {
+				progress_spinner.dismiss();
+			}
+			if (progress_horizontal != null) {
 
-			progress_horizontal.dismiss();
+				progress_horizontal.dismiss();
+			}
+		} catch (Exception e) {
+
+			e.printStackTrace();
 		}
 
 		progress_spinner = new ProgressDialog(context_con);

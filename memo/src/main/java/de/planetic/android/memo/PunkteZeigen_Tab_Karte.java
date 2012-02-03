@@ -90,7 +90,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		boolean_google_lizenz_beachten = sp_einstellungen.getBoolean(
 				"boolean_google_lizenz_beachten", true);
-		
+
 		mapview_karte
 				.setTraffic(sp_einstellungen
 						.getBoolean(
@@ -100,11 +100,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 								false));
 
 		if (savedInstanceState == null) {
+
 			dbAbfrageStarten(new Intent());
-		} else if (savedInstanceState.getBoolean("karte_asynctask")) {
-			karteAnzeigen(
-					memosingleton_anwendung.arraylist_karte_overlays.size(),
-					false, false);
 		}
 	}
 
@@ -122,6 +119,9 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 				String string_intent_action = intent.getAction();
 
 				if (string_intent_action
+						.equals(MemoSingleton.INTENT_ZEIGE_KARTE)) {
+					karteAnzeigen(intent.getIntExtra("int_anzahl", 0), true);
+				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_DB_FUELLEN)) {
 					dbAbfrageStarten(new Intent());
 				} else if (string_intent_action
@@ -174,6 +174,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		ifilter_filter.addAction(MemoSingleton.INTENT_STOPPE_TTS);
 		ifilter_filter
 				.addAction(MemoSingleton.INTENT_KARTE_NAVIGATIONSANWEISUNG);
+		ifilter_filter.addAction(MemoSingleton.INTENT_ZEIGE_KARTE);
 
 		this.registerReceiver(bcreceiver_receiver, ifilter_filter);
 
@@ -252,8 +253,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		if ((asynctask_dbabfrage != null)
 				&& (asynctask_dbabfrage.getStatus() == Status.RUNNING)) {
 
-			asynctask_dbabfrage.cancel(false);
-			outState.putBoolean("karte_asynctask", true);
+			outState.putBoolean("boolean_karte_asynctask", true);
 		}
 
 		outState.putBoolean("boolean_navigation_button",
@@ -274,10 +274,10 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// stellt auf der karte angezeigte punkte nach drehung wiederher
 
-		karteAnzeigen(
-				0,
-				false,
-				(memosingleton_anwendung.boolean_gefiltert || memosingleton_anwendung.boolean_navigieren));
+		if (!savedInstanceState.getBoolean("boolean_karte_asynctask", false)) {
+
+			karteAnzeigen(0, false);
+		}
 
 		if (savedInstanceState.getBoolean("boolean_navigation_button")) {
 
@@ -409,8 +409,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	}
 
 	/**
-	 * {@code public void karteAnzeigen(int int_anzahl_punkte, boolean bool_meldung,
-			boolean boolean_filter)}
+	 * {@code public void karteAnzeigen(int int_anzahl_punkte, boolean bool_meldung)}
 	 * <p/>
 	 * Zeigt die verarbeiteten Daten aus {@link MemoSingleton} auf der Karte an.
 	 * 
@@ -418,13 +417,10 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 *            Anzahl der angezeigten Punkte zur Ausgabe per {@link Toast}
 	 * @param bool_meldung
 	 *            {@link Boolean} zur Steuerung der {@link Toast}-Ausgabe
-	 * @param boolean_filter
-	 *            {@link Boolean} zur Signalisierung für gefilterter Inhalte
 	 * 
 	 * @see MemoSingleton
 	 */
-	public void karteAnzeigen(int int_anzahl_punkte, boolean bool_meldung,
-			boolean boolean_filter) {
+	public void karteAnzeigen(int int_anzahl_punkte, boolean bool_meldung) {
 		// public void karteAnzeigen(
 		// HashMap<Integer, ItemOverlay> hashmap_itemoverlays_temp) {
 
@@ -449,7 +445,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 		Iterator<Overlay> iterator_itemoverlays;
 
-		if (!boolean_filter) {
+		if (!(memosingleton_anwendung.boolean_gefiltert || memosingleton_anwendung.boolean_navigieren)) {
 
 			iterator_itemoverlays = memosingleton_anwendung.arraylist_karte_overlays
 					.iterator();
@@ -594,7 +590,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			if (string_status.equalsIgnoreCase("OK")) {
 
 				memosingleton_anwendung.boolean_navigieren = true;
-				karteAnzeigen(0, false, true);
+				karteAnzeigen(0, false);
 
 				zoomeKarte(
 						new GeoPunkt(intent_befehl.getIntExtra(getPackageName()

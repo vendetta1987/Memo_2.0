@@ -64,6 +64,8 @@ public class MemoSingleton extends Application {
 	public static final String INTENT_DB_LEEREN = PACKAGE_NAME + "db_leeren";
 	public static final String INTENT_ZEIGE_LISTE = PACKAGE_NAME
 			+ "zeige_liste";
+	public static final String INTENT_ZEIGE_KARTE = PACKAGE_NAME
+			+ "zeige_karte";
 	public static final String INTENT_ZOOME_KARTE = PACKAGE_NAME
 			+ "zeige_karte";
 	public static final String INTENT_STARTE_GPS = PACKAGE_NAME + "starte_gps";

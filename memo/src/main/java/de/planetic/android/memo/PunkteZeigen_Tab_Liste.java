@@ -70,10 +70,8 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 		});
 
 		if (savedInstanceState == null) {
+
 			dbAbfrageStarten(new Intent());
-		} else if (savedInstanceState.getBoolean("liste_asynctask")) {
-			listeAnzeigen(memosingleton_anwendung.arraylist_liste_daten.size(),
-					false, false);
 		}
 	}
 
@@ -91,6 +89,9 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 				String string_intent_action = intent.getAction();
 
 				if (string_intent_action
+						.equals(MemoSingleton.INTENT_ZEIGE_LISTE)) {
+					listeAnzeigen(intent.getIntExtra("int_anzahl", 0), true);
+				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_DB_FUELLEN)) {
 					dbAbfrageStarten(intent);
 				} else if (string_intent_action
@@ -107,6 +108,7 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 		ifilter_filter.addAction(MemoSingleton.INTENT_DB_FUELLEN);
 		ifilter_filter.addAction(MemoSingleton.INTENT_DB_LEEREN);
 		ifilter_filter.addAction(MemoSingleton.INTENT_PUNKTE_FILTERN);
+		ifilter_filter.addAction(MemoSingleton.INTENT_ZEIGE_LISTE);
 
 		this.registerReceiver(bcreceiver_receiver, ifilter_filter);
 
@@ -139,8 +141,8 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 
 		if ((asynctask_dbabfrage != null)
 				&& (asynctask_dbabfrage.getStatus() == Status.RUNNING)) {
-			asynctask_dbabfrage.cancel(false);
-			outState.putBoolean("liste_asynctask", true);
+
+			outState.putBoolean("boolean_liste_asynctask", true);
 		}
 
 		Log.d("memo_debug_punktezeigen_tab_liste", "onsaveinstancestate");
@@ -154,7 +156,10 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 
-		listeAnzeigen(0, false, memosingleton_anwendung.boolean_gefiltert);
+		if (!savedInstanceState.getBoolean("boolean_liste_asynctask", false)) {
+
+			listeAnzeigen(0, false);
+		}
 
 		Log.d("memo_debug_punktezeigen_tab_liste", "onrestoreinstancestate");
 
@@ -245,8 +250,7 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 	}
 
 	/**
-	 * {@code public void listeAnzeigen(int int_anzahl_punkte, boolean bool_meldung,
-			boolean boolean_filter)}
+	 * {@code public void listeAnzeigen(int int_anzahl_punkte, boolean bool_meldung)}
 	 * <p/>
 	 * Zeigt die verarbeiteten Daten aus {@link MemoSingleton} als Liste an.
 	 * 
@@ -254,13 +258,10 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 	 *            Anzahl der angezeigten Punkte zur Ausgabe per {@link Toast}
 	 * @param bool_meldung
 	 *            {@link Boolean} zur Steuerung der {@link Toast}-Ausgabe
-	 * @param boolean_filter
-	 *            {@link Boolean} zur Signalisierung für gefilterter Inhalte
 	 * 
 	 * @see MemoSingleton
 	 */
-	public void listeAnzeigen(int int_anzahl_punkte, boolean bool_meldung,
-			boolean boolean_filter) {
+	public void listeAnzeigen(int int_anzahl_punkte, boolean bool_meldung) {
 
 		ListView listview_liste = (ListView) findViewById(R.id.punktezeigen_liste_layout_listview1);
 
@@ -277,7 +278,7 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 					Toast.LENGTH_SHORT).show();
 		}
 
-		if (!boolean_filter) {
+		if (!memosingleton_anwendung.boolean_gefiltert) {
 
 			simpleadapter_liste_adapter = new SimpleAdapter(
 					this,

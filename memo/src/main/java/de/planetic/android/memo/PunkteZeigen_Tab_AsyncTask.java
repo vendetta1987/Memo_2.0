@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -41,8 +42,8 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	private Context context_con;
 	private MemoSingleton memosingleton_anwendung;
 	private ProgressDialog progress_fortschritt;
-	private int int_modus;
-	private int int_prozent_temp;
+	private int int_modus, int_prozent_temp, int_progress_aktuell,
+			int_progress_max;
 	private boolean boolean_filter;
 
 	/**
@@ -58,12 +59,16 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	 *            {@link Boolean} für die Nutzung von Filtern und Navigation
 	 */
 	public PunkteZeigen_Tab_AsyncTask(Context con, int int_mod, boolean filter) {
+
 		int_modus = int_mod;
 		boolean_filter = filter;
 
 		context_con = con;
 		memosingleton_anwendung = (MemoSingleton) context_con
 				.getApplicationContext();
+
+		int_progress_aktuell = 0;
+		int_progress_max = 100;
 	}
 
 	/**
@@ -73,26 +78,56 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	@Override
 	protected void onPreExecute() {
 
-		progress_fortschritt = new ProgressDialog(context_con);
+		erzeugeDialog();
+
+		Log.d("memo_debug_punktezeigen_tab_asynctask", "onpreexecute");
+	}
+
+	/**
+	 * Erzeugt den Fortschrittsdialog und zeigt ihn an. Schließt den Dialog bei
+	 * Gerätedrehung und ersetzt ihn.
+	 */
+	private void erzeugeDialog() {
+
+		if (progress_fortschritt != null) {
+
+			try {
+
+				progress_fortschritt.dismiss();
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			}
+		}
+
+		progress_fortschritt = new ProgressDialog(
+				memosingleton_anwendung.context_punktezeigen_tab);
 
 		switch (int_modus) {
 		case LISTE:
+
 			progress_fortschritt
 					.setTitle(R.string.punktezeigen_tab_liste_asynctask_progressdialog_title);
 			break;
 		case KARTE:
+
 			progress_fortschritt
 					.setTitle(R.string.punktezeigen_tab_karte_asynctask_progressdialog_title);
 			break;
-		default:
 		}
 
 		progress_fortschritt.setCancelable(false);
 		progress_fortschritt.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progress_fortschritt.setMax(int_progress_max);
+		progress_fortschritt.setProgress(int_progress_aktuell);
 
-		progress_fortschritt.show();
+		try {
 
-		Log.d("memo_debug_punktezeigen_tab_asynctask", "onpreexecute");
+			progress_fortschritt.show();
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -106,31 +141,39 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	@Override
 	protected void onProgressUpdate(Integer... int_progress) {
 
+		if (memosingleton_anwendung.boolean_gedreht) {
+
+			erzeugeDialog();
+			memosingleton_anwendung.boolean_gedreht = false;
+		}
+
 		try {
 			switch (int_progress[0]) {
+
 			case PROGRESS_UPDATE:
-				// if (progress_fortschritt.getMax() < 100) {
-				// progress_fortschritt.incrementProgressBy(1);
-				// } else {
-				// if ((int_progress[1] % int_prozent_temp) == 0) {
+
 				progress_fortschritt.setProgress(int_progress[1]);
-				// }
-				// }
+				int_progress_aktuell = int_progress[1];
 				break;
 			case PROGRESS_MIN:
+
 				progress_fortschritt.setProgress(0);
+				int_progress_aktuell = 0;
 				break;
 			case PROGRESS_MAX:
+
 				progress_fortschritt.setProgress(progress_fortschritt.getMax());
+				int_progress_aktuell = progress_fortschritt.getMax();
 				break;
 			case PROGRESS_SET_MAX:
+
 				progress_fortschritt.setMax(int_progress[1]);
-				// int_prozent_temp = (progress_fortschritt.getMax() / 100)
-				// * PROGRESS_PROZENT_SCHRITTE;
+				int_progress_max = int_progress[1];
 				break;
 			default:
 			}
 		} catch (Exception e) {
+
 			Log.d("memo_debug", "onProgressUpdate: " + e.toString());
 		}
 	}
@@ -408,6 +451,8 @@ public class PunkteZeigen_Tab_AsyncTask extends
 				if ((int_zaehler % int_prozent_temp) == 0) {
 
 					publishProgress(PROGRESS_UPDATE, int_zaehler);
+
+					SystemClock.sleep(1000);
 				}
 				int_zaehler++;
 			}
@@ -451,19 +496,26 @@ public class PunkteZeigen_Tab_AsyncTask extends
 
 	}
 
-	/**
-	 * Wird aufgerufen sobald der Thread innerhalb von {@code doInBackground()}
-	 * von außen abgebrochen wird und schließt den Fortschrittdsdialog.
-	 */
-	@Override
-	protected void onCancelled() {
-
-		progress_fortschritt.dismiss();
-
-		Log.d("memo_debug_punktezeigen_tab_asynctask", "oncancelled");
-
-		super.onCancelled();
-	}
+	// /**
+	// * Wird aufgerufen sobald der Thread innerhalb von {@code
+	// doInBackground()}
+	// * von außen abgebrochen wird und schließt den Fortschrittdsdialog.
+	// */
+	// @Override
+	// protected void onCancelled() {
+	//
+	// try {
+	//
+	// progress_fortschritt.dismiss();
+	// } catch (Exception e) {
+	//
+	// e.printStackTrace();
+	// }
+	//
+	// Log.d("memo_debug_punktezeigen_tab_asynctask", "oncancelled");
+	//
+	// super.onCancelled();
+	// }
 
 	/**
 	 * Wird nach der Verarbeitung in {@code doInBackground} aufgerufen und ruft
@@ -476,23 +528,33 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	 */
 	@Override
 	protected void onPostExecute(Integer int_result) {
-		
-		//TODO !!! auf Intent umstellen
-		
+
+		// TODO !!! auf Intent umstellen
+
+		Intent intent_nachricht = new Intent();
+		intent_nachricht.putExtra("int_anzahl", int_result);
+
 		switch (int_modus) {
 		case LISTE:
-			((PunkteZeigen_Tab_Liste) context_con).listeAnzeigen(int_result,
-					true, boolean_filter);
+
+			intent_nachricht.setAction(MemoSingleton.INTENT_ZEIGE_LISTE);
 			break;
 		case KARTE:
-			((PunkteZeigen_Tab_Karte) context_con).karteAnzeigen(int_result,
-					true, boolean_filter);
+
+			intent_nachricht.setAction(MemoSingleton.INTENT_ZEIGE_KARTE);
 			break;
-		default:
 		}
 
-		progress_fortschritt.setProgress(progress_fortschritt.getMax());
-		progress_fortschritt.dismiss();
+		memosingleton_anwendung.sendBroadcast(intent_nachricht);
+
+		try {
+
+			progress_fortschritt.setProgress(progress_fortschritt.getMax());
+			progress_fortschritt.dismiss();
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
 
 		Log.d("memo_debug_punktezeigen_tab_asynctask", "onpostexecute");
 	}
