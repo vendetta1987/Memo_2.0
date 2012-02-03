@@ -555,7 +555,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	 */
 	private boolean werteDialogAus(Dialog dialog, int int_dialog_id) {
 
-		String string_fehler = "", string_name, string_beschreibung, string_adresse, string_radio_eigenschaften, string_groesserkleiner, string_icon;
+		String string_fehler = "", string_name, string_beschreibung, string_adresse, string_radio_eigenschaften, string_groesserkleiner, string_icon, string_temp;
 		double double_preis;
 		boolean boolean_ergebnis = true, boolean_pos_aus_gps;
 		int int_filter_checkbox = 0;
@@ -566,8 +566,9 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 			string_name = ((EditText) dialog
 					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText1))
 					.getText().toString();
-			if (string_name.equals(getResources().getString(
-					R.string.punktezeigen_tab_dialog_text_name))) {
+			if (string_name.equalsIgnoreCase(getResources().getString(
+					R.string.punktezeigen_tab_dialog_text_name))
+					|| string_name.equalsIgnoreCase("")) {
 
 				boolean_ergebnis = false;
 				string_fehler = string_fehler.concat(getResources().getString(
@@ -578,8 +579,9 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 			string_beschreibung = ((EditText) dialog
 					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText2))
 					.getText().toString();
-			if (string_beschreibung.equals(getResources().getString(
-					R.string.punktezeigen_tab_dialog_text_beschreibung))) {
+			if (string_beschreibung.equalsIgnoreCase(getResources().getString(
+					R.string.punktezeigen_tab_dialog_text_beschreibung))
+					|| string_beschreibung.equalsIgnoreCase("")) {
 
 				boolean_ergebnis = false;
 				string_fehler = string_fehler.concat(getResources().getString(
@@ -600,8 +602,9 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 						.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText3))
 						.getText().toString();
 
-				if (string_adresse.equals(getResources().getString(
-						R.string.punktezeigen_tab_dialog_text_adresse))) {
+				if (string_adresse.equalsIgnoreCase(getResources().getString(
+						R.string.punktezeigen_tab_dialog_text_adresse))
+						|| string_adresse.equalsIgnoreCase("")) {
 
 					boolean_ergebnis = false;
 					string_fehler = string_fehler
@@ -618,16 +621,25 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 							.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_radioGroup1))
 							.getCheckedRadioButtonId())).getText().toString();
 
-			double_preis = Double
-					.valueOf(((EditText) dialog
-							.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText4))
-							.getText().toString());
+			string_temp = ((EditText) dialog
+					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText4))
+					.getText().toString();
+
+			// regulaerer ausdruck fuer alle fließkommazahlen
+			if (string_temp.matches("[0-9]*[\\.\\,]?[0-9]+")) {
+
+				double_preis = Double.valueOf(string_temp);
+			} else {
+
+				double_preis = 0;
+			}
 
 			string_icon = ((HashMap<String, Object>) ((Spinner) dialog
 					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner1))
 					.getSelectedItem()).get(ICON_NAME).toString();
 
 			if (boolean_ergebnis) {
+
 				Intent intent_service = new Intent(this,
 						PunkteHinzufuegen_Service.class);
 
@@ -668,8 +680,9 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 				int_filter_checkbox++;
 
-				if (string_adresse.equals(getResources().getString(
-						R.string.punktezeigen_tab_dialog_text_adresse))) {
+				if (string_adresse.equalsIgnoreCase(getResources().getString(
+						R.string.punktezeigen_tab_dialog_text_adresse))
+						|| string_adresse.equalsIgnoreCase("")) {
 					boolean_ergebnis = false;
 					string_fehler = string_fehler
 							.concat(getResources()
@@ -692,8 +705,9 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 				int_filter_checkbox++;
 
-				if (string_name.equals(getResources().getString(
-						R.string.punktezeigen_tab_dialog_text_name))) {
+				if (string_name.equalsIgnoreCase(getResources().getString(
+						R.string.punktezeigen_tab_dialog_text_name))
+						|| string_name.equalsIgnoreCase("")) {
 					boolean_ergebnis = false;
 					string_fehler = string_fehler.concat(getResources()
 							.getString(
@@ -730,10 +744,23 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 					string_groesserkleiner = "?";
 				}
 
-				double_preis = Double
-						.valueOf(((EditText) dialog
-								.findViewById(R.id.punktezeigen_tab_dialog_pktfiltern_editText3))
-								.getText().toString());
+				string_temp = ((EditText) dialog
+						.findViewById(R.id.punktezeigen_tab_dialog_pktfiltern_editText3))
+						.getText().toString();
+
+				if (string_temp.matches("[0-9]*[\\.\\,]?[0-9]+")) {
+
+					double_preis = Double.valueOf(string_temp);
+				} else {
+
+					double_preis = 0;
+					boolean_ergebnis = false;
+					string_fehler = string_fehler
+							.concat(getResources()
+									.getString(
+											R.string.punktezeigen_tab_dialog_text_preis)
+									+ " ");
+				}
 
 				intent_befehl.putExtra(getPackageName() + "_"
 						+ "string_groesserkleiner", string_groesserkleiner);
