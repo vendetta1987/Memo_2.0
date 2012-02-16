@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -108,5 +109,17 @@ public class MemoStart extends Activity {
 	public void einstellungenZeigen(View v_view) {
 
 		startActivity(new Intent(this, Memo_Einstellungen.class));
+	}
+
+	private void initialisiereVokabular() {
+
+		if (!Memo_Einstellungen.leseEinstellungen(this).getBoolean(
+				"boolean_vokabular_initialisiert", false)) {
+
+			SQLiteDatabase sqldatabase_writeable = new SQLDB_Verwaltung_neu(this)
+					.getWritableDatabase();
+			
+			
+		}
 	}
 }

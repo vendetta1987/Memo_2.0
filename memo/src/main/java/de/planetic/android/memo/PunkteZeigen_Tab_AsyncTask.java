@@ -529,8 +529,6 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	@Override
 	protected void onPostExecute(Integer int_result) {
 
-		// TODO !!! auf Intent umstellen
-
 		Intent intent_nachricht = new Intent();
 		intent_nachricht.putExtra("int_anzahl", int_result);
 

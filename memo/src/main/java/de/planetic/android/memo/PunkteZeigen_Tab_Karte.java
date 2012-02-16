@@ -827,7 +827,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 */
 	private void sageTTS(String string_text) {
 
-		if (boolean_tts_aktiv && boolean_google_lizenz_beachten) {
+		if (boolean_tts_aktiv && !boolean_google_lizenz_beachten) {
 
 			texttospeech_sprache.speak(string_text, TextToSpeech.QUEUE_ADD,
 					null);
