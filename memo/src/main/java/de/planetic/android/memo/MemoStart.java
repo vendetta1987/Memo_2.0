@@ -24,10 +24,10 @@ public class MemoStart extends Activity {
 
 	public void punkteZeigen(View v_view) {
 
-		// Intent int_intent = new Intent(this, PunkteZeigen_Tab.class);
-		// this.startActivity(int_intent);
-
 		initialisiereVokabular();
+
+		Intent int_intent = new Intent(this, PunkteZeigen_Tab.class);
+		this.startActivity(int_intent);
 	}
 
 	public void serverSynchronisieren(View v_view) {
@@ -119,6 +119,7 @@ public class MemoStart extends Activity {
 
 	private void initialisiereVokabular() {
 
+		// TODO Vokabular Initialisierung anpassen
 		if (!Memo_Einstellungen.leseEinstellungen(this).getBoolean(
 				"boolean_vokabular_initialisiert", false)) {
 
@@ -226,6 +227,9 @@ public class MemoStart extends Activity {
 			Memo_Einstellungen.leseEinstellungen(this).edit()
 					.putBoolean("boolean_vokabular_initialisiert", true)
 					.apply();
+
+			Toast.makeText(this, "Vokabular initialisiert.", Toast.LENGTH_SHORT)
+					.show();
 		}
 	}
 
