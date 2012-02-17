@@ -1,5 +1,7 @@
 package de.planetic.android.memo;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -20,6 +22,8 @@ public class Ladestation {
 	public int int_betreiber_id;
 	public double double_preis;
 
+	public ArrayList<Stecker> arraylist_stecker;
+
 	private Context context_application;
 
 	public Ladestation(Context context) {
@@ -27,17 +31,18 @@ public class Ladestation {
 		context_application = context.getApplicationContext();
 
 		int_adress_id = 1;
-		geopoint_standort = new GeoPoint(0, 0);
+		setzeStandort(0, 0);
 		string_kommentar = "";
 		string_bezeichnung = "";
-		drawable_ladestation_foto = context_application.getResources()
-				.getDrawable(R.drawable.icon);
+		setzeLadestationFoto(R.drawable.icon);
 		int_verfuegbarkeit_anfang = 0;
 		int_verfuegbarkeit_ende = 0;
 		string_verfuegbarkeit_kommentar = "";
 		int_zugangstyp = 0;
 		int_betreiber_id = 1;
 		double_preis = 0;
+
+		arraylist_stecker = new ArrayList<Stecker>();
 	}
 
 	public void setzeStandort(int int_lat, int int_lon) {

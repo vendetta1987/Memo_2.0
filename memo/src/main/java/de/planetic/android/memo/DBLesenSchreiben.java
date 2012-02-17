@@ -16,12 +16,19 @@ import android.util.Log;
 
 public class DBLesenSchreiben {
 
+	// Reihenfolge des Einfuegens
+	// ((((Adresse), (Abrechung -> Betreiber)) -> (Ladestation)), Stecker) ->
+	// Stecker Anzahl
+
 	private SQLiteDatabase sqldb_writeable;
 	private ContentValues cv_werte;
+	private Context context_application;
 
-	public DBLesenSchreiben(SQLiteDatabase writeable_db) {
+	public DBLesenSchreiben(Context context) {
 
-		sqldb_writeable = writeable_db;
+		context_application = context.getApplicationContext();
+		sqldb_writeable = new SQLDB_Verwaltung_neu(context_application)
+				.getWritableDatabase();
 		cv_werte = new ContentValues();
 	}
 
@@ -41,34 +48,62 @@ public class DBLesenSchreiben {
 
 		Adresse adresse_ort;
 		ArrayList<Adresse> arraylist_adresse_return = new ArrayList<Adresse>();
-		Cursor cursor_anfrage;
+		Cursor cursor_adresse_anfrage;
 
-		cursor_anfrage = leseDaten(int_id, SQLDB_Verwaltung_neu.TABELLE_ADRESSE);
+		cursor_adresse_anfrage = leseDaten(int_id,
+				SQLDB_Verwaltung_neu.SPALTE_ID,
+				SQLDB_Verwaltung_neu.TABELLE_ADRESSE);
 
-		if (cursor_anfrage.moveToFirst()) {
+		if (cursor_adresse_anfrage.moveToFirst()) {
 
 			do {
 
 				adresse_ort = new Adresse();
 
-				adresse_ort.string_land = cursor_anfrage
-						.getString(cursor_anfrage
+				adresse_ort.string_land = cursor_adresse_anfrage
+						.getString(cursor_adresse_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_LAND));
-				adresse_ort.string_plz = cursor_anfrage
-						.getString(cursor_anfrage
+				adresse_ort.string_plz = cursor_adresse_anfrage
+						.getString(cursor_adresse_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_PLZ));
-				adresse_ort.string_ort = cursor_anfrage
-						.getString(cursor_anfrage
+				adresse_ort.string_ort = cursor_adresse_anfrage
+						.getString(cursor_adresse_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ORT));
-				adresse_ort.string_str_nr = cursor_anfrage
-						.getString(cursor_anfrage
+				adresse_ort.string_str_nr = cursor_adresse_anfrage
+						.getString(cursor_adresse_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STR_NR));
 
 				arraylist_adresse_return.add(adresse_ort);
-			} while (cursor_anfrage.moveToNext());
+			} while (cursor_adresse_anfrage.moveToNext());
 		}
 
+		cursor_adresse_anfrage.close();
+
 		return arraylist_adresse_return;
+	}
+
+	public long schreibeAbrechnung(Abrechnung abrechnung_rechnung) {
+
+		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG,
+				abrechnung_rechnung.string_bezeichnung);
+		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_PREIS,
+				abrechnung_rechnung.double_preis);
+
+		return schreibeDaten(SQLDB_Verwaltung_neu.TABELLE_ABRECHNUNG);
+	}
+
+	public long schreibeBetreiber(Betreiber betreiber_firma) {
+
+		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_NAME,
+				betreiber_firma.string_name);
+		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_LOGO,
+				erzeugeBlob(betreiber_firma.drawable_logo));
+		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_ABRECHNUNG_ID,
+				betreiber_firma.int_abrechnung_id);
+		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_WEBSITE,
+				betreiber_firma.string_website);
+
+		return schreibeDaten(SQLDB_Verwaltung_neu.TABELLE_BETREIBER);
 	}
 
 	public long schreibeLadestation(Ladestation ladestation_saeule) {
@@ -84,7 +119,7 @@ public class DBLesenSchreiben {
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG,
 				ladestation_saeule.string_bezeichnung);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO,
-				leseBlob(ladestation_saeule.drawable_ladestation_foto));
+				erzeugeBlob(ladestation_saeule.drawable_ladestation_foto));
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ANFANG,
 				ladestation_saeule.int_verfuegbarkeit_anfang);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ENDE,
@@ -98,11 +133,169 @@ public class DBLesenSchreiben {
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_PREIS,
 				ladestation_saeule.double_preis);
 
-		return schreibeDaten(SQLDB_Verwaltung_neu.TABELLE_LADESTATION);
+		long long_return = schreibeDaten(SQLDB_Verwaltung_neu.TABELLE_LADESTATION);
+
+		schreibeSteckerAnzahl(long_return, ladestation_saeule.arraylist_stecker);
+
+		return long_return;
 
 	}
 
-	private byte[] leseBlob(Drawable drawable_bild) {
+	public ArrayList<Ladestation> leseLadestation(int int_id) {
+
+		Ladestation ladestation_saeule;
+		Cursor cursor_ladestation_anfrage;
+		ArrayList<Ladestation> arraylist_ladestation_return = new ArrayList<Ladestation>();
+
+		cursor_ladestation_anfrage = leseDaten(int_id,
+				SQLDB_Verwaltung_neu.SPALTE_ID,
+				SQLDB_Verwaltung_neu.TABELLE_LADESTATION);
+
+		if (cursor_ladestation_anfrage.moveToFirst()) {
+
+			do {
+
+				ladestation_saeule = new Ladestation(context_application);
+
+				ladestation_saeule.int_adress_id = cursor_ladestation_anfrage
+						.getInt(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ADRESS_ID));
+				ladestation_saeule
+						.setzeStandort(
+								((Double) (cursor_ladestation_anfrage
+										.getDouble(cursor_ladestation_anfrage
+												.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STANDORT_BREITE)) * 1e6))
+										.intValue(),
+								((Double) (cursor_ladestation_anfrage.getDouble(cursor_ladestation_anfrage
+										.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STANDORT_LAENGE)) * 1e6))
+										.intValue());
+				ladestation_saeule.string_kommentar = cursor_ladestation_anfrage
+						.getString(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_KOMMENTAR));
+				ladestation_saeule.string_bezeichnung = cursor_ladestation_anfrage
+						.getString(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG));
+				ladestation_saeule.drawable_ladestation_foto = erzeugeDrawable(cursor_ladestation_anfrage
+						.getBlob(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO)));
+				ladestation_saeule.int_verfuegbarkeit_anfang = cursor_ladestation_anfrage
+						.getInt(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ANFANG));
+				ladestation_saeule.int_verfuegbarkeit_ende = cursor_ladestation_anfrage
+						.getInt(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ENDE));
+				ladestation_saeule.string_verfuegbarkeit_kommentar = cursor_ladestation_anfrage
+						.getString(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_KOMMENTAR));
+				ladestation_saeule.int_zugangstyp = cursor_ladestation_anfrage
+						.getInt(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ZUGANGSTYP));
+				ladestation_saeule.int_betreiber_id = cursor_ladestation_anfrage
+						.getInt(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BETREIBER_ID));
+				ladestation_saeule.double_preis = cursor_ladestation_anfrage
+						.getDouble(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_PREIS));
+				ladestation_saeule.arraylist_stecker = leseSteckerAnzahl(cursor_ladestation_anfrage
+						.getInt(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ID)));
+
+				arraylist_ladestation_return.add(ladestation_saeule);
+			} while (cursor_ladestation_anfrage.moveToNext());
+		}
+
+		cursor_ladestation_anfrage.close();
+
+		return arraylist_ladestation_return;
+	}
+
+	public long schreibeStecker(Stecker stecker_typ) {
+
+		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_NAME, stecker_typ.string_name);
+		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG,
+				stecker_typ.string_bezeichnung);
+		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_STECKER_FOTO,
+				erzeugeBlob(stecker_typ.drawable_stecker_foto));
+
+		return schreibeDaten(SQLDB_Verwaltung_neu.TABELLE_STECKER);
+	}
+
+	private Stecker leseStecker(int int_id) {
+
+		Cursor cursor_stecker_anfrage;
+		Stecker stecker_typ = null;
+
+		cursor_stecker_anfrage = leseDaten(int_id,
+				SQLDB_Verwaltung_neu.SPALTE_ID,
+				SQLDB_Verwaltung_neu.TABELLE_STECKER);
+
+		if (cursor_stecker_anfrage.moveToFirst()) {
+
+			do {
+
+				stecker_typ = new Stecker(context_application);
+
+				stecker_typ.string_name = cursor_stecker_anfrage
+						.getString(cursor_stecker_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_NAME));
+				stecker_typ.string_bezeichnung = cursor_stecker_anfrage
+						.getString(cursor_stecker_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG));
+				stecker_typ.drawable_stecker_foto = erzeugeDrawable(cursor_stecker_anfrage
+						.getBlob(cursor_stecker_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STECKER_FOTO)));
+
+				stecker_typ.int_id = cursor_stecker_anfrage
+						.getInt(cursor_stecker_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ID));
+
+			} while (cursor_stecker_anfrage.moveToNext());
+		}
+
+		cursor_stecker_anfrage.close();
+
+		return stecker_typ;
+	}
+
+	private void schreibeSteckerAnzahl(long long_id,
+			ArrayList<Stecker> arraylist_stecker) {
+
+		// hier ladestation id und die zugehörigen stecker auslesen und in db
+		// schreiben
+	}
+
+	private ArrayList<Stecker> leseSteckerAnzahl(int int_id) {
+
+		Cursor cursor_steckeranzahl_anfrage;
+		Stecker stecker_typ;
+		ArrayList<Stecker> arraylist_stecker = new ArrayList<Stecker>();
+
+		cursor_steckeranzahl_anfrage = leseDaten(int_id,
+				SQLDB_Verwaltung_neu.SPALTE_LADESTATION_ID,
+				SQLDB_Verwaltung_neu.TABELLE_STECKER_ANZAHL);
+
+		if (cursor_steckeranzahl_anfrage.moveToFirst()) {
+
+			do {
+
+				stecker_typ = leseStecker(cursor_steckeranzahl_anfrage
+						.getInt(cursor_steckeranzahl_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STECKER_ID)));
+
+				stecker_typ.int_anzahl = cursor_steckeranzahl_anfrage
+						.getInt(cursor_steckeranzahl_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ANZAHL));
+
+				arraylist_stecker.add(stecker_typ);
+			} while (cursor_steckeranzahl_anfrage.moveToNext());
+		}
+
+		cursor_steckeranzahl_anfrage.close();
+
+		return arraylist_stecker;
+	}
+
+	private byte[] erzeugeBlob(Drawable drawable_bild) {
 
 		ByteArrayOutputStream baos_ausgabe = new ByteArrayOutputStream();
 		((BitmapDrawable) drawable_bild).getBitmap().compress(
@@ -111,74 +304,10 @@ public class DBLesenSchreiben {
 		return baos_ausgabe.toByteArray();
 	}
 
-	public ArrayList<Ladestation> leseLadestation(int int_id,
-			Context context_application) {
+	private Drawable erzeugeDrawable(byte[] byte_blob) {
 
-		Ladestation ladestation_saeule;
-		Cursor cursor_anfrage;
-		ArrayList<Ladestation> arraylist_ladestation_return = new ArrayList<Ladestation>();
-		context_application = context_application.getApplicationContext();
-
-		cursor_anfrage = leseDaten(int_id,
-				SQLDB_Verwaltung_neu.TABELLE_LADESTATION);
-
-		if (cursor_anfrage.moveToFirst()) {
-
-			do {
-
-				ladestation_saeule = new Ladestation(context_application);
-
-				ladestation_saeule.int_adress_id = cursor_anfrage
-						.getInt(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ADRESS_ID));
-				ladestation_saeule
-						.setzeStandort(
-								((Double) (cursor_anfrage
-										.getDouble(cursor_anfrage
-												.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STANDORT_BREITE)) * 1e6))
-										.intValue(),
-								((Double) (cursor_anfrage.getDouble(cursor_anfrage
-										.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STANDORT_LAENGE)) * 1e6))
-										.intValue());
-				ladestation_saeule.string_kommentar = cursor_anfrage
-						.getString(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_KOMMENTAR));
-				ladestation_saeule.string_bezeichnung = cursor_anfrage
-						.getString(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG));
-
-				byte[] byte_blob = cursor_anfrage
-						.getBlob(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO));
-
-				ladestation_saeule.drawable_ladestation_foto = new BitmapDrawable(
-						BitmapFactory.decodeByteArray(byte_blob, 0,
-								byte_blob.length));
-
-				ladestation_saeule.int_verfuegbarkeit_anfang = cursor_anfrage
-						.getInt(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ANFANG));
-				ladestation_saeule.int_verfuegbarkeit_ende = cursor_anfrage
-						.getInt(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ENDE));
-				ladestation_saeule.string_verfuegbarkeit_kommentar = cursor_anfrage
-						.getString(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_KOMMENTAR));
-				ladestation_saeule.int_zugangstyp = cursor_anfrage
-						.getInt(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ZUGANGSTYP));
-				ladestation_saeule.int_betreiber_id = cursor_anfrage
-						.getInt(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BETREIBER_ID));
-				ladestation_saeule.double_preis = cursor_anfrage
-						.getDouble(cursor_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_PREIS));
-
-				arraylist_ladestation_return.add(ladestation_saeule);
-			} while (cursor_anfrage.moveToNext());
-		}
-
-		return arraylist_ladestation_return;
+		return new BitmapDrawable(BitmapFactory.decodeByteArray(byte_blob, 0,
+				byte_blob.length));
 	}
 
 	private long schreibeDaten(String string_tabelle) {
@@ -206,13 +335,14 @@ public class DBLesenSchreiben {
 		return long_return;
 	}
 
-	private Cursor leseDaten(int int_id, String string_tabelle) {
+	private Cursor leseDaten(int int_id, String string_spalte,
+			String string_tabelle) {
 		Cursor cursor_anfrage;
 
 		if (int_id > 0) {
 
 			cursor_anfrage = sqldb_writeable.query(string_tabelle, null,
-					SQLDB_Verwaltung_neu.SPALTE_ID + "=?",
+					string_spalte + "=?",
 					new String[] { String.valueOf(int_id) }, null, null, null);
 		} else {
 

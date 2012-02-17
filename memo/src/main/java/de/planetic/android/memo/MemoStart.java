@@ -1,14 +1,11 @@
 package de.planetic.android.memo;
 
-import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,8 +23,17 @@ public class MemoStart extends Activity {
 
 		initialisiereVokabular();
 
-		Intent int_intent = new Intent(this, PunkteZeigen_Tab.class);
-		this.startActivity(int_intent);
+		DBLesenSchreiben db = new DBLesenSchreiben(this);
+
+		db.schreibeAdresse(new Adresse());
+		db.schreibeLadestation(new Ladestation(this));
+
+		ArrayList<Ladestation> test = db.leseLadestation(-1);
+
+		test.add(null);
+
+		// Intent int_intent = new Intent(this, PunkteZeigen_Tab.class);
+		// this.startActivity(int_intent);
 	}
 
 	public void serverSynchronisieren(View v_view) {
@@ -123,106 +129,64 @@ public class MemoStart extends Activity {
 		if (!Memo_Einstellungen.leseEinstellungen(this).getBoolean(
 				"boolean_vokabular_initialisiert", false)) {
 
-			SQLiteDatabase sqldatabase_writeable = new SQLDB_Verwaltung_neu(
-					this).getWritableDatabase();
-			ContentValues cv_dbeintrag = new ContentValues();
+			DBLesenSchreiben dblesenschreiben_db = new DBLesenSchreiben(this);
 
 			// Stecker
-			sqldatabase_writeable.delete(SQLDB_Verwaltung_neu.TABELLE_STECKER,
-					null, null);
+			Stecker stecker_typ = new Stecker(this);
 
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_NAME,
-					"IEC60309_32A_400V");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG,
-					"roter Stecker nach IEC60309 mit maximal 32A bei 400V");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_STECKER_FOTO,
-					leseBlob(R.drawable.iec60309_32a_400v));
+			stecker_typ.string_name = "IEC60309_32A_400V";
+			stecker_typ.string_bezeichnung = "roter Stecker nach IEC60309 mit maximal 32A bei 400V";
+			stecker_typ.setzeSteckerFoto(R.drawable.iec60309_32a_400v);
 
-			sqldatabase_writeable.insert(SQLDB_Verwaltung_neu.TABELLE_STECKER,
-					null, cv_dbeintrag);
+			dblesenschreiben_db.schreibeStecker(stecker_typ);
 
-			cv_dbeintrag.clear();
+			stecker_typ.string_name = "IEC60309_16A_230V";
+			stecker_typ.string_bezeichnung = "blauer Stecker nach IEC60309 mit maximal 16A bei 230V";
+			stecker_typ.setzeSteckerFoto(R.drawable.iec60309_16a_230v);
 
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_NAME,
-					"IEC60309_16A_230V");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG,
-					"blauer Stecker nach IEC60309 mit maximal 16A bei 230V");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_STECKER_FOTO,
-					leseBlob(R.drawable.iec60309_16a_230v));
-
-			sqldatabase_writeable.insert(SQLDB_Verwaltung_neu.TABELLE_STECKER,
-					null, cv_dbeintrag);
-
-			cv_dbeintrag.clear();
+			dblesenschreiben_db.schreibeStecker(stecker_typ);
 
 			// Abrechung
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG,
-					"Flatrate");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_PREIS, 0);
+			Abrechnung abrechung_rechnung = new Abrechnung();
 
-			sqldatabase_writeable
-					.insert(SQLDB_Verwaltung_neu.TABELLE_ABRECHNUNG, null,
-							cv_dbeintrag);
+			abrechung_rechnung.string_bezeichnung = "Flatrate";
+			abrechung_rechnung.double_preis = 0.0;
 
-			cv_dbeintrag.clear();
+			dblesenschreiben_db.schreibeAbrechnung(abrechung_rechnung);
 
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG, "Teuer");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_PREIS, 15.0);
+			abrechung_rechnung.string_bezeichnung = "Teuer";
+			abrechung_rechnung.double_preis = 15.0;
 
-			sqldatabase_writeable
-					.insert(SQLDB_Verwaltung_neu.TABELLE_ABRECHNUNG, null,
-							cv_dbeintrag);
+			dblesenschreiben_db.schreibeAbrechnung(abrechung_rechnung);
 
-			cv_dbeintrag.clear();
+			abrechung_rechnung.string_bezeichnung = "Billig";
+			abrechung_rechnung.double_preis = 1.7;
 
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG, "Billig");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_PREIS, 1.5);
-
-			sqldatabase_writeable
-					.insert(SQLDB_Verwaltung_neu.TABELLE_ABRECHNUNG, null,
-							cv_dbeintrag);
-
-			cv_dbeintrag.clear();
+			dblesenschreiben_db.schreibeAbrechnung(abrechung_rechnung);
 
 			// Betreiber
+			Betreiber betreiber_firma = new Betreiber(this);
 
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_NAME, "Eon");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_LOGO,
-					leseBlob(R.drawable.eon));
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_ABRECHNUNG_ID, 1);
-			cv_dbeintrag
-					.put(SQLDB_Verwaltung_neu.SPALTE_WEBSITE,
-							"http://www.eon-energie.com/pages/eea_de/Innovation/Innovation/E-Mobilitaet/Uebersicht/index.htm");
+			betreiber_firma.string_name = "Eon";
+			betreiber_firma.setzeBetreiberLogo(R.drawable.eon);
+			betreiber_firma.int_abrechnung_id = 1;
+			betreiber_firma.string_website = "http://www.eon-energie.com/pages/eea_de/Innovation/Innovation/E-Mobilitaet/Uebersicht/index.htm";
 
-			sqldatabase_writeable.insert(
-					SQLDB_Verwaltung_neu.TABELLE_BETREIBER, null, cv_dbeintrag);
+			dblesenschreiben_db.schreibeBetreiber(betreiber_firma);
 
-			cv_dbeintrag.clear();
+			betreiber_firma.string_name = "RWE";
+			betreiber_firma.setzeBetreiberLogo(R.drawable.rwe);
+			betreiber_firma.int_abrechnung_id = 2;
+			betreiber_firma.string_website = "http://www.rwe-mobility.com/web/cms/de/240690/rwemobility/was-ist-elektromobilitaet/standorte-rwe-smart-station/";
 
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_NAME, "RWE");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_LOGO,
-					leseBlob(R.drawable.rwe));
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_ABRECHNUNG_ID, 2);
-			cv_dbeintrag
-					.put(SQLDB_Verwaltung_neu.SPALTE_WEBSITE,
-							"http://www.rwe-mobility.com/web/cms/de/240690/rwemobility/was-ist-elektromobilitaet/standorte-rwe-smart-station/");
+			dblesenschreiben_db.schreibeBetreiber(betreiber_firma);
 
-			sqldatabase_writeable.insert(
-					SQLDB_Verwaltung_neu.TABELLE_BETREIBER, null, cv_dbeintrag);
+			betreiber_firma.string_name = "Vatenfall";
+			betreiber_firma.setzeBetreiberLogo(R.drawable.vattenfall);
+			betreiber_firma.int_abrechnung_id = 3;
+			betreiber_firma.string_website = "http://www.vattenfall.de/de/batterieantrieb.htm";
 
-			cv_dbeintrag.clear();
-
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_NAME, "Vattenfall");
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_LOGO,
-					leseBlob(R.drawable.vattenfall));
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_ABRECHNUNG_ID, 3);
-			cv_dbeintrag.put(SQLDB_Verwaltung_neu.SPALTE_WEBSITE,
-					"http://www.vattenfall.de/de/batterieantrieb.htm");
-
-			sqldatabase_writeable.insert(
-					SQLDB_Verwaltung_neu.TABELLE_BETREIBER, null, cv_dbeintrag);
-
-			sqldatabase_writeable.close();
+			dblesenschreiben_db.schreibeBetreiber(betreiber_firma);
 
 			Memo_Einstellungen.leseEinstellungen(this).edit()
 					.putBoolean("boolean_vokabular_initialisiert", true)
@@ -231,13 +195,5 @@ public class MemoStart extends Activity {
 			Toast.makeText(this, "Vokabular initialisiert.", Toast.LENGTH_SHORT)
 					.show();
 		}
-	}
-
-	private byte[] leseBlob(int id) {
-
-		ByteArrayOutputStream baos_ausgabe = new ByteArrayOutputStream();
-		((BitmapDrawable) getResources().getDrawable(id)).getBitmap().compress(
-				Bitmap.CompressFormat.PNG, 100, baos_ausgabe);
-		return baos_ausgabe.toByteArray();
 	}
 }
