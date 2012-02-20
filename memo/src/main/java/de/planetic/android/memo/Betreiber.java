@@ -8,7 +8,7 @@ public class Betreiber {
 
 	public String string_name;
 	public Drawable drawable_logo;
-	public int int_abrechnung_id;
+	public long long_abrechnung_id;
 	public String string_website;
 
 	private Context context_application;
@@ -18,7 +18,7 @@ public class Betreiber {
 		context_application = context.getApplicationContext();
 		string_name = "Betreiber";
 		setzeBetreiberLogo(R.drawable.icon);
-		int_abrechnung_id = 1;
+		long_abrechnung_id = 1;
 		string_website = "www.betreiber.de";
 	}
 

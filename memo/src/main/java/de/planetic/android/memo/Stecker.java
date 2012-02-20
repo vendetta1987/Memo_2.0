@@ -10,7 +10,7 @@ public class Stecker {
 	public String string_bezeichnung;
 	public Drawable drawable_stecker_foto;
 
-	public int int_id;
+	public long long_id;
 	public int int_anzahl;
 
 	private Context context_application;
@@ -18,6 +18,7 @@ public class Stecker {
 	public Stecker(Context context) {
 
 		context_application = context.getApplicationContext();
+		long_id = 1;
 		string_name = "Standard";
 		string_bezeichnung = "Bezeichnung";
 		int_anzahl = 1;

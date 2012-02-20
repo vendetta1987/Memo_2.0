@@ -10,7 +10,8 @@ import com.google.android.maps.GeoPoint;
 
 public class Ladestation {
 
-	public int int_adress_id;
+	public long long_id;
+	public long long_adress_id;
 	public GeoPoint geopoint_standort;
 	public String string_kommentar;
 	public String string_bezeichnung;
@@ -19,7 +20,7 @@ public class Ladestation {
 	public int int_verfuegbarkeit_ende;
 	public String string_verfuegbarkeit_kommentar;
 	public int int_zugangstyp;
-	public int int_betreiber_id;
+	public long long_betreiber_id;
 	public double double_preis;
 
 	public ArrayList<Stecker> arraylist_stecker;
@@ -30,7 +31,8 @@ public class Ladestation {
 
 		context_application = context.getApplicationContext();
 
-		int_adress_id = 1;
+		long_id = 1;
+		long_adress_id = 1;
 		setzeStandort(0, 0);
 		string_kommentar = "";
 		string_bezeichnung = "";
@@ -39,7 +41,7 @@ public class Ladestation {
 		int_verfuegbarkeit_ende = 0;
 		string_verfuegbarkeit_kommentar = "";
 		int_zugangstyp = 0;
-		int_betreiber_id = 1;
+		long_betreiber_id = 1;
 		double_preis = 0;
 
 		arraylist_stecker = new ArrayList<Stecker>();

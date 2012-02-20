@@ -27,7 +27,7 @@ public class MemoStart extends Activity {
 
 		db.schreibeAdresse(new Adresse());
 		db.schreibeLadestation(new Ladestation(this));
-
+		
 		ArrayList<Ladestation> test = db.leseLadestation(-1);
 
 		test.add(null);
@@ -169,21 +169,21 @@ public class MemoStart extends Activity {
 
 			betreiber_firma.string_name = "Eon";
 			betreiber_firma.setzeBetreiberLogo(R.drawable.eon);
-			betreiber_firma.int_abrechnung_id = 1;
+			betreiber_firma.long_abrechnung_id = 1;
 			betreiber_firma.string_website = "http://www.eon-energie.com/pages/eea_de/Innovation/Innovation/E-Mobilitaet/Uebersicht/index.htm";
 
 			dblesenschreiben_db.schreibeBetreiber(betreiber_firma);
 
 			betreiber_firma.string_name = "RWE";
 			betreiber_firma.setzeBetreiberLogo(R.drawable.rwe);
-			betreiber_firma.int_abrechnung_id = 2;
+			betreiber_firma.long_abrechnung_id = 2;
 			betreiber_firma.string_website = "http://www.rwe-mobility.com/web/cms/de/240690/rwemobility/was-ist-elektromobilitaet/standorte-rwe-smart-station/";
 
 			dblesenschreiben_db.schreibeBetreiber(betreiber_firma);
 
 			betreiber_firma.string_name = "Vatenfall";
 			betreiber_firma.setzeBetreiberLogo(R.drawable.vattenfall);
-			betreiber_firma.int_abrechnung_id = 3;
+			betreiber_firma.long_abrechnung_id = 3;
 			betreiber_firma.string_website = "http://www.vattenfall.de/de/batterieantrieb.htm";
 
 			dblesenschreiben_db.schreibeBetreiber(betreiber_firma);
