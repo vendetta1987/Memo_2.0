@@ -84,7 +84,7 @@ public class SQLDB_Verwaltung_neu extends SQLiteOpenHelper {
 	// public static final String SPALTE_ID = "id";
 	// public static final String SPALTE_NAME = "name";
 	public static final String SPALTE_LOGO = "logo";
-	public static final String SPALTE_ABRECHNUNG_ID = "abrechung_id";
+	public static final String SPALTE_ABRECHNUNG_ID = "abrechnung_id";
 	public static final String SPALTE_WEBSITE = "website";
 
 	// public static final String TYP_ID = "INTEGER";

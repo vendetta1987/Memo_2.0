@@ -1,7 +1,5 @@
 package de.planetic.android.memo;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -17,23 +15,14 @@ public class MemoStart extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.memostart_layout);
+
+		initialisiereVokabular();
 	}
 
 	public void punkteZeigen(View v_view) {
 
-		initialisiereVokabular();
-
-		DBLesenSchreiben db = new DBLesenSchreiben(this);
-
-		db.schreibeAdresse(new Adresse());
-		db.schreibeLadestation(new Ladestation(this));
-		
-		ArrayList<Ladestation> test = db.leseLadestation(-1);
-
-		test.add(null);
-
-		// Intent int_intent = new Intent(this, PunkteZeigen_Tab.class);
-		// this.startActivity(int_intent);
+		Intent int_intent = new Intent(this, PunkteZeigen_Tab.class);
+		this.startActivity(int_intent);
 	}
 
 	public void serverSynchronisieren(View v_view) {
@@ -130,6 +119,7 @@ public class MemoStart extends Activity {
 				"boolean_vokabular_initialisiert", false)) {
 
 			DBLesenSchreiben dblesenschreiben_db = new DBLesenSchreiben(this);
+			// TODO durch objekt im singleton ersetzen
 
 			// Stecker
 			Stecker stecker_typ = new Stecker(this);

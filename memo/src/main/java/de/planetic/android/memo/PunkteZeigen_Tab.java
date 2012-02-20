@@ -13,6 +13,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
@@ -202,7 +203,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 		switch (item.getItemId()) {
 		case R.id.punktezeigen_tab_menu_item1:
 			// db fuellen
-			dbFuellen();
+			// dbFuellen();
+			dbFuellen_neu();
 			sendBroadcast(new Intent(MemoSingleton.INTENT_DB_FUELLEN));
 			break;
 		case R.id.punktezeigen_tab_menu_item2:
@@ -931,4 +933,153 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 				MemoSingleton.ZURUECKSETZEN, 0);
 	}
 
+	private void dbFuellen_neu() {
+
+		Random random_int = new Random();
+		DBLesenSchreiben db = new DBLesenSchreiben(this);// TODO durch objekt im
+															// singleton
+															// ersetzen
+		SQLiteDatabase sql = new SQLDB_Verwaltung_neu(this)
+				.getReadableDatabase();
+		Cursor cursor_sql;
+		int int_dummy, int_anzahl = 50;
+		long long_max_adresse_id, long_max_betreiber_id, long_max_stecker_id;
+
+		Adresse adresse_ort;
+		Ladestation ladestation_saeule;
+		Stecker stecker_typ;
+		// Adresse---------------------------------------------------------------------------
+		for (int i = 0; i < int_anzahl; i++) {
+
+			adresse_ort = new Adresse();
+
+			switch (random_int.nextInt(3)) {
+			case 0:
+				adresse_ort.string_land = "de";
+				break;
+			case 1:
+				adresse_ort.string_land = "en";
+				break;
+			case 2:
+				adresse_ort.string_land = "es";
+				break;
+			}
+
+			adresse_ort.string_plz = String.valueOf(random_int.nextInt(100000));
+
+			switch (random_int.nextInt(4)) {
+			case 0:
+				adresse_ort.string_ort = "Berlin";
+				break;
+			case 1:
+				adresse_ort.string_ort = "München";
+				break;
+			case 2:
+				adresse_ort.string_ort = "Hamburg";
+				break;
+			case 3:
+				adresse_ort.string_ort = "Köln";
+				break;
+			}
+
+			adresse_ort.string_str_nr = "Straße Nr. "
+					+ String.valueOf(random_int.nextInt(500));
+
+			db.schreibeAdresse(adresse_ort);
+		}
+		// Ladestation---------------------------------------------------------------------------
+		cursor_sql = sql
+				.query(SQLDB_Verwaltung_neu.TABELLE_ADRESSE,
+						new String[] { "count("
+								+ SQLDB_Verwaltung_neu.SPALTE_ID + ")" }, null,
+						null, null, null, null);
+		cursor_sql.moveToFirst();
+		long_max_adresse_id = cursor_sql.getLong(0);
+		cursor_sql.close();
+
+		cursor_sql = sql
+				.query(SQLDB_Verwaltung_neu.TABELLE_BETREIBER,
+						new String[] { "count("
+								+ SQLDB_Verwaltung_neu.SPALTE_ID + ")" }, null,
+						null, null, null, null);
+		cursor_sql.moveToFirst();
+		long_max_betreiber_id = cursor_sql.getLong(0);
+		cursor_sql.close();
+
+		cursor_sql = sql
+				.query(SQLDB_Verwaltung_neu.TABELLE_STECKER,
+						new String[] { "count("
+								+ SQLDB_Verwaltung_neu.SPALTE_ID + ")" }, null,
+						null, null, null, null);
+		cursor_sql.moveToFirst();
+		long_max_stecker_id = cursor_sql.getLong(0);
+		cursor_sql.close();
+
+		for (int i = 0; i < int_anzahl; i++) {
+
+			ladestation_saeule = new Ladestation(this);
+
+			ladestation_saeule.long_adress_id = random_int
+					.nextInt((int) long_max_adresse_id) + 1;
+			ladestation_saeule.setzeStandort(random_int.nextInt(80000000),
+					random_int.nextInt(180000000));
+			ladestation_saeule.string_kommentar = "Kommentar Nr.: "
+					+ String.valueOf(random_int.nextInt());
+			ladestation_saeule.string_bezeichnung = "Bezeichung Nr.: "
+					+ String.valueOf(random_int.nextInt());
+
+			switch (random_int.nextInt(4)) {
+			case 0:
+				ladestation_saeule.setzeLadestationFoto(R.drawable.icon);
+				break;
+			case 1:
+				ladestation_saeule.setzeLadestationFoto(R.drawable.kopfueber);
+				break;
+			case 2:
+				ladestation_saeule.setzeLadestationFoto(R.drawable.links);
+				break;
+			case 3:
+				ladestation_saeule.setzeLadestationFoto(R.drawable.rechts);
+				break;
+			}
+
+			ladestation_saeule.int_verfuegbarkeit_anfang = random_int
+					.nextInt(720);
+			ladestation_saeule.int_verfuegbarkeit_ende = random_int
+					.nextInt(720) + 720;
+			ladestation_saeule.string_kommentar = "Kommentar Nr.: "
+					+ String.valueOf(random_int.nextInt());
+			ladestation_saeule.int_zugangstyp = random_int.nextInt(4) + 1;
+
+			int_dummy = (int) long_max_betreiber_id;
+			int_dummy = random_int.nextInt(int_dummy) + 1;
+			ladestation_saeule.long_betreiber_id = int_dummy;
+
+			cursor_sql = sql.rawQuery("select "
+					+ SQLDB_Verwaltung_neu.SPALTE_PREIS + " from "
+					+ SQLDB_Verwaltung_neu.TABELLE_ABRECHNUNG + " where "
+					+ SQLDB_Verwaltung_neu.SPALTE_ID + " = (select "
+					+ SQLDB_Verwaltung_neu.SPALTE_ABRECHNUNG_ID + " from "
+					+ SQLDB_Verwaltung_neu.TABELLE_BETREIBER + " where "
+					+ SQLDB_Verwaltung_neu.SPALTE_ID + "=?)",
+					new String[] { String.valueOf(int_dummy) });
+			cursor_sql.moveToFirst();
+			ladestation_saeule.double_preis = cursor_sql.getDouble(0);
+			cursor_sql.close();
+
+			ladestation_saeule.arraylist_stecker.clear();
+
+			for (int j = 1; j <= (random_int.nextInt((int) long_max_stecker_id) + 1); j++) {
+
+				stecker_typ = new Stecker(this);
+				stecker_typ.long_id = j;
+				stecker_typ.int_anzahl = random_int.nextInt(25) + 1;
+				ladestation_saeule.arraylist_stecker.add(stecker_typ);
+			}
+
+			db.schreibeLadestation(ladestation_saeule);
+		}
+
+		sql.close();
+	}
 }

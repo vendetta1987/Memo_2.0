@@ -135,7 +135,11 @@ public class DBLesenSchreiben {
 
 		long long_return = schreibeDaten(SQLDB_Verwaltung_neu.TABELLE_LADESTATION);
 
-		schreibeSteckerAnzahl(long_return, ladestation_saeule.arraylist_stecker);
+		if (long_return > 0) {
+
+			schreibeSteckerAnzahl(long_return,
+					ladestation_saeule.arraylist_stecker);
+		}
 
 		return long_return;
 
