@@ -216,8 +216,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 			// db leeren
 			// dbLeeren();
 			dbLeeren_neu();
-			intent_befehl.setAction(MemoSingleton.INTENT_DB_LEEREN);
-			sendBroadcast(intent_befehl);
+			// intent_befehl.setAction(MemoSingleton.INTENT_DB_LEEREN);
+			// sendBroadcast(intent_befehl);
 			break;
 		case R.id.punktezeigen_tab_menu_item3:
 			// punkt hinzufuegen
@@ -1087,18 +1087,15 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 		}
 
 		sql.close();
+		db.schliessen();
 	}
 
 	private void dbLeeren_neu() {
 
-		SQLiteDatabase sql = new SQLDB_Verwaltung_neu(this)
-				.getWritableDatabase();
-		// TODO durch objekt im singleton ersetzen
+		DBLesenSchreiben db = new DBLesenSchreiben(this);
 
-		sql.delete(SQLDB_Verwaltung_neu.TABELLE_STECKER_ANZAHL, null, null);
-		sql.delete(SQLDB_Verwaltung_neu.TABELLE_LADESTATION, null, null);
-		sql.delete(SQLDB_Verwaltung_neu.TABELLE_ADRESSE, null, null);
+		db.loescheDaten();
 
-		sql.close();
+		db.schliessen();
 	}
 }

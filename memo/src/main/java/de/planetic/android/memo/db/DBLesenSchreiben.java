@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import de.planetic.android.memo.MemoSingleton;
 
 public class DBLesenSchreiben {
 
@@ -25,6 +27,7 @@ public class DBLesenSchreiben {
 	private Context context_application;
 
 	public DBLesenSchreiben(Context context) {
+
 		context_application = context.getApplicationContext();
 		sqldb_writeable = new SQLDB_Verwaltung_neu(context_application)
 				.getWritableDatabase();
@@ -367,6 +370,13 @@ public class DBLesenSchreiben {
 
 			cv_werte.clear();
 		}
+
+		if (long_return > 0) {
+
+			context_application.sendBroadcast(new Intent(
+					MemoSingleton.INTENT_DB_FUELLEN));
+		}
+
 		return long_return;
 	}
 
@@ -389,5 +399,19 @@ public class DBLesenSchreiben {
 				new String[] { String.valueOf(long_id) }, null, null, null);
 
 		return cursor_anfrage;
+	}
+
+	public void loescheDaten() {
+
+		sqldb_writeable.delete(SQLDB_Verwaltung_neu.TABELLE_STECKER_ANZAHL,
+				null, null);
+		sqldb_writeable.delete(SQLDB_Verwaltung_neu.TABELLE_LADESTATION, null,
+				null);
+		sqldb_writeable
+				.delete(SQLDB_Verwaltung_neu.TABELLE_ADRESSE, null, null);
+		sqldb_writeable.delete("sqlite_sequence", null, null);
+
+		context_application.sendBroadcast(new Intent(
+				MemoSingleton.INTENT_DB_LEEREN));
 	}
 }

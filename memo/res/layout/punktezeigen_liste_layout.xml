@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <fragment
+        android:id="@+id/punktezeigen_liste_layout_listfragment1"
+        android:name="android.support.v4.app.ListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout><!--
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/punktezeigen_liste_layout_listview1"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
 </ListView>
+-->
