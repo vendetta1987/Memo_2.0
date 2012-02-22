@@ -1,6 +1,10 @@
 package de.planetic.android.memo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +12,9 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,11 +23,13 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import de.planetic.android.memo.db.ListeAsyncTaskLoader;
 
 /**
  * {@link Activity} zur Anzeige der hinterlegten Punkte in einer Liste.
  */
-public class PunkteZeigen_Tab_Liste extends Activity {
+public class PunkteZeigen_Tab_Liste extends FragmentActivity implements
+		LoaderCallbacks<ArrayList<HashMap<String, String>>> {
 
 	public static final String GEOPUNKT_NAME = "geopunkt_name";
 	public static final String GEOPUNKT_LAT_LON = "geopunkt_lat_lon";
@@ -29,6 +38,8 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 	private BroadcastReceiver bcreceiver_receiver;
 	private PunkteZeigen_Tab_AsyncTask asynctask_dbabfrage;
 	private MemoSingleton memosingleton_anwendung;
+
+	private ProgressDialog progressdialog_fortschritt;
 
 	/**
 	 * Initialisiert die Anwendung und konfiguriert {@link OnItemClickListener}
@@ -69,10 +80,21 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 			}
 		});
 
-		if (savedInstanceState == null) {
+		// if (savedInstanceState == null) {
+		//
+		// dbAbfrageStarten(new Intent());
+		// }
 
-			dbAbfrageStarten(new Intent());
+		if (savedInstanceState != null) {
+
+			if (savedInstanceState.getBoolean("boolean_zeige_fortschritt")) {
+
+				erzeugeFortschrittsDialog();
+			}
 		}
+
+		Log.d("memo_debug", getSupportLoaderManager().initLoader(0, null, this)
+				.toString());
 	}
 
 	/**
@@ -145,6 +167,12 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 			outState.putBoolean("boolean_liste_asynctask", true);
 		}
 
+		if ((progressdialog_fortschritt != null)
+				&& progressdialog_fortschritt.isShowing()) {
+
+			outState.putBoolean("boolean_zeige_fortschritt", true);
+		}
+
 		Log.d("memo_debug_punktezeigen_tab_liste", "onsaveinstancestate");
 
 		super.onSaveInstanceState(outState);
@@ -158,7 +186,7 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 
 		if (!savedInstanceState.getBoolean("boolean_liste_asynctask", false)) {
 
-			listeAnzeigen(0, false);
+			// listeAnzeigen(0, false);
 		}
 
 		Log.d("memo_debug_punktezeigen_tab_liste", "onrestoreinstancestate");
@@ -320,5 +348,49 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 		listview_liste.setAdapter(null);
 		listview_liste.invalidate();
 
+	}
+
+	public Loader<ArrayList<HashMap<String, String>>> onCreateLoader(int id,
+			Bundle args) {
+
+		erzeugeFortschrittsDialog();
+
+		return new ListeAsyncTaskLoader(this);
+	}
+
+	public void onLoadFinished(Loader<ArrayList<HashMap<String, String>>> arg0,
+			ArrayList<HashMap<String, String>> arg1) {
+
+		schliesseFortschrittsDialog();
+
+		((ListView) this.findViewById(R.id.punktezeigen_liste_layout_listview1))
+				.setAdapter(new SimpleAdapter(this, arg1,
+						android.R.layout.simple_list_item_2, new String[] {
+								"bezeichnung", "verfuegbarkeit" }, new int[] {
+								android.R.id.text1, android.R.id.text2 }));
+	}
+
+	public void onLoaderReset(Loader<ArrayList<HashMap<String, String>>> arg0) {
+	}
+
+	private void erzeugeFortschrittsDialog() {
+
+		schliesseFortschrittsDialog();
+
+		progressdialog_fortschritt = new ProgressDialog(this);
+		progressdialog_fortschritt
+				.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progressdialog_fortschritt.setTitle("Ladestationen laden");
+
+		progressdialog_fortschritt.show();
+	}
+
+	private void schliesseFortschrittsDialog() {
+
+		if (progressdialog_fortschritt != null
+				&& progressdialog_fortschritt.isShowing()) {
+
+			progressdialog_fortschritt.dismiss();
+		}
 	}
 }

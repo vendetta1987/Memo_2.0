@@ -1,4 +1,4 @@
-package de.planetic.android.memo;
+package de.planetic.android.memo.db;
 
 import java.util.ArrayList;
 
@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
+
+import de.planetic.android.memo.R;
 
 public class Ladestation {
 
@@ -68,5 +70,13 @@ public class Ladestation {
 
 			return false;
 		}
+	}
+
+	public String leseVerfuegbarkeit() {
+
+		return String.valueOf(int_verfuegbarkeit_anfang / 60) + ":"
+				+ String.valueOf(int_verfuegbarkeit_anfang % 60) + " - "
+				+ String.valueOf(int_verfuegbarkeit_ende / 60) + ":"
+				+ String.valueOf(int_verfuegbarkeit_ende % 60);
 	}
 }

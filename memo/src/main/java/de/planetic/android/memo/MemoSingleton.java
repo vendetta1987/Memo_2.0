@@ -162,7 +162,6 @@ public class MemoSingleton extends Application {
 		ifilter_filter.addAction(MemoSingleton.INTENT_STOPPE_GPS);
 
 		this.registerReceiver(bcreceiver_receiver, ifilter_filter);
-
 	}
 
 	// aktualisiert zeitstempel bei letzten zugriff der activities um nur neue

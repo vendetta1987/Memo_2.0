@@ -1,4 +1,4 @@
-package de.planetic.android.memo;
+package de.planetic.android.memo.db;
 
 public class Abrechnung {
 

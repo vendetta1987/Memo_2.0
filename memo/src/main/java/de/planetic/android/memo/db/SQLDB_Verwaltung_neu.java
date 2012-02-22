@@ -1,4 +1,4 @@
-package de.planetic.android.memo;
+package de.planetic.android.memo.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

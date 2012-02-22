@@ -8,6 +8,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import de.planetic.android.memo.db.Abrechnung;
+import de.planetic.android.memo.db.Betreiber;
+import de.planetic.android.memo.db.DBLesenSchreiben;
+import de.planetic.android.memo.db.Stecker;
 
 public class MemoStart extends Activity {
 
@@ -177,6 +181,8 @@ public class MemoStart extends Activity {
 			betreiber_firma.string_website = "http://www.vattenfall.de/de/batterieantrieb.htm";
 
 			dblesenschreiben_db.schreibeBetreiber(betreiber_firma);
+
+			dblesenschreiben_db.schliessen();
 
 			Memo_Einstellungen.leseEinstellungen(this).edit()
 					.putBoolean("boolean_vokabular_initialisiert", true)

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.planetic.android.memo"
-    android:versionCode="1"
-    android:versionName="1.0-RC" >
+    android:versionCode="2"
+    android:versionName="2.0-Beta" >
 
     <uses-sdk android:minSdkVersion="8" />
 
@@ -26,6 +26,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".PunkteZeigen_neu" >
         </activity>
         <activity
             android:name=".PunkteZeigen_Tab"

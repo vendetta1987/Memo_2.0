@@ -34,6 +34,11 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.Toast;
+import de.planetic.android.memo.db.Adresse;
+import de.planetic.android.memo.db.DBLesenSchreiben;
+import de.planetic.android.memo.db.Ladestation;
+import de.planetic.android.memo.db.SQLDB_Verwaltung_neu;
+import de.planetic.android.memo.db.Stecker;
 
 /**
  * {@link TabActivity} zur Darstellung der Punkte in der Datenbank. Angezeigt
@@ -209,7 +214,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 			break;
 		case R.id.punktezeigen_tab_menu_item2:
 			// db leeren
-			dbLeeren();
+			// dbLeeren();
+			dbLeeren_neu();
 			intent_befehl.setAction(MemoSingleton.INTENT_DB_LEEREN);
 			sendBroadcast(intent_befehl);
 			break;
@@ -936,9 +942,9 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	private void dbFuellen_neu() {
 
 		Random random_int = new Random();
-		DBLesenSchreiben db = new DBLesenSchreiben(this);// TODO durch objekt im
-															// singleton
-															// ersetzen
+		DBLesenSchreiben db = new DBLesenSchreiben(this);
+		// TODO durch objekt im singleton ersetzen
+
 		SQLiteDatabase sql = new SQLDB_Verwaltung_neu(this)
 				.getReadableDatabase();
 		Cursor cursor_sql;
@@ -1079,6 +1085,19 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 			db.schreibeLadestation(ladestation_saeule);
 		}
+
+		sql.close();
+	}
+
+	private void dbLeeren_neu() {
+
+		SQLiteDatabase sql = new SQLDB_Verwaltung_neu(this)
+				.getWritableDatabase();
+		// TODO durch objekt im singleton ersetzen
+
+		sql.delete(SQLDB_Verwaltung_neu.TABELLE_STECKER_ANZAHL, null, null);
+		sql.delete(SQLDB_Verwaltung_neu.TABELLE_LADESTATION, null, null);
+		sql.delete(SQLDB_Verwaltung_neu.TABELLE_ADRESSE, null, null);
 
 		sql.close();
 	}

@@ -1,4 +1,4 @@
-package de.planetic.android.memo;
+package de.planetic.android.memo.db;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -25,11 +25,15 @@ public class DBLesenSchreiben {
 	private Context context_application;
 
 	public DBLesenSchreiben(Context context) {
-
 		context_application = context.getApplicationContext();
 		sqldb_writeable = new SQLDB_Verwaltung_neu(context_application)
 				.getWritableDatabase();
 		cv_werte = new ContentValues();
+	}
+
+	public void schliessen() {
+
+		sqldb_writeable.close();
 	}
 
 	public long schreibeAdresse(Adresse adresse_ort) {
@@ -50,7 +54,7 @@ public class DBLesenSchreiben {
 		ArrayList<Adresse> arraylist_adresse_return = new ArrayList<Adresse>();
 		Cursor cursor_adresse_anfrage;
 
-		cursor_adresse_anfrage = leseDaten(long_id,
+		cursor_adresse_anfrage = leseDaten(long_id, false,
 				SQLDB_Verwaltung_neu.SPALTE_ID,
 				SQLDB_Verwaltung_neu.TABELLE_ADRESSE);
 
@@ -145,13 +149,14 @@ public class DBLesenSchreiben {
 
 	}
 
-	public ArrayList<Ladestation> leseLadestation(long long_id) {
+	public ArrayList<Ladestation> leseLadestation(long long_id,
+			boolean boolean_bild, boolean boolean_lese_alles) {
 
 		Ladestation ladestation_saeule;
 		Cursor cursor_ladestation_anfrage;
 		ArrayList<Ladestation> arraylist_ladestation_return = new ArrayList<Ladestation>();
 
-		cursor_ladestation_anfrage = leseDaten(long_id,
+		cursor_ladestation_anfrage = leseDaten(long_id, boolean_lese_alles,
 				SQLDB_Verwaltung_neu.SPALTE_ID,
 				SQLDB_Verwaltung_neu.TABELLE_LADESTATION);
 
@@ -182,9 +187,12 @@ public class DBLesenSchreiben {
 				ladestation_saeule.string_bezeichnung = cursor_ladestation_anfrage
 						.getString(cursor_ladestation_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG));
-				ladestation_saeule.drawable_ladestation_foto = erzeugeDrawable(cursor_ladestation_anfrage
-						.getBlob(cursor_ladestation_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO)));
+				if (boolean_bild) {
+
+					ladestation_saeule.drawable_ladestation_foto = erzeugeDrawable(cursor_ladestation_anfrage
+							.getBlob(cursor_ladestation_anfrage
+									.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO)));
+				}
 				ladestation_saeule.int_verfuegbarkeit_anfang = cursor_ladestation_anfrage
 						.getInt(cursor_ladestation_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ANFANG));
@@ -227,12 +235,12 @@ public class DBLesenSchreiben {
 		return schreibeDaten(SQLDB_Verwaltung_neu.TABELLE_STECKER);
 	}
 
-	private Stecker leseStecker(long long_id) {
+	private Stecker leseStecker(long long_id, boolean bool_bild) {
 
 		Cursor cursor_stecker_anfrage;
 		Stecker stecker_typ = null;
 
-		cursor_stecker_anfrage = leseDaten(long_id,
+		cursor_stecker_anfrage = leseDaten(long_id, false,
 				SQLDB_Verwaltung_neu.SPALTE_ID,
 				SQLDB_Verwaltung_neu.TABELLE_STECKER);
 
@@ -248,10 +256,12 @@ public class DBLesenSchreiben {
 				stecker_typ.string_bezeichnung = cursor_stecker_anfrage
 						.getString(cursor_stecker_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG));
-				stecker_typ.drawable_stecker_foto = erzeugeDrawable(cursor_stecker_anfrage
-						.getBlob(cursor_stecker_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STECKER_FOTO)));
+				if (bool_bild) {
 
+					stecker_typ.drawable_stecker_foto = erzeugeDrawable(cursor_stecker_anfrage
+							.getBlob(cursor_stecker_anfrage
+									.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STECKER_FOTO)));
+				}
 				stecker_typ.long_id = cursor_stecker_anfrage
 						.getLong(cursor_stecker_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ID));
@@ -293,7 +303,7 @@ public class DBLesenSchreiben {
 		Stecker stecker_typ;
 		ArrayList<Stecker> arraylist_stecker = new ArrayList<Stecker>();
 
-		cursor_steckeranzahl_anfrage = leseDaten(long_id,
+		cursor_steckeranzahl_anfrage = leseDaten(long_id, false,
 				SQLDB_Verwaltung_neu.SPALTE_LADESTATION_ID,
 				SQLDB_Verwaltung_neu.TABELLE_STECKER_ANZAHL);
 
@@ -301,9 +311,11 @@ public class DBLesenSchreiben {
 
 			do {
 
-				stecker_typ = leseStecker(cursor_steckeranzahl_anfrage
-						.getLong(cursor_steckeranzahl_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STECKER_ID)));
+				stecker_typ = leseStecker(
+						cursor_steckeranzahl_anfrage
+								.getLong(cursor_steckeranzahl_anfrage
+										.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STECKER_ID)),
+						false);
 
 				stecker_typ.int_anzahl = cursor_steckeranzahl_anfrage
 						.getInt(cursor_steckeranzahl_anfrage
@@ -358,20 +370,23 @@ public class DBLesenSchreiben {
 		return long_return;
 	}
 
-	private Cursor leseDaten(long long_id, String string_spalte,
-			String string_tabelle) {
+	private Cursor leseDaten(long long_id, boolean boolean_lese_alles,
+			String string_spalte, String string_tabelle) {
+
 		Cursor cursor_anfrage;
+		String string_vergleich;
 
-		if (long_id > 0) {
+		if (boolean_lese_alles) {
 
-			cursor_anfrage = sqldb_writeable.query(string_tabelle, null,
-					string_spalte + "=?",
-					new String[] { String.valueOf(long_id) }, null, null, null);
+			string_vergleich = ">";
 		} else {
 
-			cursor_anfrage = sqldb_writeable.query(string_tabelle, null, null,
-					null, null, null, SQLDB_Verwaltung_neu.SPALTE_ID);
+			string_vergleich = "=";
 		}
+
+		cursor_anfrage = sqldb_writeable.query(string_tabelle, null,
+				string_spalte + string_vergleich + "?",
+				new String[] { String.valueOf(long_id) }, null, null, null);
 
 		return cursor_anfrage;
 	}
