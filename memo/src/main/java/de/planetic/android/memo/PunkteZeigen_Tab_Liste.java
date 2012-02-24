@@ -10,13 +10,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import de.planetic.android.memo.db.ListeAsyncTaskLoader;
 
 /**
@@ -33,8 +38,6 @@ public class PunkteZeigen_Tab_Liste extends FragmentActivity implements
 	private PunkteZeigen_Tab_AsyncTask asynctask_dbabfrage;
 	private MemoSingleton memosingleton_anwendung;
 
-	// private ProgressDialog progressdialog_fortschritt;
-
 	/**
 	 * Initialisiert die Anwendung und konfiguriert {@link OnItemClickListener}
 	 * für die Listeneinträge.
@@ -46,34 +49,37 @@ public class PunkteZeigen_Tab_Liste extends FragmentActivity implements
 
 		memosingleton_anwendung = (MemoSingleton) getApplication();
 
-		// ListView listview_liste = (ListView)
-		// findViewById(R.id.punktezeigen_liste_layout_listview1);
-		//
-		// listview_liste.setOnItemClickListener(new OnItemClickListener() {
-		//
-		// public void onItemClick(AdapterView<?> parent, View view,
-		// int position, long id) {
-		//
-		// String string_lat_lon = ((TextView) view
-		// .findViewById(R.id.punktezeigen_liste_listview_item_layout_textview2))
-		// .getText().toString();
-		//
-		// String[] stringarrays_lat_lon = string_lat_lon.split(" ");
-		//
-		// stringarrays_lat_lon[0] = stringarrays_lat_lon[0].replace(view
-		// .getResources().getString(R.string.lat_kurz), "");
-		//
-		// stringarrays_lat_lon[1] = stringarrays_lat_lon[1].replace(view
-		// .getResources().getString(R.string.lon_kurz), "");
-		//
-		// GeoPunkt geopunkt_punkt = new GeoPunkt(Integer
-		// .valueOf(stringarrays_lat_lon[0]), Integer
-		// .valueOf(stringarrays_lat_lon[1]));
-		//
-		// ((MemoSingleton) getApplication()).dbAbfragen(geopunkt_punkt,
-		// true);
-		// }
-		// });
+		ListFragment listfragment_liste = new ListFragment() {
+			@Override
+			public void onListItemClick(ListView l, View v, int position,
+					long id) {
+
+				id = Long
+						.decode(((TextView) v
+								.findViewById(R.id.punktezeigen_liste_listview_item_layout_textview3))
+								.getText().toString());
+
+				Bundle bun = new Bundle();
+				bun.putLong("id", id);
+				Fragment frag = new LadestationDetail_Fragment();
+				frag.setArguments(bun);
+
+				FragmentTransaction ft = ((PunkteZeigen_Tab_Liste) l
+						.getContext()).getSupportFragmentManager()
+						.beginTransaction();
+
+				ft.replace(R.id.punktezeigen_liste_layout_framelayout1, frag);
+				ft.addToBackStack(null);
+
+				ft.commit();
+			}
+		};
+
+		getSupportFragmentManager()
+				.beginTransaction()
+				.add(R.id.punktezeigen_liste_layout_framelayout1,
+						listfragment_liste,
+						"punktezeigen_liste_layout_listfragment1").commit();
 
 		// if (savedInstanceState == null) {
 		//
@@ -167,12 +173,6 @@ public class PunkteZeigen_Tab_Liste extends FragmentActivity implements
 
 			outState.putBoolean("boolean_liste_asynctask", true);
 		}
-
-		// if ((progressdialog_fortschritt != null)
-		// && progressdialog_fortschritt.isShowing()) {
-		//
-		// outState.putBoolean("boolean_zeige_fortschritt", true);
-		// }
 
 		Log.d("memo_debug_punktezeigen_tab_liste", "onsaveinstancestate");
 
@@ -357,60 +357,35 @@ public class PunkteZeigen_Tab_Liste extends FragmentActivity implements
 	public Loader<ArrayList<HashMap<String, String>>> onCreateLoader(int id,
 			Bundle args) {
 
-		// erzeugeFortschrittsDialog();
-
 		return new ListeAsyncTaskLoader(this);
 	}
 
 	public void onLoadFinished(Loader<ArrayList<HashMap<String, String>>> arg0,
 			ArrayList<HashMap<String, String>> arg1) {
 
-		// schliesseFortschrittsDialog();
-
 		ListFragment lf_fragment = (ListFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.punktezeigen_liste_layout_listfragment1);
+				.findFragmentByTag("punktezeigen_liste_layout_listfragment1");
 
 		if (arg1.size() == 0) {
 
 			lf_fragment.setListShown(false);
 		} else {
 
-			lf_fragment.setListAdapter(new SimpleAdapter(this, arg1,
-					android.R.layout.simple_list_item_2, new String[] {
-							"bezeichnung", "verfuegbarkeit" }, new int[] {
-							android.R.id.text1, android.R.id.text2 }));
+			lf_fragment
+					.setListAdapter(new SimpleAdapter(
+							this,
+							arg1,
+							R.layout.punktezeigen_liste_listview_item_layout,
+							new String[] { "bezeichnung", "verfuegbarkeit",
+									"id" },
+							new int[] {
+									R.id.punktezeigen_liste_listview_item_layout_textview1,
+									R.id.punktezeigen_liste_listview_item_layout_textview2,
+									R.id.punktezeigen_liste_listview_item_layout_textview3 }));
 			lf_fragment.setListShown(true);
 		}
-
-		// ((ListView)
-		// findViewById(R.id.punktezeigen_liste_layout_listview1))
-		// .setAdapter(new SimpleAdapter(this, arg1,
-		// android.R.layout.simple_list_item_2, new String[] {
-		// "bezeichnung", "verfuegbarkeit" }, new int[] {
-		// android.R.id.text1, android.R.id.text2 }));
 	}
 
 	public void onLoaderReset(Loader<ArrayList<HashMap<String, String>>> arg0) {
 	}
-
-	// private void erzeugeFortschrittsDialog() {
-	//
-	// schliesseFortschrittsDialog();
-	//
-	// progressdialog_fortschritt = new ProgressDialog(this);
-	// progressdialog_fortschritt
-	// .setProgressStyle(ProgressDialog.STYLE_SPINNER);
-	// progressdialog_fortschritt.setTitle("Ladestationen laden");
-	//
-	// progressdialog_fortschritt.show();
-	// }
-	//
-	// private void schliesseFortschrittsDialog() {
-	//
-	// if (progressdialog_fortschritt != null
-	// && progressdialog_fortschritt.isShowing()) {
-	//
-	// progressdialog_fortschritt.dismiss();
-	// }
-	// }
 }

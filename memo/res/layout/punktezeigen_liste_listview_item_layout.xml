@@ -15,23 +15,31 @@
             android:id="@+id/punktezeigen_liste_listview_item_layout_textview1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textSize="25dp" >
+            android:textSize="20dp" >
         </TextView>
 
         <TextView
-
             android:id="@+id/punktezeigen_liste_listview_item_layout_textview2"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textSize="15dp" >
         </TextView>
+
+        <TextView
+            android:id="@+id/punktezeigen_liste_listview_item_layout_textview3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
+        </TextView>
     </LinearLayout>
 
-    <ImageView
+    <!--
+         <ImageView
         android:id="@+id/punktezeigen_liste_listview_item_layout_imageview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:src="@drawable/icon" android:contentDescription="@string/kein_bild"/>
+    -->
 
 </RelativeLayout>

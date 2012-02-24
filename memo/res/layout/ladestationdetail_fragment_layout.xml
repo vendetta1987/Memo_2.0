@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/ladestationdetail_fragment_layout_textView_bezeichnung"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bezeichnung" />
+
+            <TextView
+                android:id="@+id/ladestationdetail_fragment_layout_textView_kommentar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kommentar" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ladestationdetail_fragment_layout_imageView_foto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:src="@drawable/dot" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/ladestationdetail_fragment_layout_textView_verfuegbarkeit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Verfügbarkeit" />
+
+    <TextView
+        android:id="@+id/ladestationdetail_fragment_layout_textView_zugangstyp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zugangstyp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/ladestationdetail_fragment_layout_imageView_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:src="@drawable/dot" />
+
+        <TextView
+            android:id="@+id/ladestationdetail_fragment_layout_textView_preis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Preis" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/ladestationdetail_fragment_layout_textView_land"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Land" />
+
+    <TextView
+        android:id="@+id/ladestationdetail_fragment_layout_textView_plz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PLZ" />
+
+    <TextView
+        android:id="@+id/ladestationdetail_fragment_layout_textView_ort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ort" />
+
+    <TextView
+        android:id="@+id/ladestationdetail_fragment_layout_textView_str"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Straße" />
+
+</LinearLayout>

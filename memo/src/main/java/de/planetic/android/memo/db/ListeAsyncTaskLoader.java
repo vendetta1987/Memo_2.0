@@ -133,6 +133,8 @@ public class ListeAsyncTaskLoader extends
 					ladestation_saeule.string_bezeichnung);
 			hashmap_station.put("verfuegbarkeit",
 					ladestation_saeule.leseVerfuegbarkeit());
+			hashmap_station.put("id",
+					String.valueOf(ladestation_saeule.long_id));
 
 			long_temp++;
 			arraylist_temp.add(hashmap_station);
