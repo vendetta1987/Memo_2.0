@@ -22,6 +22,10 @@ public class DBLesenSchreiben {
 	// ((((Adresse), (Abrechung -> Betreiber)) -> (Ladestation)), Stecker) ->
 	// Stecker Anzahl
 
+	private static final int LADESTATION = 0;
+	private static final int BETREIBER = 1;
+	private static final int STECKER = 2;
+
 	private SQLiteDatabase sqldb_writeable;
 	private ContentValues cv_werte;
 	private Context context_application;
@@ -104,7 +108,7 @@ public class DBLesenSchreiben {
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_NAME,
 				betreiber_firma.string_name);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_LOGO,
-				erzeugeBlob(betreiber_firma.drawable_logo));
+				erzeugeBlob(BETREIBER, betreiber_firma.drawable_logo));
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_ABRECHNUNG_ID,
 				betreiber_firma.long_abrechnung_id);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_WEBSITE,
@@ -125,8 +129,10 @@ public class DBLesenSchreiben {
 				ladestation_saeule.string_kommentar);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG,
 				ladestation_saeule.string_bezeichnung);
-		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO,
-				erzeugeBlob(ladestation_saeule.drawable_ladestation_foto));
+		cv_werte.put(
+				SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO,
+				erzeugeBlob(LADESTATION,
+						ladestation_saeule.drawable_ladestation_foto));
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ANFANG,
 				ladestation_saeule.time_verfuegbarkeit_anfang.format3339(false));
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ENDE,
@@ -190,8 +196,9 @@ public class DBLesenSchreiben {
 
 				if (boolean_bild) {
 
-					ladestation_saeule.drawable_ladestation_foto = erzeugeDrawable(cursor_ladestation_anfrage
-							.getBlob(cursor_ladestation_anfrage
+					ladestation_saeule.drawable_ladestation_foto = erzeugeDrawable(
+							LADESTATION,
+							cursor_ladestation_anfrage.getBlob(cursor_ladestation_anfrage
 									.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO)));
 				}
 
@@ -256,8 +263,9 @@ public class DBLesenSchreiben {
 
 				if (boolean_bild) {
 
-					betreiber_anbieter.drawable_logo = erzeugeDrawable(cursor_betreiber_anfrage
-							.getBlob(cursor_betreiber_anfrage
+					betreiber_anbieter.drawable_logo = erzeugeDrawable(
+							BETREIBER,
+							cursor_betreiber_anfrage.getBlob(cursor_betreiber_anfrage
 									.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_LOGO)));
 				}
 
@@ -282,7 +290,7 @@ public class DBLesenSchreiben {
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG,
 				stecker_typ.string_bezeichnung);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_STECKER_FOTO,
-				erzeugeBlob(stecker_typ.drawable_stecker_foto));
+				erzeugeBlob(STECKER, stecker_typ.drawable_stecker_foto));
 
 		return schreibeDaten(SQLDB_Verwaltung_neu.TABELLE_STECKER);
 	}
@@ -310,8 +318,9 @@ public class DBLesenSchreiben {
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG));
 				if (bool_bild) {
 
-					stecker_typ.drawable_stecker_foto = erzeugeDrawable(cursor_stecker_anfrage
-							.getBlob(cursor_stecker_anfrage
+					stecker_typ.drawable_stecker_foto = erzeugeDrawable(
+							STECKER,
+							cursor_stecker_anfrage.getBlob(cursor_stecker_anfrage
 									.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_STECKER_FOTO)));
 				}
 				stecker_typ.long_id = cursor_stecker_anfrage
@@ -382,19 +391,66 @@ public class DBLesenSchreiben {
 		return arraylist_stecker;
 	}
 
-	private byte[] erzeugeBlob(Drawable drawable_bild) {
+	private byte[] erzeugeBlob(int int_modus, Drawable drawable_bild) {
 
 		ByteArrayOutputStream baos_ausgabe = new ByteArrayOutputStream();
-		((BitmapDrawable) drawable_bild).getBitmap().compress(
+
+		int int_width, int_height;
+
+		switch (int_modus) {
+		case LADESTATION:
+			int_width = 120;
+			int_height = 160;
+			break;
+		case BETREIBER:
+			int_width = 60;
+			int_height = 80;
+			break;
+		case STECKER:
+			int_width = 120;
+			int_height = 160;
+			break;
+		default:
+			int_width = 120;
+			int_height = 160;
+		}
+
+		Bitmap.createScaledBitmap(((BitmapDrawable) drawable_bild).getBitmap(),
+				int_width, int_height, true).compress(
 				Bitmap.CompressFormat.PNG, 100, baos_ausgabe);
 
 		return baos_ausgabe.toByteArray();
 	}
 
-	private Drawable erzeugeDrawable(byte[] byte_blob) {
+	private Drawable erzeugeDrawable(int int_modus, byte[] byte_blob) {
 
-		return new BitmapDrawable(BitmapFactory.decodeByteArray(byte_blob, 0,
-				byte_blob.length));
+		Bitmap bitmap_return = BitmapFactory.decodeByteArray(byte_blob, 0,
+				byte_blob.length);
+
+		// int int_width, int_height;
+		//
+		// switch (int_modus) {
+		// case LADESTATION:
+		// int_width = 120;
+		// int_height = 160;
+		// break;
+		// case BETREIBER:
+		// int_width = 60;
+		// int_height = 80;
+		// break;
+		// case STECKER:
+		// int_width = 120;
+		// int_height = 160;
+		// break;
+		// default:
+		// int_width = 120;
+		// int_height = 160;
+		// }
+		//
+		// bitmap_return = Bitmap.createScaledBitmap(bitmap_return, int_width,
+		// int_height, true);
+
+		return new BitmapDrawable(bitmap_return);
 	}
 
 	private long schreibeDaten(String string_tabelle) {

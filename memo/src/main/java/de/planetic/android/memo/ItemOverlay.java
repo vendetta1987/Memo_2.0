@@ -3,6 +3,7 @@ package de.planetic.android.memo;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -222,8 +223,16 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 		if (!boolean_pfad
 				&& !((MemoSingleton) context.getApplicationContext()).boolean_aktuelle_position) {
 
-			((MemoSingleton) context.getApplicationContext()).dbAbfragen(
-					(GeoPunkt) arraylist_overlays.get(index).getPoint(), false);
+			// ((MemoSingleton) context.getApplicationContext()).dbAbfragen(
+			// (GeoPunkt) arraylist_overlays.get(index).getPoint(), false);
+
+			((MemoSingleton) context.getApplicationContext()).context_punktezeigen_tab.tabhost
+					.setCurrentTab(PunkteZeigen_Tab.TAB_LISTE);
+
+			context.getApplicationContext().sendBroadcast(
+					new Intent(MemoSingleton.INTENT_ZEIGE_DETAILS).putExtra(
+							"id", Long.decode(arraylist_overlays.get(index)
+									.getSnippet())));
 		}
 
 		return true;

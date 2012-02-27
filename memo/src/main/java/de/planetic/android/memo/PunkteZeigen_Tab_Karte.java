@@ -102,10 +102,10 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 												R.string.memo_einstellungen_gps_verkehrslage_schluessel),
 								false));
 
-		// if (savedInstanceState == null) {
-		//
-		// dbAbfrageStarten(new Intent());
-		// }
+		if (savedInstanceState == null) {
+
+			dbAbfrageStarten(new Intent());
+		}
 
 	}
 
@@ -124,7 +124,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 				if (string_intent_action
 						.equals(MemoSingleton.INTENT_ZEIGE_KARTE)) {
-					// karteAnzeigen(intent.getIntExtra("int_anzahl", 0), true);
+					karteAnzeigen(intent.getIntExtra("int_anzahl", 0), true);
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_DB_FUELLEN)) {
 					// dbAbfrageStarten(new Intent());
@@ -321,96 +321,104 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		return false;
 	}
 
-	/**
-	 * {@code private void dbAbfrageStarten(Intent intent_befehl)}
-	 * <p/>
-	 * Startet eine DB-Abfrage nach den Vorgaben in {@code intent_befehl} und
-	 * reicht die Ergebnisse an {@link PunkteZeigen_Tab_AsyncTask} zur
-	 * Verarbeitung weiter. Wird für die normale und gefilterte Darstellung
-	 * genutzt.
-	 * 
-	 * @param intent_befehl
-	 *            {@link Intent} mit den Daten für die DB-Anfrage.
-	 */
+	// /**
+	// * {@code private void dbAbfrageStarten(Intent intent_befehl)}
+	// * <p/>
+	// * Startet eine DB-Abfrage nach den Vorgaben in {@code intent_befehl} und
+	// * reicht die Ergebnisse an {@link PunkteZeigen_Tab_AsyncTask} zur
+	// * Verarbeitung weiter. Wird für die normale und gefilterte Darstellung
+	// * genutzt.
+	// *
+	// * @param intent_befehl
+	// * {@link Intent} mit den Daten für die DB-Anfrage.
+	// */
+	// private void dbAbfrageStarten(Intent intent_befehl) {
+	// // initialisiert die karte mit den neu hinzugekommenen punkten seit dem
+	// // letzten abruf
+	//
+	// String string_adresse, string_name, string_groesserkleiner, string_id;
+	// boolean boolean_filter;
+	//
+	// boolean_filter = intent_befehl.getBooleanExtra(getPackageName() + "_"
+	// + "boolean_filter", false);
+	//
+	// if (!boolean_filter) {
+	// string_id = SQL_DB_Verwaltung.NAME_SPALTE_1
+	// + ">"
+	// + Long.toString(memosingleton_anwendung
+	// .letzterDBZugriff(MemoSingleton.KARTE));
+	// } else {
+	// string_id = SQL_DB_Verwaltung.NAME_SPALTE_1 + ">-1";
+	// }
+	//
+	// if (intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_adresse") != null) {
+	// string_adresse = " AND "
+	// + SQL_DB_Verwaltung.NAME_SPALTE_10
+	// + " LIKE '%"
+	// + intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_adresse") + "%'";
+	// } else {
+	// string_adresse = "";
+	// }
+	//
+	// if (intent_befehl
+	// .getStringExtra(getPackageName() + "_" + "string_name") != null) {
+	// string_name = " AND "
+	// + SQL_DB_Verwaltung.NAME_SPALTE_2
+	// + " LIKE '%"
+	// + intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_name") + "%'";
+	// } else {
+	// string_name = "";
+	// }
+	//
+	// if (intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_groesserkleiner") != null) {
+	// string_groesserkleiner = " AND "
+	// + SQL_DB_Verwaltung.NAME_SPALTE_9
+	// + intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_groesserkleiner")
+	// + intent_befehl.getDoubleExtra(getPackageName() + "_"
+	// + "double_preis", 0);
+	// } else {
+	// string_groesserkleiner = "";
+	// }
+	//
+	// // select ... from tabellenname where id>x AND ... order by id
+	// Cursor cursor_db_anfrage_geopkt =
+	// memosingleton_anwendung.sqldatabase_readable
+	// .query(SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, new String[] {
+	// SQL_DB_Verwaltung.NAME_SPALTE_1,
+	// SQL_DB_Verwaltung.NAME_SPALTE_2,
+	// SQL_DB_Verwaltung.NAME_SPALTE_3,
+	// SQL_DB_Verwaltung.NAME_SPALTE_4,
+	// SQL_DB_Verwaltung.NAME_SPALTE_5 },
+	// string_id + string_adresse + string_groesserkleiner
+	// + string_name, null, null, null,
+	// SQL_DB_Verwaltung.NAME_SPALTE_1);
+	//
+	// // select icon from tabellenname group by icon
+	// // erfasse symbole die den ausgelesenen punkten zugeordnet wurden
+	// Cursor cursor_db_anfrage_icon =
+	// memosingleton_anwendung.sqldatabase_readable
+	// .query(SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT,
+	// new String[] { SQL_DB_Verwaltung.NAME_SPALTE_5 }, null,
+	// null, SQL_DB_Verwaltung.NAME_SPALTE_5, null, null);
+	//
+	// asynctask_dbabfrage = new PunkteZeigen_Tab_AsyncTask(this,
+	// PunkteZeigen_Tab_AsyncTask.KARTE, boolean_filter);
+	//
+	// asynctask_dbabfrage.execute(cursor_db_anfrage_geopkt,
+	// cursor_db_anfrage_icon);
+	//
+	// Log.d("memo_debug_punktezeigen_tab_karte", "dbabfragestarten");
+	// }
+
 	private void dbAbfrageStarten(Intent intent_befehl) {
-		// initialisiert die karte mit den neu hinzugekommenen punkten seit dem
-		// letzten abruf
 
-		String string_adresse, string_name, string_groesserkleiner, string_id;
-		boolean boolean_filter;
-
-		boolean_filter = intent_befehl.getBooleanExtra(getPackageName() + "_"
-				+ "boolean_filter", false);
-
-		if (!boolean_filter) {
-			string_id = SQL_DB_Verwaltung.NAME_SPALTE_1
-					+ ">"
-					+ Long.toString(memosingleton_anwendung
-							.letzterDBZugriff(MemoSingleton.KARTE));
-		} else {
-			string_id = SQL_DB_Verwaltung.NAME_SPALTE_1 + ">-1";
-		}
-
-		if (intent_befehl.getStringExtra(getPackageName() + "_"
-				+ "string_adresse") != null) {
-			string_adresse = " AND "
-					+ SQL_DB_Verwaltung.NAME_SPALTE_10
-					+ " LIKE '%"
-					+ intent_befehl.getStringExtra(getPackageName() + "_"
-							+ "string_adresse") + "%'";
-		} else {
-			string_adresse = "";
-		}
-
-		if (intent_befehl
-				.getStringExtra(getPackageName() + "_" + "string_name") != null) {
-			string_name = " AND "
-					+ SQL_DB_Verwaltung.NAME_SPALTE_2
-					+ " LIKE '%"
-					+ intent_befehl.getStringExtra(getPackageName() + "_"
-							+ "string_name") + "%'";
-		} else {
-			string_name = "";
-		}
-
-		if (intent_befehl.getStringExtra(getPackageName() + "_"
-				+ "string_groesserkleiner") != null) {
-			string_groesserkleiner = " AND "
-					+ SQL_DB_Verwaltung.NAME_SPALTE_9
-					+ intent_befehl.getStringExtra(getPackageName() + "_"
-							+ "string_groesserkleiner")
-					+ intent_befehl.getDoubleExtra(getPackageName() + "_"
-							+ "double_preis", 0);
-		} else {
-			string_groesserkleiner = "";
-		}
-
-		// select ... from tabellenname where id>x AND ... order by id
-		Cursor cursor_db_anfrage_geopkt = memosingleton_anwendung.sqldatabase_readable
-				.query(SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, new String[] {
-						SQL_DB_Verwaltung.NAME_SPALTE_1,
-						SQL_DB_Verwaltung.NAME_SPALTE_2,
-						SQL_DB_Verwaltung.NAME_SPALTE_3,
-						SQL_DB_Verwaltung.NAME_SPALTE_4,
-						SQL_DB_Verwaltung.NAME_SPALTE_5 },
-						string_id + string_adresse + string_groesserkleiner
-								+ string_name, null, null, null,
-						SQL_DB_Verwaltung.NAME_SPALTE_1);
-
-		// select icon from tabellenname group by icon
-		// erfasse symbole die den ausgelesenen punkten zugeordnet wurden
-		Cursor cursor_db_anfrage_icon = memosingleton_anwendung.sqldatabase_readable
-				.query(SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT,
-						new String[] { SQL_DB_Verwaltung.NAME_SPALTE_5 }, null,
-						null, SQL_DB_Verwaltung.NAME_SPALTE_5, null, null);
-
-		asynctask_dbabfrage = new PunkteZeigen_Tab_AsyncTask(this,
-				PunkteZeigen_Tab_AsyncTask.KARTE, boolean_filter);
-
-		asynctask_dbabfrage.execute(cursor_db_anfrage_geopkt,
-				cursor_db_anfrage_icon);
-
-		Log.d("memo_debug_punktezeigen_tab_karte", "dbabfragestarten");
+		new PunkteZeigen_Tab_AsyncTask(this, PunkteZeigen_Tab_AsyncTask.KARTE,
+				false).execute((Cursor) null);
 	}
 
 	/**

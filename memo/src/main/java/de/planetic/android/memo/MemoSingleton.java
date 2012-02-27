@@ -81,6 +81,9 @@ public class MemoSingleton extends Application {
 	public static final String INTENT_STARTE_TTS = PACKAGE_NAME + "starte_tts";
 	public static final String INTENT_STOPPE_TTS = PACKAGE_NAME + "stoppe_tts";
 
+	public static final String INTENT_ZEIGE_DETAILS = PACKAGE_NAME
+			+ "zeige_details";
+
 	// werden zur unterscheidung bei aktualisiereDBZugrif genutzt
 	public static final int LISTE = 0;
 	public static final int KARTE = 1;

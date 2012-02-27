@@ -54,24 +54,30 @@ public class PunkteZeigen_Tab_Liste extends FragmentActivity implements
 			public void onListItemClick(ListView l, View v, int position,
 					long id) {
 
-				id = Long
+				zeigeDetails(Long
 						.decode(((TextView) v
 								.findViewById(R.id.punktezeigen_liste_listview_item_layout_textview3))
-								.getText().toString());
+								.getText().toString()));
 
-				Bundle bun = new Bundle();
-				bun.putLong("id", id);
-				Fragment frag = new LadestationDetail_Fragment();
-				frag.setArguments(bun);
+				// id = Long
+				// .decode(((TextView) v
+				// .findViewById(R.id.punktezeigen_liste_listview_item_layout_textview3))
+				// .getText().toString());
 
-				FragmentTransaction ft = ((PunkteZeigen_Tab_Liste) l
-						.getContext()).getSupportFragmentManager()
-						.beginTransaction();
-
-				ft.replace(R.id.punktezeigen_liste_layout_framelayout1, frag);
-				ft.addToBackStack(null);
-
-				ft.commit();
+				// Bundle bun = new Bundle();
+				// bun.putLong("id", id);
+				// Fragment frag = new LadestationDetail_Fragment();
+				// frag.setArguments(bun);
+				//
+				// FragmentTransaction ft = ((PunkteZeigen_Tab_Liste) l
+				// .getContext()).getSupportFragmentManager()
+				// .beginTransaction();
+				//
+				// ft.replace(R.id.punktezeigen_liste_layout_framelayout1,
+				// frag);
+				// ft.addToBackStack(null);
+				//
+				// ft.commit();
 			}
 		};
 
@@ -129,6 +135,9 @@ public class PunkteZeigen_Tab_Liste extends FragmentActivity implements
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_PUNKTE_FILTERN)) {
 					// dbAbfrageStarten(intent);
+				} else if (string_intent_action
+						.equals(MemoSingleton.INTENT_ZEIGE_DETAILS)) {
+					zeigeDetails(intent.getLongExtra("id", 1));
 				}
 			}
 		};
@@ -138,6 +147,7 @@ public class PunkteZeigen_Tab_Liste extends FragmentActivity implements
 		ifilter_filter.addAction(MemoSingleton.INTENT_DB_LEEREN);
 		ifilter_filter.addAction(MemoSingleton.INTENT_PUNKTE_FILTERN);
 		ifilter_filter.addAction(MemoSingleton.INTENT_ZEIGE_LISTE);
+		ifilter_filter.addAction(MemoSingleton.INTENT_ZEIGE_DETAILS);
 
 		this.registerReceiver(bcreceiver_receiver, ifilter_filter);
 
@@ -387,5 +397,20 @@ public class PunkteZeigen_Tab_Liste extends FragmentActivity implements
 	}
 
 	public void onLoaderReset(Loader<ArrayList<HashMap<String, String>>> arg0) {
+	}
+
+	private void zeigeDetails(long long_id) {
+
+		Bundle bun = new Bundle();
+		bun.putLong("id", long_id);
+		Fragment frag = new LadestationDetail_Fragment();
+		frag.setArguments(bun);
+
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+		ft.replace(R.id.punktezeigen_liste_layout_framelayout1, frag);
+		ft.addToBackStack(null);
+
+		ft.commit();
 	}
 }
