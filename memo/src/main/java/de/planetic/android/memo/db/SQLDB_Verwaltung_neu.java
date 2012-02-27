@@ -34,8 +34,10 @@ public class SQLDB_Verwaltung_neu extends SQLiteOpenHelper {
 	public static final String TYP_KOMMENTAR = "TEXT";
 	public static final String TYP_BEZEICHNUNG = "TEXT";
 	public static final String TYP_LADESTATION_FOTO = "BLOB";
-	public static final String TYP_VERFUEGBARKEIT_ANFANG = "INTEGER";
-	public static final String TYP_VERFUEGBARKEIT_ENDE = "INTEGER";
+
+	public static final String TYP_VERFUEGBARKEIT_ANFANG = "TEXT";
+	public static final String TYP_VERFUEGBARKEIT_ENDE = "TEXT";
+
 	public static final String TYP_VERFUEGBARKEIT_KOMMENTAR = "TEXT";
 	public static final String TYP_ZUGANGSTYP = "INTEGER";
 	public static final String TYP_BETREIBER_ID = "INTEGER";

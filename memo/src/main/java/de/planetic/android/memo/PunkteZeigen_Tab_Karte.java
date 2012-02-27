@@ -1,5 +1,6 @@
 package de.planetic.android.memo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,8 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,7 +43,7 @@ import com.google.android.maps.OverlayItem;
  * @see MemoSingleton
  */
 public class PunkteZeigen_Tab_Karte extends MapActivity implements
-		OnInitListener {
+		OnInitListener, LoaderCallbacks<ArrayList<HashMap<String, String>>> {
 
 	private BroadcastReceiver bcreceiver_receiver;
 	private PunkteZeigen_Tab_AsyncTask asynctask_dbabfrage;
@@ -99,10 +102,11 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 												R.string.memo_einstellungen_gps_verkehrslage_schluessel),
 								false));
 
-		if (savedInstanceState == null) {
+		// if (savedInstanceState == null) {
+		//
+		// dbAbfrageStarten(new Intent());
+		// }
 
-			dbAbfrageStarten(new Intent());
-		}
 	}
 
 	/**
@@ -120,10 +124,10 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 
 				if (string_intent_action
 						.equals(MemoSingleton.INTENT_ZEIGE_KARTE)) {
-					karteAnzeigen(intent.getIntExtra("int_anzahl", 0), true);
+					// karteAnzeigen(intent.getIntExtra("int_anzahl", 0), true);
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_DB_FUELLEN)) {
-					dbAbfrageStarten(new Intent());
+					// dbAbfrageStarten(new Intent());
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_DB_LEEREN)) {
 					karteOverlayLoeschen();
@@ -138,7 +142,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 									getPackageName() + "_" + "int_lonspan", -1));
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_PUNKTE_FILTERN)) {
-					dbAbfrageStarten(intent);
+					// dbAbfrageStarten(intent);
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_KARTE_VERFOLGE_AKTUELLE_POS)) {
 					verfolgeAktuellePosition(intent);
@@ -274,10 +278,11 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// stellt auf der karte angezeigte punkte nach drehung wiederher
 
-		if (!savedInstanceState.getBoolean("boolean_karte_asynctask", false)) {
-
-			karteAnzeigen(0, false);
-		}
+		// if (!savedInstanceState.getBoolean("boolean_karte_asynctask", false))
+		// {
+		//
+		// karteAnzeigen(0, false);
+		// }
 
 		if (savedInstanceState.getBoolean("boolean_navigation_button")) {
 
@@ -409,7 +414,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	}
 
 	/**
-	 * {@code public void karteAnzeigen(int int_anzahl_punkte, boolean bool_meldung)}
+	 * {@code public void karteAnzeigen(int int_anzahl_punkte, boolean
+	 bool_meldung)}
 	 * <p/>
 	 * Zeigt die verarbeiteten Daten aus {@link MemoSingleton} auf der Karte an.
 	 * 
@@ -590,7 +596,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			if (string_status.equalsIgnoreCase("OK")) {
 
 				memosingleton_anwendung.boolean_navigieren = true;
-				karteAnzeigen(0, false);
+				// karteAnzeigen(0, false);
 
 				zoomeKarte(
 						new GeoPunkt(intent_befehl.getIntExtra(getPackageName()
@@ -741,7 +747,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		memosingleton_anwendung.hashmap_karte_navigationsanweisungen = null;
 		memosingleton_anwendung.boolean_navigieren = false;
 
-		dbAbfrageStarten(new Intent());
+		// dbAbfrageStarten(new Intent());
 
 		Log.d("memo_debug_punktezeigen_tab_karte", "navigationbeenden");
 	}
@@ -946,5 +952,22 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		}
 
 		Log.d("memo_debug_punktezeigen_tab_karte", "navigationanweisung");
+	}
+
+	public Loader<ArrayList<HashMap<String, String>>> onCreateLoader(int arg0,
+			Bundle arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void onLoadFinished(Loader<ArrayList<HashMap<String, String>>> arg0,
+			ArrayList<HashMap<String, String>> arg1) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void onLoaderReset(Loader<ArrayList<HashMap<String, String>>> arg0) {
+		// TODO Auto-generated method stub
+
 	}
 }

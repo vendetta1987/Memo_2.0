@@ -116,7 +116,7 @@ public class DBLesenSchreiben {
 	public long schreibeLadestation(Ladestation ladestation_saeule) {
 
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_ADRESS_ID,
-				ladestation_saeule.long_adress_id);
+				ladestation_saeule.adresse_ort.long_id);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_STANDORT_LAENGE,
 				ladestation_saeule.geopoint_standort.getLongitudeE6() / 1e6);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_STANDORT_BREITE,
@@ -128,15 +128,15 @@ public class DBLesenSchreiben {
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO,
 				erzeugeBlob(ladestation_saeule.drawable_ladestation_foto));
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ANFANG,
-				ladestation_saeule.int_verfuegbarkeit_anfang);
+				ladestation_saeule.time_verfuegbarkeit_anfang.format3339(false));
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ENDE,
-				ladestation_saeule.int_verfuegbarkeit_ende);
+				ladestation_saeule.time_verfuegbarkeit_ende.format3339(false));
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_KOMMENTAR,
 				ladestation_saeule.string_kommentar);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_ZUGANGSTYP,
 				ladestation_saeule.int_zugangstyp);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_BETREIBER_ID,
-				ladestation_saeule.long_betreiber_id);
+				ladestation_saeule.betreiber_anbieter.long_id);
 		cv_werte.put(SQLDB_Verwaltung_neu.SPALTE_PREIS,
 				ladestation_saeule.double_preis);
 
@@ -172,9 +172,6 @@ public class DBLesenSchreiben {
 				ladestation_saeule.long_id = cursor_ladestation_anfrage
 						.getLong(cursor_ladestation_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ID));
-				ladestation_saeule.long_adress_id = cursor_ladestation_anfrage
-						.getLong(cursor_ladestation_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ADRESS_ID));
 				ladestation_saeule
 						.setzeStandort(
 								((Double) (cursor_ladestation_anfrage
@@ -190,33 +187,41 @@ public class DBLesenSchreiben {
 				ladestation_saeule.string_bezeichnung = cursor_ladestation_anfrage
 						.getString(cursor_ladestation_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BEZEICHNUNG));
+
 				if (boolean_bild) {
 
 					ladestation_saeule.drawable_ladestation_foto = erzeugeDrawable(cursor_ladestation_anfrage
 							.getBlob(cursor_ladestation_anfrage
 									.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_LADESTATION_FOTO)));
 				}
-				ladestation_saeule.int_verfuegbarkeit_anfang = cursor_ladestation_anfrage
-						.getInt(cursor_ladestation_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ANFANG));
-				ladestation_saeule.int_verfuegbarkeit_ende = cursor_ladestation_anfrage
-						.getInt(cursor_ladestation_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ENDE));
+
+				ladestation_saeule.time_verfuegbarkeit_anfang
+						.parse3339(cursor_ladestation_anfrage.getString(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ANFANG)));
+				ladestation_saeule.time_verfuegbarkeit_ende
+						.parse3339(cursor_ladestation_anfrage.getString(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_ENDE)));
 				ladestation_saeule.string_verfuegbarkeit_kommentar = cursor_ladestation_anfrage
 						.getString(cursor_ladestation_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_VERFUEGBARKEIT_KOMMENTAR));
 				ladestation_saeule.int_zugangstyp = cursor_ladestation_anfrage
 						.getInt(cursor_ladestation_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ZUGANGSTYP));
-				ladestation_saeule.long_betreiber_id = cursor_ladestation_anfrage
-						.getLong(cursor_ladestation_anfrage
-								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BETREIBER_ID));
 				ladestation_saeule.double_preis = cursor_ladestation_anfrage
 						.getDouble(cursor_ladestation_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_PREIS));
 				ladestation_saeule.arraylist_stecker = leseSteckerAnzahl(cursor_ladestation_anfrage
 						.getLong(cursor_ladestation_anfrage
 								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ID)));
+				ladestation_saeule.adresse_ort = leseAdresse(
+						cursor_ladestation_anfrage.getLong(cursor_ladestation_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ADRESS_ID)))
+						.get(0);
+				ladestation_saeule.betreiber_anbieter = leseBetreiber(
+						cursor_ladestation_anfrage
+								.getLong(cursor_ladestation_anfrage
+										.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_BETREIBER_ID)),
+						boolean_bild, false).get(0);
 
 				arraylist_ladestation_return.add(ladestation_saeule);
 			} while (cursor_ladestation_anfrage.moveToNext());
@@ -225,6 +230,50 @@ public class DBLesenSchreiben {
 		cursor_ladestation_anfrage.close();
 
 		return arraylist_ladestation_return;
+	}
+
+	public ArrayList<Betreiber> leseBetreiber(long long_id,
+			boolean boolean_bild, boolean boolean_lese_alles) {
+
+		Betreiber betreiber_anbieter;
+		ArrayList<Betreiber> arraylist_betreiber_return = new ArrayList<Betreiber>();
+		Cursor cursor_betreiber_anfrage = leseDaten(long_id,
+				boolean_lese_alles, SQLDB_Verwaltung_neu.SPALTE_ID,
+				SQLDB_Verwaltung_neu.TABELLE_BETREIBER);
+
+		if (cursor_betreiber_anfrage.moveToFirst()) {
+
+			do {
+
+				betreiber_anbieter = new Betreiber(context_application);
+
+				betreiber_anbieter.long_id = cursor_betreiber_anfrage
+						.getLong(cursor_betreiber_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ID));
+				betreiber_anbieter.string_name = cursor_betreiber_anfrage
+						.getString(cursor_betreiber_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_NAME));
+
+				if (boolean_bild) {
+
+					betreiber_anbieter.drawable_logo = erzeugeDrawable(cursor_betreiber_anfrage
+							.getBlob(cursor_betreiber_anfrage
+									.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_LOGO)));
+				}
+
+				betreiber_anbieter.long_abrechnung_id = cursor_betreiber_anfrage
+						.getLong(cursor_betreiber_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_ABRECHNUNG_ID));
+				betreiber_anbieter.string_website = cursor_betreiber_anfrage
+						.getString(cursor_betreiber_anfrage
+								.getColumnIndex(SQLDB_Verwaltung_neu.SPALTE_WEBSITE));
+
+				arraylist_betreiber_return.add(betreiber_anbieter);
+
+			} while (cursor_betreiber_anfrage.moveToNext());
+		}
+
+		return arraylist_betreiber_return;
 	}
 
 	public long schreibeStecker(Stecker stecker_typ) {

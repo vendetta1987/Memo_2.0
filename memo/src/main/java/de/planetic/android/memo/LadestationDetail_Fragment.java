@@ -5,8 +5,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import de.planetic.android.memo.db.Adresse;
+import android.widget.EditText;
+import android.widget.ImageView;
 import de.planetic.android.memo.db.DBLesenSchreiben;
 import de.planetic.android.memo.db.Ladestation;
 
@@ -36,41 +36,46 @@ public class LadestationDetail_Fragment extends Fragment {
 		Ladestation ladestation_saeule = db.leseLadestation(
 				getArguments().getLong("id"), true, false).get(0);
 
-		((TextView) v
+		((EditText) v
 				.findViewById(R.id.ladestationdetail_fragment_layout_textView_bezeichnung))
 				.setText(ladestation_saeule.string_bezeichnung);
 
-		((TextView) v
+		((EditText) v
 				.findViewById(R.id.ladestationdetail_fragment_layout_textView_kommentar))
 				.setText(ladestation_saeule.string_kommentar);
 
-		((TextView) v
+		((ImageView) v
+				.findViewById(R.id.ladestationdetail_fragment_layout_imageView_foto))
+				.setImageDrawable(ladestation_saeule.drawable_ladestation_foto);
+
+		((EditText) v
 				.findViewById(R.id.ladestationdetail_fragment_layout_textView_verfuegbarkeit))
 				.setText(ladestation_saeule.leseVerfuegbarkeit());
 
-		((TextView) v
+		((EditText) v
 				.findViewById(R.id.ladestationdetail_fragment_layout_textView_zugangstyp))
 				.setText(String.valueOf(ladestation_saeule.int_zugangstyp));
 
-		((TextView) v
+		((ImageView) v
+				.findViewById(R.id.ladestationdetail_fragment_layout_imageView_logo))
+				.setImageDrawable(ladestation_saeule.betreiber_anbieter.drawable_logo);
+
+		((EditText) v
 				.findViewById(R.id.ladestationdetail_fragment_layout_textView_preis))
 				.setText(String.valueOf(ladestation_saeule.double_preis));
 
-		Adresse adresse_ort = db.leseAdresse(ladestation_saeule.long_adress_id)
-				.get(0);
-
-		((TextView) v
+		((EditText) v
 				.findViewById(R.id.ladestationdetail_fragment_layout_textView_land))
-				.setText(adresse_ort.string_land);
-		((TextView) v
+				.setText(ladestation_saeule.adresse_ort.string_land);
+		((EditText) v
 				.findViewById(R.id.ladestationdetail_fragment_layout_textView_plz))
-				.setText(adresse_ort.string_plz);
-		((TextView) v
+				.setText(ladestation_saeule.adresse_ort.string_plz);
+		((EditText) v
 				.findViewById(R.id.ladestationdetail_fragment_layout_textView_ort))
-				.setText(adresse_ort.string_ort);
-		((TextView) v
+				.setText(ladestation_saeule.adresse_ort.string_ort);
+		((EditText) v
 				.findViewById(R.id.ladestationdetail_fragment_layout_textView_str))
-				.setText(adresse_ort.string_str_nr);
+				.setText(ladestation_saeule.adresse_ort.string_str_nr);
 
 		db.schliessen();
 

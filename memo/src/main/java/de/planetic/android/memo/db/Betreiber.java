@@ -1,13 +1,13 @@
 package de.planetic.android.memo.db;
 
-import de.planetic.android.memo.R;
-import de.planetic.android.memo.R.drawable;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import de.planetic.android.memo.R;
 
 public class Betreiber {
 
+	public long long_id;
 	public String string_name;
 	public Drawable drawable_logo;
 	public long long_abrechnung_id;
@@ -18,6 +18,7 @@ public class Betreiber {
 	public Betreiber(Context context) {
 
 		context_application = context.getApplicationContext();
+		long_id = 1;
 		string_name = "Betreiber";
 		setzeBetreiberLogo(R.drawable.icon);
 		long_abrechnung_id = 1;
