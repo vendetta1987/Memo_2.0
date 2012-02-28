@@ -223,9 +223,6 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 		if (!boolean_pfad
 				&& !((MemoSingleton) context.getApplicationContext()).boolean_aktuelle_position) {
 
-			// ((MemoSingleton) context.getApplicationContext()).dbAbfragen(
-			// (GeoPunkt) arraylist_overlays.get(index).getPoint(), false);
-
 			((MemoSingleton) context.getApplicationContext()).context_punktezeigen_tab.tabhost
 					.setCurrentTab(PunkteZeigen_Tab.TAB_LISTE);
 

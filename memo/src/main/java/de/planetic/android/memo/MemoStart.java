@@ -186,7 +186,7 @@ public class MemoStart extends Activity {
 
 			Memo_Einstellungen.leseEinstellungen(this).edit()
 					.putBoolean("boolean_vokabular_initialisiert", true)
-					.apply();
+					.commit();
 
 			Toast.makeText(this, "Vokabular initialisiert.", Toast.LENGTH_SHORT)
 					.show();
