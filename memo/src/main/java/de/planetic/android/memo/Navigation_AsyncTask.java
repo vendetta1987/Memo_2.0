@@ -38,7 +38,7 @@ import com.google.android.maps.OverlayItem;
  * {@code DIALOGTYP_*} unterscheiden die Fortschrittsdialoge
  */
 public class Navigation_AsyncTask extends
-		AsyncTask<GeoPunkt, Integer, HashMap<String, String>> {
+		AsyncTask<GeoPoint, Integer, HashMap<String, String>> {
 
 	private Context context_con;
 	private MemoSingleton memosingleton_anwendung;
@@ -239,7 +239,7 @@ public class Navigation_AsyncTask extends
 	 * @see PunkteZeigen_Tab_Karte
 	 */
 	@Override
-	protected HashMap<String, String> doInBackground(GeoPunkt... geopunkt_ziel) {
+	protected HashMap<String, String> doInBackground(GeoPoint... geopunkt_ziel) {
 
 		NetworkInfo networkinfo_internet = ((ConnectivityManager) context_con
 				.getSystemService(Context.CONNECTIVITY_SERVICE))

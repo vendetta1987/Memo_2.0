@@ -1,5 +1,6 @@
 package de.planetic.android.memo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.ProgressDialog;
@@ -26,7 +27,7 @@ import de.planetic.android.memo.db.Ladestation;
  * @see PunkteZeigen_Tab_Karte
  */
 public class PunkteZeigen_Tab_AsyncTask extends
-		AsyncTask<Cursor, Integer, Integer> {
+		AsyncTask<Void, Integer, Integer> {
 
 	public static final int LISTE = 0;
 	public static final int KARTE = 1;
@@ -207,15 +208,14 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	 * Funktion auf und schließt danach den DB-{@link Cursor}.
 	 */
 	@Override
-	protected Integer doInBackground(Cursor... cursor_db_anfrage) {
+	protected Integer doInBackground(Void... v) {
 
 		int int_rueckgabe;
 
 		switch (int_modus) {
-		// case LISTE:
-		// int_rueckgabe = listeBearbeiten(cursor_db_anfrage[0]);
-		// cursor_db_anfrage[0].close();
-		// break;
+		case LISTE:
+			int_rueckgabe = listeBearbeiten();
+			break;
 		case KARTE:
 			int_rueckgabe = karteBearbeiten();
 			break;
@@ -274,7 +274,7 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	// hashmap_liste_daten_datum = new HashMap<String, Object>(3);
 	//
 	// hashmap_liste_daten_datum.put(
-	// PunkteZeigen_Tab_Liste.GEOPUNKT_NAME,
+	// PunkteZeigen_Tab_Liste.LADESTATION_NAME,
 	// geopkt_geopunkt.string_name);
 	// hashmap_liste_daten_datum.put(
 	// PunkteZeigen_Tab_Liste.GEOPUNKT_LAT_LON,
@@ -320,6 +320,73 @@ public class PunkteZeigen_Tab_AsyncTask extends
 	//
 	// return cursor_db_anfrage.getCount();
 	// }
+
+	/**
+	 * {@code private int listeBearbeiten(Cursor cursor_db_anfrage)}
+	 * <p/>
+	 * Verarbeitet den {@link Cursor} und füllt eine {@link ArrayList} in
+	 * {@link MemoSingleton} mit den Daten für die Listenansicht.
+	 * 
+	 * @param cursor_db_anfrage
+	 *            {@link Cursor} mit den Daten der DB-Abfrage
+	 * @return Anzahl der Elemente im {@link Cursor}
+	 */
+	private int listeBearbeiten() {
+
+		if (boolean_filter) {
+			memosingleton_anwendung.arraylist_liste_daten_temp.clear();
+		}
+
+		HashMap<String, String> hashmap_liste_daten_datum;
+		Ladestation ladestation_saeule;
+		ArrayList<Ladestation> arraylist_temp = db_rw.leseLadestation(0, false,
+				true);
+
+		publishProgress(PROGRESS_SET_MAX, arraylist_temp.size());
+		int_prozent_temp = berechneProzentSchritte(arraylist_temp.size());
+
+		for (int i = 0; i < arraylist_temp.size(); i++) {
+
+			ladestation_saeule = arraylist_temp.get(i);
+
+			hashmap_liste_daten_datum = new HashMap<String, String>(3);
+
+			hashmap_liste_daten_datum.put(
+					PunkteZeigen_Tab_Liste.LADESTATION_NAME,
+					ladestation_saeule.string_bezeichnung);
+			hashmap_liste_daten_datum.put(
+					PunkteZeigen_Tab_Liste.LADESTATION_VERFUEGBARKEIT,
+					ladestation_saeule.leseVerfuegbarkeit());
+			hashmap_liste_daten_datum.put(
+					PunkteZeigen_Tab_Liste.LADESTATION_ID,
+					String.valueOf(ladestation_saeule.long_id));
+
+			if (!boolean_filter) {
+				memosingleton_anwendung.arraylist_liste_daten
+						.add(hashmap_liste_daten_datum);
+
+				memosingleton_anwendung.aktualisiereDBZugriff(
+						MemoSingleton.LISTE, ladestation_saeule.long_id);
+			} else {
+				memosingleton_anwendung.arraylist_liste_daten_temp
+						.add(hashmap_liste_daten_datum);
+			}
+
+			if (isCancelled()) {
+				return -1;
+			}
+
+			if ((i % int_prozent_temp) == 0) {
+
+				publishProgress(PROGRESS_UPDATE, i);
+			}
+
+		}
+
+		publishProgress(PROGRESS_MAX);
+
+		return arraylist_temp.size();
+	}
 
 	// /**
 	// * {@code private int karteBearbeiten(Cursor... cursor_db_anfrage)}

@@ -3,7 +3,6 @@ package de.planetic.android.memo;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -21,6 +20,8 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
+
+import de.planetic.android.memo.db.DBLesenSchreiben;
 
 // klasse fuer overlays einer karte, beinhaltet liste mit punkten, kuemmert
 // sich um zeichnen, klicken, etc
@@ -223,13 +224,14 @@ public class ItemOverlay extends ItemizedOverlay<OverlayItem> {
 		if (!boolean_pfad
 				&& !((MemoSingleton) context.getApplicationContext()).boolean_aktuelle_position) {
 
-			((MemoSingleton) context.getApplicationContext()).context_punktezeigen_tab.tabhost
-					.setCurrentTab(PunkteZeigen_Tab.TAB_LISTE);
+			DBLesenSchreiben db_rw = new DBLesenSchreiben(context);
 
-			context.getApplicationContext().sendBroadcast(
-					new Intent(MemoSingleton.INTENT_ZEIGE_DETAILS).putExtra(
-							"id", Long.decode(arraylist_overlays.get(index)
-									.getSnippet())));
+			((MemoSingleton) context.getApplicationContext()).dbAbfragen(
+					db_rw.leseLadestation(
+							Long.parseLong(arraylist_overlays.get(index)
+									.getSnippet()), true, false).get(0), false);
+
+			db_rw.schliessen();
 		}
 
 		return true;

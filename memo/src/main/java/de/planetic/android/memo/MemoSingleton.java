@@ -2,7 +2,6 @@ package de.planetic.android.memo;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import android.app.AlertDialog;
@@ -13,16 +12,16 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
+
+import de.planetic.android.memo.db.Ladestation;
 
 /**
  * Erweitert {@link Application} und dient als Singleton zum Bereitstellen von
@@ -67,7 +66,7 @@ public class MemoSingleton extends Application {
 	public static final String INTENT_ZEIGE_KARTE = PACKAGE_NAME
 			+ "zeige_karte";
 	public static final String INTENT_ZOOME_KARTE = PACKAGE_NAME
-			+ "zeige_karte";
+			+ "zoome_karte";
 	public static final String INTENT_STARTE_GPS = PACKAGE_NAME + "starte_gps";
 	public static final String INTENT_STOPPE_GPS = PACKAGE_NAME + "stoppe_gps";
 	public static final String INTENT_PUNKTE_FILTERN = PACKAGE_NAME
@@ -80,9 +79,6 @@ public class MemoSingleton extends Application {
 			+ "navigationsanweisung";
 	public static final String INTENT_STARTE_TTS = PACKAGE_NAME + "starte_tts";
 	public static final String INTENT_STOPPE_TTS = PACKAGE_NAME + "stoppe_tts";
-
-	public static final String INTENT_ZEIGE_DETAILS = PACKAGE_NAME
-			+ "zeige_details";
 
 	// werden zur unterscheidung bei aktualisiereDBZugrif genutzt
 	public static final int LISTE = 0;
@@ -105,8 +101,8 @@ public class MemoSingleton extends Application {
 	public SQLiteDatabase sqldatabase_writeable, sqldatabase_readable;
 	public Projection projection_karte;
 	// speichert listeneintraege
-	public ArrayList<HashMap<String, Object>> arraylist_liste_daten;
-	public ArrayList<HashMap<String, Object>> arraylist_liste_daten_temp;
+	public ArrayList<HashMap<String, String>> arraylist_liste_daten;
+	public ArrayList<HashMap<String, String>> arraylist_liste_daten_temp;
 	// speichert karteneintraege
 	public ArrayList<Overlay> arraylist_karte_overlays;
 	public ArrayList<Overlay> arraylist_karte_overlays_temp;
@@ -129,8 +125,8 @@ public class MemoSingleton extends Application {
 		sqldatabase_readable = sqldb_db_verwaltung.getReadableDatabase();
 		sqldatabase_writeable = sqldb_db_verwaltung.getWritableDatabase();
 
-		arraylist_liste_daten = new ArrayList<HashMap<String, Object>>();
-		arraylist_liste_daten_temp = new ArrayList<HashMap<String, Object>>();
+		arraylist_liste_daten = new ArrayList<HashMap<String, String>>();
+		arraylist_liste_daten_temp = new ArrayList<HashMap<String, String>>();
 		arraylist_karte_overlays = new ArrayList<Overlay>();
 		arraylist_karte_overlays_temp = new ArrayList<Overlay>();
 		hashmap_karte_navigationsanweisungen = new HashMap<String, ArrayList<HashMap<String, String>>>();
@@ -244,24 +240,25 @@ public class MemoSingleton extends Application {
 	 *            signalisiert die Listenansicht
 	 * @see Navigation_AsyncTask
 	 */
-	public void dbAbfragen(final GeoPunkt geopunkt_punkt, boolean boolean_liste) {
+	public void dbAbfragen(final Ladestation ladestation_saeule,
+			boolean boolean_liste) {
 
-		Cursor cursor_anfrage = sqldatabase_readable.query(
-				SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, new String[] {
-						SQL_DB_Verwaltung.NAME_SPALTE_2,
-						SQL_DB_Verwaltung.NAME_SPALTE_5,
-						SQL_DB_Verwaltung.NAME_SPALTE_6,
-						SQL_DB_Verwaltung.NAME_SPALTE_7,
-						SQL_DB_Verwaltung.NAME_SPALTE_8,
-						SQL_DB_Verwaltung.NAME_SPALTE_9,
-						SQL_DB_Verwaltung.NAME_SPALTE_10 },
-				SQL_DB_Verwaltung.NAME_SPALTE_3 + "=? AND "
-						+ SQL_DB_Verwaltung.NAME_SPALTE_4 + "=?",
-				new String[] { String.valueOf(geopunkt_punkt.getLatitudeE6()),
-						String.valueOf(geopunkt_punkt.getLongitudeE6()) },
-				null, null, null);
-
-		cursor_anfrage.moveToFirst();
+		// Cursor cursor_anfrage = sqldatabase_readable.query(
+		// SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, new String[] {
+		// SQL_DB_Verwaltung.NAME_SPALTE_2,
+		// SQL_DB_Verwaltung.NAME_SPALTE_5,
+		// SQL_DB_Verwaltung.NAME_SPALTE_6,
+		// SQL_DB_Verwaltung.NAME_SPALTE_7,
+		// SQL_DB_Verwaltung.NAME_SPALTE_8,
+		// SQL_DB_Verwaltung.NAME_SPALTE_9,
+		// SQL_DB_Verwaltung.NAME_SPALTE_10 },
+		// SQL_DB_Verwaltung.NAME_SPALTE_3 + "=? AND "
+		// + SQL_DB_Verwaltung.NAME_SPALTE_4 + "=?",
+		// new String[] { String.valueOf(geopunkt_punkt.getLatitudeE6()),
+		// String.valueOf(geopunkt_punkt.getLongitudeE6()) },
+		// null, null, null);
+		//
+		// cursor_anfrage.moveToFirst();
 
 		AlertDialog.Builder alertdialog_builder = new AlertDialog.Builder(
 				this.context_punktezeigen_tab);
@@ -279,6 +276,7 @@ public class MemoSingleton extends Application {
 				});
 
 		if (boolean_liste) {
+
 			alertdialog_builder
 					.setNeutralButton(
 							getResources()
@@ -295,12 +293,18 @@ public class MemoSingleton extends Application {
 									Intent intent_befehl = new Intent(
 											MemoSingleton.INTENT_ZOOME_KARTE);
 
-									intent_befehl.putExtra(getPackageName()
-											+ "_" + "int_lat",
-											geopunkt_punkt.getLatitudeE6());
-									intent_befehl.putExtra(getPackageName()
-											+ "_" + "int_lon",
-											geopunkt_punkt.getLongitudeE6());
+									intent_befehl
+											.putExtra(
+													getPackageName() + "_"
+															+ "int_lat",
+													ladestation_saeule.geopoint_standort
+															.getLatitudeE6());
+									intent_befehl
+											.putExtra(
+													getPackageName() + "_"
+															+ "int_lon",
+													ladestation_saeule.geopoint_standort
+															.getLongitudeE6());
 
 									context_punktezeigen_tab
 											.sendBroadcast(intent_befehl);
@@ -310,6 +314,7 @@ public class MemoSingleton extends Application {
 							});
 
 		}
+
 		alertdialog_builder.setNegativeButton(
 				getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_navigiere),
@@ -319,30 +324,19 @@ public class MemoSingleton extends Application {
 					public void onClick(DialogInterface dialog, int which) {
 
 						new Navigation_AsyncTask(context_punktezeigen_tab)
-								.execute(geopunkt_punkt);
+								.execute(ladestation_saeule.geopoint_standort);
 
 						dialog.dismiss();
 					}
 				});
 
-		alertdialog_builder.setTitle(cursor_anfrage.getString(cursor_anfrage
-				.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_2)));
+		alertdialog_builder.setTitle(ladestation_saeule.string_bezeichnung);
 
 		alertdialog_builder
-				.setIcon((Drawable) getSymbol(
-						cursor_anfrage
-								.getString(cursor_anfrage
-										.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_5)),
-						true));
+				.setIcon(ladestation_saeule.drawable_ladestation_foto);
 
-		String string_datum = DateFormat.format(
-				"" + DateFormat.DATE + DateFormat.DATE + "." + DateFormat.MONTH
-						+ DateFormat.MONTH + "." + DateFormat.YEAR + " "
-						+ DateFormat.HOUR_OF_DAY + DateFormat.HOUR_OF_DAY + ":"
-						+ DateFormat.MINUTE + DateFormat.MINUTE,
-				new Date(cursor_anfrage.getLong(cursor_anfrage
-						.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_6))))
-				.toString();
+		String string_datum = ladestation_saeule.time_verfuegbarkeit_anfang
+				.format3339(true);
 
 		alertdialog_builder.setMessage(getResources().getString(
 				R.string.datum_text)
@@ -352,17 +346,19 @@ public class MemoSingleton extends Application {
 				+ getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_beschreibung)
 				+ ":\n"
-				+ cursor_anfrage.getString(cursor_anfrage
-						.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_7))
+				+ ladestation_saeule.string_kommentar
 				+ "\n\n"
 				+ getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_eigenschaften)
 				+ ":\n"
-				+ cursor_anfrage.getString(cursor_anfrage
-						.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_8))
+				+ ladestation_saeule.leseVerfuegbarkeit()
+				+ "\n"
+				+ String.valueOf(ladestation_saeule.int_zugangstyp)
 				+ "\n\n"
-				+ cursor_anfrage.getString(cursor_anfrage
-						.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_9))
+				+ "Betreiber: "
+				+ ladestation_saeule.betreiber_anbieter.string_name
+				+ "\n"
+				+ String.valueOf(ladestation_saeule.double_preis)
 				+ " "
 				+ getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_preis)
@@ -370,18 +366,21 @@ public class MemoSingleton extends Application {
 				+ getResources().getString(
 						R.string.punktezeigen_tab_dialog_text_adresse)
 				+ ":\n"
-				+ cursor_anfrage.getString(cursor_anfrage
-						.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_10))
+				+ ladestation_saeule.adresse_ort.string_plz
+				+ " "
+				+ ladestation_saeule.adresse_ort.string_ort
+				+ "\n"
+				+ ladestation_saeule.adresse_ort.string_str_nr
 				+ "\n\n"
 				+ getResources().getString(R.string.lat_kurz)
-				+ String.valueOf(geopunkt_punkt.getLatitudeE6())
+				+ String.valueOf(ladestation_saeule.geopoint_standort
+						.getLatitudeE6())
 				+ " "
 				+ getResources().getString(R.string.lon_kurz)
-				+ String.valueOf(geopunkt_punkt.getLongitudeE6()));
+				+ String.valueOf(ladestation_saeule.geopoint_standort
+						.getLongitudeE6()));
 
 		alertdialog_builder.create().show();
-
-		cursor_anfrage.close();
 	}
 
 	/**

@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -124,7 +123,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 					karteAnzeigen(intent.getIntExtra("int_anzahl", 0), true);
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_DB_FUELLEN)) {
-					// dbAbfrageStarten(new Intent());
+					dbAbfrageStarten(new Intent());
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_DB_LEEREN)) {
 					karteOverlayLoeschen();
@@ -139,7 +138,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 									getPackageName() + "_" + "int_lonspan", -1));
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_PUNKTE_FILTERN)) {
-					// dbAbfrageStarten(intent);
+					dbAbfrageStarten(intent);
 				} else if (string_intent_action
 						.equals(MemoSingleton.INTENT_KARTE_VERFOLGE_AKTUELLE_POS)) {
 					verfolgeAktuellePosition(intent);
@@ -275,11 +274,10 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// stellt auf der karte angezeigte punkte nach drehung wiederher
 
-		// if (!savedInstanceState.getBoolean("boolean_karte_asynctask", false))
-		// {
-		//
-		// karteAnzeigen(0, false);
-		// }
+		if (!savedInstanceState.getBoolean("boolean_karte_asynctask", false)) {
+
+			karteAnzeigen(0, false);
+		}
 
 		if (savedInstanceState.getBoolean("boolean_navigation_button")) {
 
@@ -415,7 +413,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	private void dbAbfrageStarten(Intent intent_befehl) {
 
 		new PunkteZeigen_Tab_AsyncTask(this, PunkteZeigen_Tab_AsyncTask.KARTE,
-				false).execute((Cursor) null);
+				false).execute();
 	}
 
 	/**
@@ -432,8 +430,6 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	 * @see MemoSingleton
 	 */
 	public void karteAnzeigen(int int_anzahl_punkte, boolean bool_meldung) {
-		// public void karteAnzeigen(
-		// HashMap<Integer, ItemOverlay> hashmap_itemoverlays_temp) {
 
 		// erfasse, zur zeit auf der karte angezeigte, overlays
 		MapView mapview_karte = (MapView) this
@@ -601,7 +597,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 			if (string_status.equalsIgnoreCase("OK")) {
 
 				memosingleton_anwendung.boolean_navigieren = true;
-				// karteAnzeigen(0, false);
+				karteAnzeigen(0, false);
 
 				zoomeKarte(
 						new GeoPunkt(intent_befehl.getIntExtra(getPackageName()
@@ -752,7 +748,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		memosingleton_anwendung.hashmap_karte_navigationsanweisungen = null;
 		memosingleton_anwendung.boolean_navigieren = false;
 
-		// dbAbfrageStarten(new Intent());
+		dbAbfrageStarten(new Intent());
 
 		Log.d("memo_debug_punktezeigen_tab_karte", "navigationbeenden");
 	}

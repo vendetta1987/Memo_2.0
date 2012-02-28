@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,15 +15,16 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import de.planetic.android.memo.db.DBLesenSchreiben;
 
 /**
  * {@link Activity} zur Anzeige der hinterlegten Punkte in einer Liste.
  */
 public class PunkteZeigen_Tab_Liste extends Activity {
 
-	public static final String GEOPUNKT_NAME = "geopunkt_name";
-	public static final String GEOPUNKT_LAT_LON = "geopunkt_lat_lon";
-	public static final String GEOPUNKT_ICON = "geopunkt_icon";
+	public static final String LADESTATION_NAME = "ladestation_name";
+	public static final String LADESTATION_VERFUEGBARKEIT = "ladestation_verfuegbarkeit";
+	public static final String LADESTATION_ID = "ladestation_id";
 
 	private BroadcastReceiver bcreceiver_receiver;
 	private PunkteZeigen_Tab_AsyncTask asynctask_dbabfrage;
@@ -48,24 +48,17 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
-				String string_lat_lon = ((TextView) view
-						.findViewById(R.id.punktezeigen_liste_listview_item_layout_textview2))
-						.getText().toString();
+				DBLesenSchreiben db_rw = new DBLesenSchreiben(
+						getApplicationContext());
 
-				String[] stringarrays_lat_lon = string_lat_lon.split(" ");
+				((MemoSingleton) getApplication()).dbAbfragen(
+						db_rw.leseLadestation(
+								Long.parseLong(((TextView) view
+										.findViewById(R.id.punktezeigen_liste_listview_item_layout_textview3))
+										.getText().toString()), true, false)
+								.get(0), true);
 
-				stringarrays_lat_lon[0] = stringarrays_lat_lon[0].replace(view
-						.getResources().getString(R.string.lat_kurz), "");
-
-				stringarrays_lat_lon[1] = stringarrays_lat_lon[1].replace(view
-						.getResources().getString(R.string.lon_kurz), "");
-
-				GeoPunkt geopunkt_punkt = new GeoPunkt(Integer
-						.valueOf(stringarrays_lat_lon[0]), Integer
-						.valueOf(stringarrays_lat_lon[1]));
-
-				((MemoSingleton) getApplication()).dbAbfragen(geopunkt_punkt,
-						true);
+				db_rw.schliessen();
 			}
 		});
 
@@ -166,87 +159,94 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
-	/**
-	 * {@code private void dbAbfrageStarten(Intent intent_befehl)}
-	 * <p/>
-	 * Startet eine DB-Abfrage nach den Vorgaben in {@code intent_befehl} und
-	 * reicht die Ergebnisse an {@link PunkteZeigen_Tab_AsyncTask} zur
-	 * Verarbeitung weiter. Wird für die normale und gefilterte Darstellung
-	 * genutzt.
-	 * 
-	 * @param intent_befehl
-	 *            {@link Intent} mit den Daten für die DB-Anfrage.
-	 */
+	// /**
+	// * {@code private void dbAbfrageStarten(Intent intent_befehl)}
+	// * <p/>
+	// * Startet eine DB-Abfrage nach den Vorgaben in {@code intent_befehl} und
+	// * reicht die Ergebnisse an {@link PunkteZeigen_Tab_AsyncTask} zur
+	// * Verarbeitung weiter. Wird für die normale und gefilterte Darstellung
+	// * genutzt.
+	// *
+	// * @param intent_befehl
+	// * {@link Intent} mit den Daten für die DB-Anfrage.
+	// */
+	// private void dbAbfrageStarten(Intent intent_befehl) {
+	//
+	// String string_adresse, string_name, string_groesserkleiner, string_id;
+	// boolean boolean_filter;
+	//
+	// boolean_filter = intent_befehl.getBooleanExtra(getPackageName() + "_"
+	// + "boolean_filter", false);
+	//
+	// if (!boolean_filter) {
+	// string_id = SQL_DB_Verwaltung.NAME_SPALTE_1
+	// + ">"
+	// + Long.toString(memosingleton_anwendung
+	// .letzterDBZugriff(MemoSingleton.LISTE));
+	// } else {
+	// string_id = SQL_DB_Verwaltung.NAME_SPALTE_1 + ">-1";
+	// }
+	//
+	// if (intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_adresse") != null) {
+	// string_adresse = " AND "
+	// + SQL_DB_Verwaltung.NAME_SPALTE_10
+	// + " LIKE '%"
+	// + intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_adresse") + "%'";
+	// } else {
+	// string_adresse = "";
+	// }
+	//
+	// if (intent_befehl
+	// .getStringExtra(getPackageName() + "_" + "string_name") != null) {
+	// string_name = " AND "
+	// + SQL_DB_Verwaltung.NAME_SPALTE_2
+	// + " LIKE '%"
+	// + intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_name") + "%'";
+	// } else {
+	// string_name = "";
+	// }
+	//
+	// if (intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_groesserkleiner") != null) {
+	// string_groesserkleiner = " AND "
+	// + SQL_DB_Verwaltung.NAME_SPALTE_9
+	// + intent_befehl.getStringExtra(getPackageName() + "_"
+	// + "string_groesserkleiner")
+	// + intent_befehl.getDoubleExtra(getPackageName() + "_"
+	// + "double_preis", 0);
+	// } else {
+	// string_groesserkleiner = "";
+	// }
+	//
+	// Cursor cursor_db_anfrage = memosingleton_anwendung.sqldatabase_readable
+	// .query(SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, new String[] {
+	// SQL_DB_Verwaltung.NAME_SPALTE_1,
+	// SQL_DB_Verwaltung.NAME_SPALTE_2,
+	// SQL_DB_Verwaltung.NAME_SPALTE_3,
+	// SQL_DB_Verwaltung.NAME_SPALTE_4,
+	// SQL_DB_Verwaltung.NAME_SPALTE_5 },
+	// string_id + string_adresse + string_groesserkleiner
+	// + string_name, null, null, null,
+	// SQL_DB_Verwaltung.NAME_SPALTE_2);
+	// // select ... from tabellenname where id>letzter db zugriff AND ...
+	// // order by name
+	//
+	// asynctask_dbabfrage = new PunkteZeigen_Tab_AsyncTask(this,
+	// PunkteZeigen_Tab_AsyncTask.LISTE, boolean_filter);
+	//
+	// asynctask_dbabfrage.execute(cursor_db_anfrage);
+	//
+	// Log.d("memo_debug_punktezeigen_tab_liste", "dbabfragestarten");
+	// }
+
 	private void dbAbfrageStarten(Intent intent_befehl) {
 
-		String string_adresse, string_name, string_groesserkleiner, string_id;
-		boolean boolean_filter;
-
-		boolean_filter = intent_befehl.getBooleanExtra(getPackageName() + "_"
-				+ "boolean_filter", false);
-
-		if (!boolean_filter) {
-			string_id = SQL_DB_Verwaltung.NAME_SPALTE_1
-					+ ">"
-					+ Long.toString(memosingleton_anwendung
-							.letzterDBZugriff(MemoSingleton.LISTE));
-		} else {
-			string_id = SQL_DB_Verwaltung.NAME_SPALTE_1 + ">-1";
-		}
-
-		if (intent_befehl.getStringExtra(getPackageName() + "_"
-				+ "string_adresse") != null) {
-			string_adresse = " AND "
-					+ SQL_DB_Verwaltung.NAME_SPALTE_10
-					+ " LIKE '%"
-					+ intent_befehl.getStringExtra(getPackageName() + "_"
-							+ "string_adresse") + "%'";
-		} else {
-			string_adresse = "";
-		}
-
-		if (intent_befehl
-				.getStringExtra(getPackageName() + "_" + "string_name") != null) {
-			string_name = " AND "
-					+ SQL_DB_Verwaltung.NAME_SPALTE_2
-					+ " LIKE '%"
-					+ intent_befehl.getStringExtra(getPackageName() + "_"
-							+ "string_name") + "%'";
-		} else {
-			string_name = "";
-		}
-
-		if (intent_befehl.getStringExtra(getPackageName() + "_"
-				+ "string_groesserkleiner") != null) {
-			string_groesserkleiner = " AND "
-					+ SQL_DB_Verwaltung.NAME_SPALTE_9
-					+ intent_befehl.getStringExtra(getPackageName() + "_"
-							+ "string_groesserkleiner")
-					+ intent_befehl.getDoubleExtra(getPackageName() + "_"
-							+ "double_preis", 0);
-		} else {
-			string_groesserkleiner = "";
-		}
-
-		Cursor cursor_db_anfrage = memosingleton_anwendung.sqldatabase_readable
-				.query(SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, new String[] {
-						SQL_DB_Verwaltung.NAME_SPALTE_1,
-						SQL_DB_Verwaltung.NAME_SPALTE_2,
-						SQL_DB_Verwaltung.NAME_SPALTE_3,
-						SQL_DB_Verwaltung.NAME_SPALTE_4,
-						SQL_DB_Verwaltung.NAME_SPALTE_5 },
-						string_id + string_adresse + string_groesserkleiner
-								+ string_name, null, null, null,
-						SQL_DB_Verwaltung.NAME_SPALTE_2);
-		// select ... from tabellenname where id>letzter db zugriff AND ...
-		// order by name
-
 		asynctask_dbabfrage = new PunkteZeigen_Tab_AsyncTask(this,
-				PunkteZeigen_Tab_AsyncTask.LISTE, boolean_filter);
-
-		asynctask_dbabfrage.execute(cursor_db_anfrage);
-
-		Log.d("memo_debug_punktezeigen_tab_liste", "dbabfragestarten");
+				PunkteZeigen_Tab_AsyncTask.LISTE, false);
+		asynctask_dbabfrage.execute();
 	}
 
 	/**
@@ -284,24 +284,24 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 					this,
 					memosingleton_anwendung.arraylist_liste_daten,
 					R.layout.punktezeigen_liste_listview_item_layout,
-					new String[] { GEOPUNKT_NAME, GEOPUNKT_LAT_LON,
-							GEOPUNKT_ICON },
+					new String[] { LADESTATION_NAME,
+							LADESTATION_VERFUEGBARKEIT, LADESTATION_ID },
 					new int[] {
 							R.id.punktezeigen_liste_listview_item_layout_textview1,
 							R.id.punktezeigen_liste_listview_item_layout_textview2,
-							R.id.punktezeigen_liste_listview_item_layout_imageview });
+							R.id.punktezeigen_liste_listview_item_layout_textview3 });
 		} else {
 
 			simpleadapter_liste_adapter = new SimpleAdapter(
 					this,
 					memosingleton_anwendung.arraylist_liste_daten_temp,
 					R.layout.punktezeigen_liste_listview_item_layout,
-					new String[] { GEOPUNKT_NAME, GEOPUNKT_LAT_LON,
-							GEOPUNKT_ICON },
+					new String[] { LADESTATION_NAME,
+							LADESTATION_VERFUEGBARKEIT, LADESTATION_ID },
 					new int[] {
 							R.id.punktezeigen_liste_listview_item_layout_textview1,
 							R.id.punktezeigen_liste_listview_item_layout_textview2,
-							R.id.punktezeigen_liste_listview_item_layout_imageview });
+							R.id.punktezeigen_liste_listview_item_layout_textview3 });
 		}
 
 		listview_liste.setAdapter(simpleadapter_liste_adapter);
