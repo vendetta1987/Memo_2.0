@@ -1,6 +1,5 @@
 package de.planetic.android.memo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,8 +17,6 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,7 +40,7 @@ import com.google.android.maps.OverlayItem;
  * @see MemoSingleton
  */
 public class PunkteZeigen_Tab_Karte extends MapActivity implements
-		OnInitListener, LoaderCallbacks<ArrayList<HashMap<String, String>>> {
+		OnInitListener {
 
 	private BroadcastReceiver bcreceiver_receiver;
 	private PunkteZeigen_Tab_AsyncTask asynctask_dbabfrage;
@@ -960,22 +957,5 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 		}
 
 		Log.d("memo_debug_punktezeigen_tab_karte", "navigationanweisung");
-	}
-
-	public Loader<ArrayList<HashMap<String, String>>> onCreateLoader(int arg0,
-			Bundle arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void onLoadFinished(Loader<ArrayList<HashMap<String, String>>> arg0,
-			ArrayList<HashMap<String, String>> arg1) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onLoaderReset(Loader<ArrayList<HashMap<String, String>>> arg0) {
-		// TODO Auto-generated method stub
-
 	}
 }
