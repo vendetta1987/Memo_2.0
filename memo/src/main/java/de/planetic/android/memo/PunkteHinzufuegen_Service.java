@@ -17,6 +17,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.SystemClock;
 import android.util.Log;
+import de.planetic.android.memo.db.Ladestation;
 
 /**
  * {@link IntentService} zur Georeferenzierung von neu eingetragenen Punkten.
@@ -58,6 +59,9 @@ public class PunkteHinzufuegen_Service extends IntentService {
 	protected void onHandleIntent(Intent intent_service) {
 
 		ContentValues contentvalues_werte = new ContentValues();
+
+		Ladestation ladestation = intent_service
+				.getParcelableExtra("ladestation");
 
 		GeoPunkt geopunkt_position = null;
 

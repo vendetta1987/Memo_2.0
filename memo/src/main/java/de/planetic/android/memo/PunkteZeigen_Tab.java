@@ -1,7 +1,6 @@
 package de.planetic.android.memo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Calendar;
 import java.util.Random;
 
 import android.app.Dialog;
@@ -27,10 +26,10 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TabHost;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import de.planetic.android.memo.db.Adresse;
 import de.planetic.android.memo.db.DBLesenSchreiben;
@@ -207,13 +206,10 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 		case R.id.punktezeigen_tab_menu_item1:
 			// db fuellen
 			dbFuellen();
-			sendBroadcast(new Intent(MemoSingleton.INTENT_DB_FUELLEN));
 			break;
 		case R.id.punktezeigen_tab_menu_item2:
 			// db leeren
 			dbLeeren();
-			// intent_befehl.setAction(MemoSingleton.INTENT_DB_LEEREN);
-			// sendBroadcast(intent_befehl);
 			break;
 		case R.id.punktezeigen_tab_menu_item3:
 			// punkt hinzufuegen
@@ -356,67 +352,77 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 
-				EditText edittext_adresse = (EditText) dialog
+				Spinner spinner = (Spinner) dialog
+						.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner1);
+
+				spinner.setFocusable(!isChecked);
+				spinner.setFocusableInTouchMode(!isChecked);
+				spinner.setEnabled(!isChecked);
+
+				EditText edittext = (EditText) dialog
 						.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText3);
 
-				edittext_adresse.setFocusable(!isChecked);
-				edittext_adresse.setFocusableInTouchMode(!isChecked);
-				edittext_adresse.setEnabled(!isChecked);
+				edittext.setFocusable(!isChecked);
+				edittext.setFocusableInTouchMode(!isChecked);
+				edittext.setEnabled(!isChecked);
+
+				edittext = (EditText) dialog
+						.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText4);
+
+				edittext.setFocusable(!isChecked);
+				edittext.setFocusableInTouchMode(!isChecked);
+				edittext.setEnabled(!isChecked);
+
+				edittext = (EditText) dialog
+						.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText5);
+
+				edittext.setFocusable(!isChecked);
+				edittext.setFocusableInTouchMode(!isChecked);
+				edittext.setEnabled(!isChecked);
 			}
 		});
 
 		dialog.findViewById(
-				R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText3)
+				R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner1)
 				.setFocusable(!boolean_gps_verfuegbar);
 		dialog.findViewById(
 				R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText3)
-				.setEnabled(!boolean_gps_verfuegbar);
+				.setFocusable(!boolean_gps_verfuegbar);
+		dialog.findViewById(
+				R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText4)
+				.setFocusable(!boolean_gps_verfuegbar);
+		dialog.findViewById(
+				R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText5)
+				.setFocusable(!boolean_gps_verfuegbar);
 
-		Spinner spinner_icon = (Spinner) dialog
+		Spinner spinner_land = (Spinner) dialog
 				.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner1);
 
-		Cursor cursor_abfrage = memosingleton_anwendung.sqldatabase_readable
-				.query(SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT,
-						new String[] { SQL_DB_Verwaltung.NAME_SPALTE_5 }, null,
-						null, SQL_DB_Verwaltung.NAME_SPALTE_5, null, null);
+		spinner_land.setAdapter(new PunkteHinzufuegen_Dialog_SpinnerAdapter(
+				this, getResources().getStringArray(
+						R.array.punkthinzufuegen_laender_stringarray),
+				getResources().getStringArray(
+						R.array.punkthinzufuegen_laender_werte_array)));
 
-		ArrayList<HashMap<String, Object>> arraylist_spinnerdaten = new ArrayList<HashMap<String, Object>>(
-				cursor_abfrage.getCount());
-		HashMap<String, Object> hashmap_spinnereintrag;
-		String string_icon;
+		((TimePicker) dialog
+				.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_timePicker1))
+				.setIs24HourView(true);
+		((TimePicker) dialog
+				.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_timePicker2))
+				.setIs24HourView(true);
 
-		if (cursor_abfrage.moveToFirst()) {
+		Spinner spinner_zugangstyp = (Spinner) dialog
+				.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner3);
 
-			do {
-
-				hashmap_spinnereintrag = new HashMap<String, Object>(2);
-
-				string_icon = cursor_abfrage.getString(cursor_abfrage
-						.getColumnIndex(SQL_DB_Verwaltung.NAME_SPALTE_5));
-
-				hashmap_spinnereintrag.put(ICON_NAME, string_icon);
-				hashmap_spinnereintrag.put(ICON_DATEI,
-						memosingleton_anwendung.getSymbol(string_icon, true));
-
-				arraylist_spinnerdaten.add(hashmap_spinnereintrag);
-
-			} while (cursor_abfrage.moveToNext());
-		}
-
-		cursor_abfrage.close();
-
-		// TODO mindestens ein symbol mitliefern
-		if (arraylist_spinnerdaten.isEmpty()) {
-
-			hashmap_spinnereintrag = new HashMap<String, Object>(2);
-			hashmap_spinnereintrag.put(ICON_NAME, "icon");
-			hashmap_spinnereintrag.put(ICON_DATEI,
-					memosingleton_anwendung.getSymbol("icon", true));
-			arraylist_spinnerdaten.add(hashmap_spinnereintrag);
-		}
-
-		spinner_icon.setAdapter(new PunkteHinzufuegen_Dialog_SpinnerAdapter(
-				this, arraylist_spinnerdaten));
+		spinner_zugangstyp
+				.setAdapter(new PunkteHinzufuegen_Dialog_SpinnerAdapter(
+						this,
+						getResources()
+								.getStringArray(
+										R.array.punkthinzufuegen_zugangstyp_stringarray),
+						getResources()
+								.getStringArray(
+										R.array.punkthinzufuegen_zugangstyp_werte_array)));
 
 		dialog.setOnCancelListener(this);
 
@@ -559,7 +565,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 	 */
 	private boolean werteDialogAus(Dialog dialog, int int_dialog_id) {
 
-		String string_fehler = "", string_name, string_beschreibung, string_adresse, string_radio_eigenschaften, string_groesserkleiner, string_icon, string_temp;
+		String string_fehler = "", string_temp, string_name, string_adresse, string_groesserkleiner;
 		double double_preis;
 		boolean boolean_ergebnis = true, boolean_pos_aus_gps;
 		int int_filter_checkbox = 0;
@@ -567,29 +573,34 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 		switch (int_dialog_id) {
 		case DIALOG_GEOPUNKT_HINZUFUEGEN:
 
-			string_name = ((EditText) dialog
+			Ladestation ladestation_saeule = new Ladestation(this);
+
+			ladestation_saeule.string_bezeichnung = ((EditText) dialog
 					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText1))
 					.getText().toString();
-			if (string_name.equalsIgnoreCase(getResources().getString(
-					R.string.punktezeigen_tab_dialog_text_name))
-					|| string_name.equalsIgnoreCase("")) {
+			if (ladestation_saeule.string_bezeichnung
+					.equalsIgnoreCase(getResources().getString(
+							R.string.punkthinzufuegen_bezeichnung))
+					|| ladestation_saeule.string_bezeichnung
+							.equalsIgnoreCase("")) {
 
 				boolean_ergebnis = false;
 				string_fehler = string_fehler.concat(getResources().getString(
-						R.string.punktezeigen_tab_dialog_text_name)
+						R.string.punkthinzufuegen_bezeichnung)
 						+ " ");
 			}
 
-			string_beschreibung = ((EditText) dialog
+			ladestation_saeule.string_kommentar = ((EditText) dialog
 					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText2))
 					.getText().toString();
-			if (string_beschreibung.equalsIgnoreCase(getResources().getString(
-					R.string.punktezeigen_tab_dialog_text_beschreibung))
-					|| string_beschreibung.equalsIgnoreCase("")) {
+			if (ladestation_saeule.string_kommentar
+					.equalsIgnoreCase(getResources().getString(
+							R.string.punkthinzufuegen_kommentar))
+					|| ladestation_saeule.string_kommentar.equalsIgnoreCase("")) {
 
 				boolean_ergebnis = false;
 				string_fehler = string_fehler.concat(getResources().getString(
-						R.string.punktezeigen_tab_dialog_text_beschreibung)
+						R.string.punkthinzufuegen_kommentar)
 						+ " ");
 			}
 
@@ -599,69 +610,149 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 				boolean_pos_aus_gps = true;
 
-				string_adresse = "";
+				// string_adresse = "";
 			} else {
 
-				string_adresse = ((EditText) dialog
+				ladestation_saeule.adresse_ort.string_land = ((TextView) ((Spinner) dialog
+						.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner1))
+						.getSelectedView()
+						.findViewById(
+								R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_textview2))
+						.getText().toString();
+
+				ladestation_saeule.adresse_ort.string_plz = ((EditText) dialog
 						.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText3))
 						.getText().toString();
 
-				if (string_adresse.equalsIgnoreCase(getResources().getString(
-						R.string.punktezeigen_tab_dialog_text_adresse))
-						|| string_adresse.equalsIgnoreCase("")) {
+				ladestation_saeule.adresse_ort.string_ort = ((EditText) dialog
+						.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText4))
+						.getText().toString();
+
+				ladestation_saeule.adresse_ort.string_str_nr = ((EditText) dialog
+						.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText5))
+						.getText().toString();
+
+				if (ladestation_saeule.adresse_ort.string_plz
+						.equalsIgnoreCase(getResources().getString(
+								R.string.punkthinzufuegen_plz))
+						|| ladestation_saeule.adresse_ort.string_plz
+								.equalsIgnoreCase("")) {
 
 					boolean_ergebnis = false;
-					string_fehler = string_fehler
-							.concat(getResources()
-									.getString(
-											R.string.punktezeigen_tab_dialog_text_adresse));
+					string_fehler = string_fehler.concat(getResources()
+							.getString(R.string.punkthinzufuegen_plz));
+				}
+
+				if (ladestation_saeule.adresse_ort.string_ort
+						.equalsIgnoreCase(getResources().getString(
+								R.string.punkthinzufuegen_ort))
+						|| ladestation_saeule.adresse_ort.string_ort
+								.equalsIgnoreCase("")) {
+
+					boolean_ergebnis = false;
+					string_fehler = string_fehler.concat(getResources()
+							.getString(R.string.punkthinzufuegen_ort));
+				}
+
+				if (ladestation_saeule.adresse_ort.string_str_nr
+						.equalsIgnoreCase(getResources().getString(
+								R.string.punkthinzufuegen_str_nr))
+						|| ladestation_saeule.adresse_ort.string_str_nr
+								.equalsIgnoreCase("")) {
+
+					boolean_ergebnis = false;
+					string_fehler = string_fehler.concat(getResources()
+							.getString(R.string.punkthinzufuegen_str_nr));
 				}
 
 				boolean_pos_aus_gps = false;
 			}
 
-			string_radio_eigenschaften = ((RadioButton) dialog
-					.findViewById(((RadioGroup) dialog
-							.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_radioGroup1))
-							.getCheckedRadioButtonId())).getText().toString();
+			Calendar cal = Calendar.getInstance();
+			TimePicker timepicker_zeit = ((TimePicker) dialog
+					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_timePicker1));
+
+			ladestation_saeule.time_verfuegbarkeit_anfang.set(0,
+					timepicker_zeit.getCurrentMinute(),
+					timepicker_zeit.getCurrentHour(),
+					cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH),
+					cal.get(Calendar.YEAR));
+
+			timepicker_zeit = ((TimePicker) dialog
+					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_timePicker2));
+
+			ladestation_saeule.time_verfuegbarkeit_ende.set(0,
+					timepicker_zeit.getCurrentMinute(),
+					timepicker_zeit.getCurrentHour(),
+					cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH),
+					cal.get(Calendar.YEAR));
+
+			// string_radio_eigenschaften = "";
+
+			ladestation_saeule.string_verfuegbarkeit_kommentar = ((EditText) dialog
+					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText6))
+					.getText().toString();
+
+			if (ladestation_saeule.string_verfuegbarkeit_kommentar
+					.equalsIgnoreCase(getResources().getString(
+							R.string.punkthinzufuegen_verfuegbarkeit_kommentar))
+					|| ladestation_saeule.string_verfuegbarkeit_kommentar
+							.equalsIgnoreCase("")) {
+
+				boolean_ergebnis = false;
+				string_fehler = string_fehler.concat(getResources().getString(
+						R.string.punkthinzufuegen_verfuegbarkeit_kommentar));
+			}
 
 			string_temp = ((EditText) dialog
-					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText4))
+					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_editText7))
 					.getText().toString();
 
 			// regulaerer ausdruck fuer alle fließkommazahlen
 			if (string_temp.matches("[0-9]*[\\.\\,]?[0-9]+")) {
 
-				double_preis = Double.valueOf(string_temp);
+				ladestation_saeule.double_preis = Double.valueOf(string_temp);
 			} else {
 
-				double_preis = 0;
+				ladestation_saeule.double_preis = 0;
 			}
 
-			string_icon = ((HashMap<String, Object>) ((Spinner) dialog
-					.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner1))
-					.getSelectedItem()).get(ICON_NAME).toString();
+			ladestation_saeule.int_zugangstyp = Integer
+					.parseInt(((TextView) ((Spinner) dialog
+							.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner3))
+							.getSelectedView()
+							.findViewById(
+									R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_textview2))
+							.getText().toString());
+
+			// string_icon = ((HashMap<String, Object>) ((Spinner) dialog
+			// .findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner1))
+			// .getSelectedItem()).get(ICON_NAME).toString();
 
 			if (boolean_ergebnis) {
 
 				Intent intent_service = new Intent(this,
 						PunkteHinzufuegen_Service.class);
 
-				intent_service.putExtra(getPackageName() + "_" + "string_name",
-						string_name);
-				intent_service.putExtra(getPackageName() + "_"
-						+ "string_beschreibung", string_beschreibung);
-				intent_service.putExtra(getPackageName() + "_"
-						+ "string_adresse", string_adresse);
-				intent_service.putExtra(getPackageName() + "_"
-						+ "string_radio_eigenschaften",
-						string_radio_eigenschaften);
-				intent_service.putExtra(
-						getPackageName() + "_" + "double_preis", double_preis);
+				intent_service.putExtra("ladestation", ladestation_saeule);
+
+				// intent_service.putExtra(getPackageName() + "_" +
+				// "string_name",
+				// string_name);
+				// intent_service.putExtra(getPackageName() + "_"
+				// + "string_beschreibung", string_beschreibung);
+				// intent_service.putExtra(getPackageName() + "_"
+				// + "string_adresse", string_adresse);
+				// intent_service.putExtra(getPackageName() + "_"
+				// + "string_radio_eigenschaften",
+				// string_radio_eigenschaften);
+				// intent_service.putExtra(
+				// getPackageName() + "_" + "double_preis", double_preis);
 				intent_service.putExtra(getPackageName() + "_"
 						+ "boolean_pos_aus_gps", boolean_pos_aus_gps);
-				intent_service.putExtra(getPackageName() + "_" + "string_icon",
-						string_icon);
+				// intent_service.putExtra(getPackageName() + "_" +
+				// "string_icon",
+				// string_icon);
 
 				startService(intent_service);
 			}
@@ -957,6 +1048,8 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 
 		sql.close();
 		db.schliessen();
+
+		sendBroadcast(new Intent(MemoSingleton.INTENT_DB_FUELLEN));
 	}
 
 	private void dbLeeren() {
@@ -966,5 +1059,7 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 		db.loescheDaten();
 
 		db.schliessen();
+
+		sendBroadcast(new Intent(MemoSingleton.INTENT_DB_LEEREN));
 	}
 }

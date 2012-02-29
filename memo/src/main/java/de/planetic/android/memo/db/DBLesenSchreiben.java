@@ -476,11 +476,11 @@ public class DBLesenSchreiben {
 			cv_werte.clear();
 		}
 
-		if (long_return > 0) {
-
-			context_application.sendBroadcast(new Intent(
-					MemoSingleton.INTENT_DB_FUELLEN));
-		}
+//		if (long_return > 0) {
+//
+//			context_application.sendBroadcast(new Intent(
+//					MemoSingleton.INTENT_DB_FUELLEN));
+//		}
 
 		return long_return;
 	}

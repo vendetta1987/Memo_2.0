@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_relativelayout1"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
@@ -7,15 +8,25 @@
     <TextView
         android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_textview1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:textSize="20dp" >
     </TextView>
 
-    <ImageView
+    <TextView
+        android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_textview2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" >
+    </TextView>
+
+    <!--
+         <ImageView
         android:id="@+id/punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_imageview1"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
         android:contentDescription="@string/kein_bild"
         android:src="@drawable/icon" />
+    -->
 
 </RelativeLayout>

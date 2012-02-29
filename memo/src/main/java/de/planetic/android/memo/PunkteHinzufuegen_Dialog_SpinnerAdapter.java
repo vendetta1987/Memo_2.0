@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -22,10 +21,11 @@ import android.widget.TextView;
  * 
  */
 public class PunkteHinzufuegen_Dialog_SpinnerAdapter extends
-		ArrayAdapter<HashMap<String, Object>> {
+		ArrayAdapter<String> {
 
 	private PunkteZeigen_Tab punktezeigen_tab_context;
-	private ArrayList<HashMap<String, Object>> arraylist_daten;
+	private String[] mstring_anzeige;
+	private String[] mstring_werte;
 
 	/**
 	 * Konstruktor nimmt {@link Context} und {@link ArrayList} entgegen.
@@ -42,15 +42,17 @@ public class PunkteHinzufuegen_Dialog_SpinnerAdapter extends
 	 *            als {@link Drawable}
 	 */
 	public PunkteHinzufuegen_Dialog_SpinnerAdapter(Context context,
-			ArrayList<HashMap<String, Object>> arraylist_daten) {
+			String[] string_anzeige, String[] string_werte) {
 		super(
 				context,
-				R.layout.punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout,
-				arraylist_daten);
+				R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_textview1,
+				string_anzeige);
 
 		punktezeigen_tab_context = (PunkteZeigen_Tab) ((MemoSingleton) context
 				.getApplicationContext()).context_punktezeigen_tab;
-		this.arraylist_daten = arraylist_daten;
+
+		mstring_anzeige = string_anzeige;
+		mstring_werte = string_werte;
 	}
 
 	@Override
@@ -86,13 +88,16 @@ public class PunkteHinzufuegen_Dialog_SpinnerAdapter extends
 
 		((TextView) view_eintrag
 				.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_textview1))
-				.setText(arraylist_daten.get(position).get("icon_name")
-						.toString());
+				.setText(mstring_anzeige[position]);
 
-		((ImageView) view_eintrag
-				.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_imageview1))
-				.setImageDrawable((Drawable) arraylist_daten.get(position).get(
-						"icon_datei"));
+		((TextView) view_eintrag
+				.findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_textview2))
+				.setText(mstring_werte[position]);
+
+		// ((ImageView) view_eintrag
+		// .findViewById(R.id.punktezeigen_tab_dialog_pkthinzufuegen_spinner_item_layout_imageview1))
+		// .setImageDrawable((Drawable) arraylist_daten.get(position).get(
+		// "icon_datei"));
 
 		return view_eintrag;
 	}

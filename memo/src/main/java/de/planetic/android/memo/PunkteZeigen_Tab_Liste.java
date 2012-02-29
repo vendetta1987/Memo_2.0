@@ -245,7 +245,9 @@ public class PunkteZeigen_Tab_Liste extends Activity {
 	private void dbAbfrageStarten(Intent intent_befehl) {
 
 		asynctask_dbabfrage = new PunkteZeigen_Tab_AsyncTask(this,
-				PunkteZeigen_Tab_AsyncTask.LISTE, false);
+				PunkteZeigen_Tab_AsyncTask.LISTE,
+				intent_befehl.getBooleanExtra(getPackageName() + "_"
+						+ "boolean_filter", false));
 		asynctask_dbabfrage.execute();
 	}
 

@@ -384,7 +384,7 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	// Cursor cursor_db_anfrage_geopkt =
 	// memosingleton_anwendung.sqldatabase_readable
 	// .query(SQL_DB_Verwaltung.TABELLEN_NAME_HAUPT, new String[] {
-	// SQL_DB_Verwaltung.NAME_SPALTE_1,
+	// SQL_DBlong_max_id_Verwaltung.NAME_SPALTE_1,
 	// SQL_DB_Verwaltung.NAME_SPALTE_2,
 	// SQL_DB_Verwaltung.NAME_SPALTE_3,
 	// SQL_DB_Verwaltung.NAME_SPALTE_4,
@@ -413,7 +413,8 @@ public class PunkteZeigen_Tab_Karte extends MapActivity implements
 	private void dbAbfrageStarten(Intent intent_befehl) {
 
 		new PunkteZeigen_Tab_AsyncTask(this, PunkteZeigen_Tab_AsyncTask.KARTE,
-				false).execute();
+				intent_befehl.getBooleanExtra(getPackageName() + "_"
+						+ "boolean_filter", false)).execute();
 	}
 
 	/**

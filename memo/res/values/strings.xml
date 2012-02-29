@@ -71,7 +71,41 @@
     <string name="memo_einstellungen_gps_aktualisierungsrate_schluessel">gps_aktualisierungsrate</string>
     <string name="memo_einstellungen_gps_kartenansicht_schluessel">karte_kartenansicht</string>
     <string name="memo_einstellungen_gps_verkehrslage_schluessel">karte_verkehrslage</string>
-
+    <!--  -->
+    <string name="punkthinzufuegen_bezeichnung">Bezeichnung</string>
+    <string name="punkthinzufuegen_kommentar">Kommentar</string>
+    <string name="punkthinzufuegen_plz">PLZ</string>
+    <string name="punkthinzufuegen_ort">Ort</string>
+    <string name="punkthinzufuegen_str_nr">Straße und Nr.</string>
+    <string name="punkthinzufuegen_verfuegbarkeit_anfang">Verfügbarkeit Anfang</string>
+    <string name="punkthinzufuegen_verfuegbarkeit_ende">Verfügbarkeit Ende</string>
+    <string name="punkthinzufuegen_verfuegbarkeit_kommentar">Verfügbarkeit Kommentar</string>
+    <string name="punkthinzufuegen_land">Land</string>
+    <string name="punkthinzufuegen_zugangstyp">Zugangstyp</string>
+    <!--  -->
+    <string-array name="punkthinzufuegen_laender_stringarray">
+        <item>Deutschland</item>
+        <item>England</item>
+        <item>Spanien</item>
+    </string-array>
+    <string-array name="punkthinzufuegen_laender_werte_array">
+        <item>DE</item>
+        <item>EN</item>
+        <item>ES</item>
+    </string-array>
+    <string-array name="punkthinzufuegen_zugangstyp_stringarray">
+        <item>öffentlich</item>
+        <item>halb-öffentlich</item>
+        <item>halb-privat</item>
+        <item>privat</item>
+    </string-array>
+    <string-array name="punkthinzufuegen_zugangstyp_werte_array">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <!--  -->
     <string-array name="punktezeigen_tab_dialog_pktfiltern_spinner1_stringarray">
         <item>Cent/kWh ?</item>
         <item>Cent/kWh ></item>

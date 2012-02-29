@@ -339,8 +339,9 @@ public class PunkteZeigen_Tab_AsyncTask extends
 
 		HashMap<String, String> hashmap_liste_daten_datum;
 		Ladestation ladestation_saeule;
-		ArrayList<Ladestation> arraylist_temp = db_rw.leseLadestation(0, false,
-				true);
+		ArrayList<Ladestation> arraylist_temp = db_rw.leseLadestation(
+				memosingleton_anwendung.letzterDBZugriff(MemoSingleton.LISTE),
+				false, true);
 
 		publishProgress(PROGRESS_SET_MAX, arraylist_temp.size());
 		int_prozent_temp = berechneProzentSchritte(arraylist_temp.size());
@@ -362,17 +363,20 @@ public class PunkteZeigen_Tab_AsyncTask extends
 					String.valueOf(ladestation_saeule.long_id));
 
 			if (!boolean_filter) {
+
 				memosingleton_anwendung.arraylist_liste_daten
 						.add(hashmap_liste_daten_datum);
 
 				memosingleton_anwendung.aktualisiereDBZugriff(
 						MemoSingleton.LISTE, ladestation_saeule.long_id);
 			} else {
+
 				memosingleton_anwendung.arraylist_liste_daten_temp
 						.add(hashmap_liste_daten_datum);
 			}
 
 			if (isCancelled()) {
+
 				return -1;
 			}
 
@@ -588,8 +592,9 @@ public class PunkteZeigen_Tab_AsyncTask extends
 		publishProgress(PROGRESS_UPDATE, 25);
 
 		// fuer alle erfassten neuen punkte
-		for (Ladestation ladestation_saeule : db_rw.leseLadestation(0, false,
-				true)) {
+		for (Ladestation ladestation_saeule : db_rw.leseLadestation(
+				memosingleton_anwendung.letzterDBZugriff(MemoSingleton.KARTE),
+				false, true)) {
 
 			// erzeuge overlayitem (geopunkt mit zusaetzlichen daten) zum
 			// einfuegen in overlays
@@ -599,6 +604,11 @@ public class PunkteZeigen_Tab_AsyncTask extends
 					new OverlayItem(ladestation_saeule.geopoint_standort,
 							ladestation_saeule.string_bezeichnung, String
 									.valueOf(ladestation_saeule.long_id)));
+
+			if (isCancelled()) {
+
+				return -1;
+			}
 
 			if (long_max_id < ladestation_saeule.long_id) {
 
@@ -627,7 +637,8 @@ public class PunkteZeigen_Tab_AsyncTask extends
 		for (ItemOverlay itemoverlay_inner : hashmap_itemoverlays_temp.values()) {
 
 			if (isCancelled()) {
-				return 0;
+
+				return -1;
 			}
 
 			itemoverlay_inner.initialisieren();
@@ -671,7 +682,7 @@ public class PunkteZeigen_Tab_AsyncTask extends
 			// }
 		}
 
-		// publishProgress(PROGRESS_MAX);
+		publishProgress(PROGRESS_MAX);
 
 		return (int) long_max_id;
 	}
