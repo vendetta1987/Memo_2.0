@@ -1,6 +1,5 @@
 package de.planetic.android.memo;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,7 +7,6 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -17,6 +15,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.SystemClock;
 import android.util.Log;
+
+import com.google.android.maps.GeoPoint;
+
+import de.planetic.android.memo.db.DBLesenSchreiben;
 import de.planetic.android.memo.db.Ladestation;
 
 /**
@@ -58,27 +60,26 @@ public class PunkteHinzufuegen_Service extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent_service) {
 
-		ContentValues contentvalues_werte = new ContentValues();
-
-		Ladestation ladestation = intent_service
-				.getParcelableExtra("ladestation");
-
-		GeoPunkt geopunkt_position = null;
+		Ladestation ladestation_saeule;
+		DBLesenSchreiben db = new DBLesenSchreiben(memosingleton_anwendung);
+		// GeoPunkt geopunkt_position = null;
 
 		// intent-daten auslesen
-		String string_name = intent_service.getStringExtra(getPackageName()
-				+ "_" + "string_name");
-		String string_beschreibung = intent_service
-				.getStringExtra(getPackageName() + "_" + "string_beschreibung");
-		String string_adresse = intent_service.getStringExtra(getPackageName()
-				+ "_" + "string_adresse");
-		String string_radio_eigenschaften = intent_service
-				.getStringExtra(getPackageName() + "_"
-						+ "string_radio_eigenschaften");
-		String string_icon = intent_service.getStringExtra(getPackageName()
-				+ "_" + "string_icon");
-		Double double_preis = intent_service.getDoubleExtra(getPackageName()
-				+ "_" + "double_preis", 0.0);
+		// String string_name = intent_service.getStringExtra(getPackageName()
+		// + "_" + "string_name");
+		// String string_beschreibung = intent_service
+		// .getStringExtra(getPackageName() + "_" + "string_beschreibung");
+		// String string_adresse =
+		// intent_service.getStringExtra(getPackageName()
+		// + "_" + "string_adresse");
+		// String string_radio_eigenschaften = intent_service
+		// .getStringExtra(getPackageName() + "_"
+		// + "string_radio_eigenschaften");
+		// String string_icon = intent_service.getStringExtra(getPackageName()
+		// + "_" + "string_icon");
+		// Double double_preis = intent_service.getDoubleExtra(getPackageName()
+		// + "_" + "double_preis", 0.0);
+
 		// falls position aus gps ermittelt werden soll
 		boolean boolean_pos_aus_gps = intent_service.getBooleanExtra(
 				getPackageName() + "_" + "boolean_pos_aus_gps", true);
@@ -91,7 +92,18 @@ public class PunkteHinzufuegen_Service extends IntentService {
 		long long_id = intent_service.getLongExtra(getPackageName() + "_"
 				+ "long_id", -1), long_zeit;
 		int int_wartezeit;
-		HashMap<String, String> hashmap_temp;
+		HashMap<String, String> hashmap_temp = new HashMap<String, String>();
+
+		if (long_id > 0
+				&& memosingleton_anwendung.hashmap_ladestation_service
+						.containsKey(long_id)) {
+
+			ladestation_saeule = memosingleton_anwendung.hashmap_ladestation_service
+					.get(long_id);
+		} else {
+
+			return;
+		}
 
 		// bereitet meldung fuer notification-leiste vor
 		Notification notification_nachricht = new Notification(R.drawable.icon,
@@ -115,7 +127,7 @@ public class PunkteHinzufuegen_Service extends IntentService {
 						getResources()
 								.getString(
 										R.string.punktehinzufuegen_service_notification_speichere)
-								+ " " + string_name,
+								+ " " + ladestation_saeule.string_bezeichnung,
 						getResources()
 								.getString(
 										R.string.punktehinzufuegen_service_notification_bitte_warten),
@@ -155,23 +167,11 @@ public class PunkteHinzufuegen_Service extends IntentService {
 
 					if (memosingleton_anwendung.gps_verwaltung.long_letzte_aktualisierung > long_zeit) {
 
-						geopunkt_position = memosingleton_anwendung.gps_verwaltung
+						ladestation_saeule.geopoint_standort = (GeoPoint) memosingleton_anwendung.gps_verwaltung
 								.aktuellePosition();
 
-						hashmap_temp = new HashMap<String, String>();
-						hashmap_temp.put("string_lat",
-								String.valueOf((geopunkt_position
-										.getLatitudeE6() / 1e6d)));
-						hashmap_temp.put("string_lon",
-								String.valueOf((geopunkt_position
-										.getLongitudeE6() / 1e6d)));
-						hashmap_temp = nutzeGeokodierung(hashmap_temp);
+						ladestation_saeule = nutzeGeokodierung(ladestation_saeule);
 
-						if ((hashmap_temp != null)
-								&& hashmap_temp.containsKey("string_adresse")) {
-
-							string_adresse = hashmap_temp.get("string_adresse");
-						}
 						break;
 					}
 
@@ -183,7 +183,8 @@ public class PunkteHinzufuegen_Service extends IntentService {
 										getResources()
 												.getString(
 														R.string.punktehinzufuegen_service_notification_speichere)
-												+ " " + string_name,
+												+ " "
+												+ ladestation_saeule.string_bezeichnung,
 										getResources()
 												.getString(
 														R.string.punktehinzufuegen_service_notification_warte_auf_gps)
@@ -214,82 +215,42 @@ public class PunkteHinzufuegen_Service extends IntentService {
 				}
 			} else {
 
-				geopunkt_position = null;
+				ladestation_saeule.geopoint_standort = null;
 			}
 		} else {
 			// adresse in position umwandeln
 
-			hashmap_temp = new HashMap<String, String>();
-			hashmap_temp.put("string_adresse", string_adresse);
-			hashmap_temp = nutzeGeokodierung(hashmap_temp);
-
-			if ((hashmap_temp != null)
-					&& hashmap_temp.containsKey("string_lat")
-					&& hashmap_temp.containsKey("string_lon")) {
-
-				geopunkt_position = new GeoPunkt(Integer.parseInt(hashmap_temp
-						.get("string_lat")), Integer.parseInt(hashmap_temp
-						.get("string_lon")));
-			} else {
-
-				geopunkt_position = null;
-			}
+			ladestation_saeule = nutzeGeokodierung(ladestation_saeule);
 		}
 
-		contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_2, string_name);
-
-		if (geopunkt_position != null) {
+		if (ladestation_saeule.geopoint_standort != null) {
 			// fuer den punkt wurden geokoordinaten ermittelt
-
-			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_3,
-					geopunkt_position.getLatitudeE6());
-			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_4,
-					geopunkt_position.getLongitudeE6());
 
 			boolean_verarbeitet = true;
 		} else {
 			// falls keine koordinaten ermittelt werden konnten
 
-			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_3, -1);
-			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_4, -1);
-
 			boolean_verarbeitet = false;
 		}
-
-		contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_5, string_icon);
-
-		contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_6, Calendar
-				.getInstance().getTimeInMillis());
-
-		contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_7,
-				string_beschreibung);
-		contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_8,
-				string_radio_eigenschaften);
-		contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_9, double_preis);
-		contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_10,
-				string_adresse);
 
 		if (boolean_verarbeitet) {
 			// hinterlege in der tabelle, dass der punkt verarbeitet wurde
 
-			contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_11,
-					VERARBEITET);
-
 			notification_nachricht
 					.setLatestEventInfo(
 							getApplicationContext(),
-							string_name
+							ladestation_saeule.string_bezeichnung
 									+ " "
 									+ getResources()
 											.getString(
 													R.string.punktehinzufuegen_service_notification_gespeichert),
 							getResources().getString(R.string.lat_kurz)
-									+ String.valueOf(geopunkt_position
+									+ String.valueOf(ladestation_saeule.geopoint_standort
 											.getLatitudeE6())
 									+ " "
 									+ getResources().getString(
 											R.string.lon_kurz)
-									+ String.valueOf(geopunkt_position
+									+ String.valueOf(ladestation_saeule.geopoint_standort
 											.getLongitudeE6()), PendingIntent
 									.getBroadcast(getApplicationContext(), 0,
 											new Intent(),
@@ -302,18 +263,20 @@ public class PunkteHinzufuegen_Service extends IntentService {
 
 			if (boolean_pos_aus_gps) {
 
-				contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_11,
-						NICHT_VERARBEITET_GPS);
+				// TODO kennzeichnung für erneutes verarbeiten in der DB anlegen
+
+				// contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_11,
+				// NICHT_VERARBEITET_GPS);
 			} else {
 
-				contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_11,
-						NICHT_VERARBEITET_ADRESSE);
+				// contentvalues_werte.put(SQL_DB_Verwaltung.NAME_SPALTE_11,
+				// NICHT_VERARBEITET_ADRESSE);
 			}
 
 			notification_nachricht
 					.setLatestEventInfo(
 							getApplicationContext(),
-							string_name
+							ladestation_saeule.string_bezeichnung
 									+ " "
 									+ getResources()
 											.getString(
@@ -331,15 +294,15 @@ public class PunkteHinzufuegen_Service extends IntentService {
 		if (boolean_erneut_verarbeiten && (long_id >= 0)) {
 			// aktualisiere den erneut verarbeiteten punkt
 
-			memosingleton_anwendung.sqldatabase_writeable.update(
-					SQL_DB_Verwaltung.TABELLEN_NAME_SYNCH, contentvalues_werte,
-					SQL_DB_Verwaltung.NAME_SPALTE_1 + "=?",
-					new String[] { String.valueOf(long_id) });
+			// TODO aktualisierung umsetzen
+
+			// memosingleton_anwendung.sqldatabase_writeable.update(
+			// SQL_DB_Verwaltung.TABELLEN_NAME_SYNCH, contentvalues_werte,
+			// SQL_DB_Verwaltung.NAME_SPALTE_1 + "=?",
+			// new String[] { String.valueOf(long_id) });
 		} else {
 
-			memosingleton_anwendung.sqldatabase_writeable.insert(
-					SQL_DB_Verwaltung.TABELLEN_NAME_SYNCH, null,
-					contentvalues_werte);
+			db.schreibeLadestation(ladestation_saeule);
 		}
 
 		if (boolean_pos_aus_gps
@@ -368,34 +331,53 @@ public class PunkteHinzufuegen_Service extends IntentService {
 	 * @return eine {@link HashMap} mit dem in {@code hashmap_anfrage} fehlenden
 	 *         Eintrag
 	 */
-	public HashMap<String, String> nutzeGeokodierung(
-			HashMap<String, String> hashmap_anfrage) {
+	public Ladestation nutzeGeokodierung(Ladestation ladestation_saeule) {
 
 		Geocoder geocoder_geokodierung = new Geocoder(getApplicationContext());
 		List<Address> list_ergebnis = null;
 		HashMap<String, String> hashmap_ergebnis = new HashMap<String, String>();
 		String string_temp;
+		boolean boolean_hat_adresse = false;
 
 		NetworkInfo networkinfo_internet = ((ConnectivityManager) getApplicationContext()
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();
+
+		if (!ladestation_saeule.adresse_ort.string_land.equalsIgnoreCase("")
+				|| !ladestation_saeule.adresse_ort.string_plz
+						.equalsIgnoreCase("")
+				|| !ladestation_saeule.adresse_ort.string_ort
+						.equalsIgnoreCase("")
+				|| !ladestation_saeule.adresse_ort.string_str_nr
+						.equalsIgnoreCase("")) {
+
+			boolean_hat_adresse = true;
+		}
 
 		if ((networkinfo_internet != null)
 				&& networkinfo_internet.isAvailable()) {
 
 			try {
 
-				if (hashmap_anfrage.containsKey("string_adresse")) {
+				if (boolean_hat_adresse) {
 
-					list_ergebnis = geocoder_geokodierung.getFromLocationName(
-							hashmap_anfrage.get("string_adresse"), 1);
+					list_ergebnis = geocoder_geokodierung
+							.getFromLocationName(
+									ladestation_saeule.adresse_ort.string_land
+											+ " "
+											+ ladestation_saeule.adresse_ort.string_plz
+											+ " "
+											+ ladestation_saeule.adresse_ort.string_ort
+											+ " "
+											+ ladestation_saeule.adresse_ort.string_str_nr,
+									1);
 				} else {
 
 					list_ergebnis = geocoder_geokodierung.getFromLocation(
-							Double.parseDouble(hashmap_anfrage
-									.get("string_lat")), Double
-									.parseDouble(hashmap_anfrage
-											.get("string_lon")), 1);
+							ladestation_saeule.geopoint_standort
+									.getLatitudeE6() / 1e6d,
+							ladestation_saeule.geopoint_standort
+									.getLongitudeE6() / 1e6d, 1);
 				}
 
 			} catch (Exception e) {
@@ -408,35 +390,30 @@ public class PunkteHinzufuegen_Service extends IntentService {
 
 			for (Address address_adresse : list_ergebnis) {
 
-				if (hashmap_anfrage.containsKey("string_adresse")) {
+				if (boolean_hat_adresse) {
 
 					if (address_adresse.hasLatitude()
 							&& address_adresse.hasLongitude()) {
 
-						hashmap_ergebnis.put("string_lat", String
-								.valueOf(((Double) (address_adresse
-										.getLatitude() * 1e6)).intValue()));
-						hashmap_ergebnis.put("string_lon", String
-								.valueOf(((Double) (address_adresse
-										.getLongitude() * 1e6)).intValue()));
-						return hashmap_ergebnis;
+						ladestation_saeule.geopoint_standort = new GeoPoint(
+								((Double) (address_adresse.getLatitude() * 1e6))
+										.intValue(), ((Double) (address_adresse
+										.getLongitude() * 1e6)).intValue());
 					}
 				} else {
 
-					string_temp = new String();
-
-					for (int i = 0; i <= address_adresse
-							.getMaxAddressLineIndex(); i++) {
-
-						string_temp += address_adresse.getAddressLine(i) + " ";
-					}
-
-					hashmap_ergebnis.put("string_adresse", string_temp);
-					return hashmap_ergebnis;
+					ladestation_saeule.adresse_ort.string_land = address_adresse
+							.getCountryCode();
+					ladestation_saeule.adresse_ort.string_plz = address_adresse
+							.getPostalCode();
+					ladestation_saeule.adresse_ort.string_ort = address_adresse
+							.getLocality();
+					ladestation_saeule.adresse_ort.string_str_nr = address_adresse
+							.getThoroughfare();
 				}
 			}
 		}
 
-		return null;
+		return ladestation_saeule;
 	}
 }

@@ -611,6 +611,11 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 				boolean_pos_aus_gps = true;
 
 				// string_adresse = "";
+
+				ladestation_saeule.adresse_ort.string_land = "";
+				ladestation_saeule.adresse_ort.string_plz = "";
+				ladestation_saeule.adresse_ort.string_ort = "";
+				ladestation_saeule.adresse_ort.string_str_nr = "";
 			} else {
 
 				ladestation_saeule.adresse_ort.string_land = ((TextView) ((Spinner) dialog
@@ -734,7 +739,11 @@ public class PunkteZeigen_Tab extends TabActivity implements OnCancelListener {
 				Intent intent_service = new Intent(this,
 						PunkteHinzufuegen_Service.class);
 
-				intent_service.putExtra("ladestation", ladestation_saeule);
+				memosingleton_anwendung.hashmap_ladestation_service.put(
+						ladestation_saeule.long_id, ladestation_saeule);
+
+				intent_service.putExtra(getPackageName() + "_" + "long_id",
+						ladestation_saeule.long_id);
 
 				// intent_service.putExtra(getPackageName() + "_" +
 				// "string_name",

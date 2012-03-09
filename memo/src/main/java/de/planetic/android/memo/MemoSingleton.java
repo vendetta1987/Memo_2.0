@@ -108,6 +108,8 @@ public class MemoSingleton extends Application {
 	public ArrayList<Overlay> arraylist_karte_overlays_temp;
 	public HashMap<String, ArrayList<HashMap<String, String>>> hashmap_karte_navigationsanweisungen;
 
+	public HashMap<Long, Ladestation> hashmap_ladestation_service;
+
 	// speichern letzten lesezugriff auf db in ms seit 1.1.1970
 	private long long_letzter_db_zugriff_liste;
 	private long long_letzter_db_zugriff_karte;
@@ -130,6 +132,8 @@ public class MemoSingleton extends Application {
 		arraylist_karte_overlays = new ArrayList<Overlay>();
 		arraylist_karte_overlays_temp = new ArrayList<Overlay>();
 		hashmap_karte_navigationsanweisungen = new HashMap<String, ArrayList<HashMap<String, String>>>();
+
+		hashmap_ladestation_service = new HashMap<Long, Ladestation>();
 
 		gps_verwaltung = new GPS_Verwaltung(getApplicationContext());
 		itemoverlay_aktuelle_position = new ItemOverlay(getResources()
@@ -230,9 +234,9 @@ public class MemoSingleton extends Application {
 	 * {@code public void dbAbfragen(final GeoPunkt geopunkt_punkt, boolean boolean_liste)}
 	 * <p/>
 	 * Wird aufgerufen sobald ein Listenpunkt oder Karteneintrag angeklickt wird
-	 * und erzeugt einen Dialog mit den in der DB hinterlegten Daten. Zusätzlich
-	 * enthält der Dialog die Schaltflächen: OK, auf Karte zentrieren (nur für
-	 * Liste) und hierhin navigieren.
+	 * und erzeugt einen Dialog mit den in der DB hinterlegten Daten.
+	 * Zusätzlich enthält der Dialog die Schaltflächen: OK, auf Karte
+	 * zentrieren (nur für Liste) und hierhin navigieren.
 	 * 
 	 * @param geopunkt_punkt
 	 *            Der ausgewählte Punkt
